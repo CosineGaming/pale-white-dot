@@ -34,6 +34,10 @@ img {
 
 ul {
 	list-style: none;
-	background-color: rgba(2,5,18,0.75); /* The body background color, so it only shows up over graphics */
+	background-color: rgba(1,2,8,0.75); /* The body background color, so it only shows up over graphics */
 	padding: 20px;
+}
+
+li {
+	padding: 5px;
 }
