@@ -1,33 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8" />
+	<title>FUN GAME (TODO)</title>
 	<script
 	  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
 	  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
 	  crossorigin="anonymous"></script>
+	<script src="image-map-resize.min.js"></script>
 	<script src="data.js"></script>
 	<script src="game.js"></script>
 	<link rel="stylesheet" href="game.css" />
 </head>
 <body>
-	<div id="state-1">
-		<h1>Game</h1>
-		<p>This is a fun game</p>
-	</div>
-	<div id="play">
-		<!--backup<pre>
-                         -----      -----                        
-                        /     \    /     \     /---\     /---\   
-    .   o   o   .      |       |  |       |   |     |   |     |  
-                        \     /    \     /     \---/     \---/   
-                         -----      -----                        
-		</pre>-->
-		<img src="assets/solar-system.png" class="solar-system" />
-		<ul id="resources" class="resources" style="position: absolute; left: 50px; top: 50px;"></ul>
-		<h3 style="position: absolute; text-align: right; left: 500px; top:
-			50px;">Owned bodies:</h3>
-		<ul id="owned" class="owned" style="position: absolute; text-align:
-			right; left: 500px; top: 80px;"></ul>
-	</div>
+	<!--backup<pre>
+                        -----      -----                        
+                       /     \    /     \     /---\     /---\   
+   .   o   o   .      |       |  |       |   |     |   |     |  
+                       \     /    \     /     \---/     \---/   
+                        -----      -----                        
+	</pre>-->
+	<img src="assets/solar-system.png" id="focused-body"
+		usemap="#ss-map" />
+	<ul id="resources" class="resources" style="position: absolute; left:
+		50px; top: 50px;"></ul>
+	<h3 style="position: absolute; text-align: right; left: 500px; top:
+		50px;">Owned bodies:</h3>
+	<ul id="owned" class="owned" style="position: absolute; text-align:
+		right; left: 500px; top: 80px;"></ul>
+	<!-- Maps -->
+	<map name="solar-system-map" id="solar-system-map">
+		<!-- #$-:Image map file created by GIMP Image Map plug-in -->
+		<!-- #$-:GIMP Image Map plug-in by Maurits Rijk -->
+		<!-- #$-:Please do not edit lines starting with "#$" -->
+		<!-- #$VERSION:2.3 -->
+		<!-- #$AUTHOR:Luna -->
+		<area shape="circle" coords="17,97,8" title="Mercury" href="#mercury" />
+		<area shape="circle" coords="35,96,9" title="Venus" href="#venus" />
+		<area shape="circle" coords="61,97,12" title="Earth" href="#earth" />
+		<area shape="circle" coords="86,97,12" title="Mars" href="#mars" />
+		<area shape="circle" coords="131,97,28" title="Jupiter" href="#jupiter" />
+		<area shape="circle" coords="212,97,27" title="Saturn" href="#saturn" />
+		<area shape="circle" coords="263,97,12" title="Uranus" href="#uranus" />
+		<area shape="circle" coords="297,98,10" title="Neptune" href="#neptune" />
+	</map>
+
 </body>
 </html>

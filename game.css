@@ -17,10 +17,12 @@ img {
 	-ms-interpolation-mode: nearest-neighbor;   /* IE8+						   */
 }
 
-.solar-system {
+#focused-body {
 	width: 640px;
 }
 
-li {
+ul {
 	list-style: none;
+	background-color: rgba(2,5,18,0.75); /* The body background color, so it only shows up over graphics */
+	padding: 20px;
 }

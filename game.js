@@ -2,6 +2,8 @@
 // It's going to be an incremental game in the solar system
 // GPL3 for whole project
 
+var focusedBody = "solar-system";
+
 // Something something prototype.js bad form something something
 // Fuck you. Anyway, thanks http://stackoverflow.com/a/3291856/1556332
 String.prototype.capitalize = function() {
@@ -41,6 +43,8 @@ function bodies(func)
 
 function draw()
 {
+	$("#focused-body").attr("src", "assets/" + focusedBody + ".png");
+	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
 	$("#resources").empty();
 	$.each(resources, function(resource, count) {
 		$("#resources").append(
@@ -63,7 +67,13 @@ function init()
 	draw();
 
 	// TODO: Decide fun interval
-	setInterval(update, 2000);
+	//setInterval(update, 1000);
+
+	$("map").imageMapResize();
+	$("map area").click(function() {
+		focusedBody = $(this).attr("href").substr(1);
+		draw();
+	});
 
 }
 
