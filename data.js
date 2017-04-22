@@ -1,4 +1,4 @@
-// For use by game.js
+// For use by game.js. Basically json
 // Big objects that essentially just store data
 // ld-38
 // GPL3

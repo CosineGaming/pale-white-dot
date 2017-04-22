@@ -54,8 +54,7 @@ function draw()
 	});
 	$("#owned").empty();
 	bodies(function(body, name) {
-		if (body.owner == "player")
-		{
+		if (body.owner == "player") {
 			$("#owned").append($("<li>").append(name.capitalize()));
 		}
 	});
