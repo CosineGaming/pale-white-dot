@@ -60,19 +60,34 @@ function draw()
 	});
 }
 
+function hashChange()
+{
+	focusedBody = window.location.hash.substr(1);
+	if (!focusedBody) {
+		focusedBody = "solar-system";
+	}
+	document.body.style.backgroundPosition = Math.random() * 800 + "px " + Math.random() * 800 + "px"; // I don't need you for this jQuery, but thanks
+	draw();
+}
+
 function init()
 {
 
-	draw();
-
 	// TODO: Decide fun interval
-	//setInterval(update, 1000);
+	setInterval(update, 1000);
+	
+	draw();
+	
+	// This way must be slower! Why do you do it this way?
+	// The answer is so that the back button functions appropriately.
+	$(window).on("hashchange", hashChange); // Not sure how to do this The jQuery Way
+	if (window.location.hash) {
+		hashChange();
+	}
 
 	$("map").imageMapResize();
-	$("map area").click(function() {
-		focusedBody = $(this).attr("href").substr(1);
-		draw();
-	});
+
+	draw();
 
 }
 
