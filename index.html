@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script
+	  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+	  crossorigin="anonymous"></script>
+	<script src="data.js"></script>
+	<script src="game.js"></script>
+	<link rel="stylesheet" href="game.css" />
+</head>
+<body>
+	<div id="state-1">
+		<h1>Game</h1>
+		<p>This is a fun game</p>
+	</div>
+	<div id="play">
+		<!--backup<pre>
+                         -----      -----                        
+                        /     \    /     \     /---\     /---\   
+    .   o   o   .      |       |  |       |   |     |   |     |  
+                        \     /    \     /     \---/     \---/   
+                         -----      -----                        
+		</pre>-->
+		<img src="assets/solar-system.png" class="solar-system" />
+		<ul id="resources" class="resources" style="position: absolute; left: 50px; top: 50px;"></ul>
+		<h3 style="position: absolute; text-align: right; left: 500px; top:
+			50px;">Owned bodies:</h3>
+		<ul id="owned" class="owned" style="position: absolute; text-align:
+			right; left: 500px; top: 80px;"></ul>
+	</div>
+</body>
+</html>
