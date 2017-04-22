@@ -1,0 +1,17 @@
+<img src="solar-system.xcf" width="320" height="180" border="0" usemap="#map" />
+
+<map name="map">
+<!-- #$-:Image map file created by GIMP Image Map plug-in -->
+<!-- #$-:GIMP Image Map plug-in by Maurits Rijk -->
+<!-- #$-:Please do not edit lines starting with "#$" -->
+<!-- #$VERSION:2.3 -->
+<!-- #$AUTHOR:Luna -->
+<area shape="circle" coords="35,96,9" href="#venus" />
+<area shape="circle" coords="17,97,8" href="#mercury" />
+<area shape="circle" coords="61,97,12" href="#earth" />
+<area shape="circle" coords="86,97,12" href="#mars" />
+<area shape="circle" coords="131,97,28" href="#jupiter" />
+<area shape="circle" coords="212,97,27" href="#saturn" />
+<area shape="circle" coords="263,97,12" href="#uranus" />
+<area shape="circle" coords="297,98,10" href="#neptune" />
+</map>
