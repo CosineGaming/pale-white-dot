@@ -66,6 +66,7 @@ main {
 
 .body-section {
 	display: inline-block;
+	position: relative;
 	width: 640px;
 }
 
@@ -97,6 +98,9 @@ main {
 #focused-body {
 	width: 640px;
 	z-index: -1000;
+	position: absolute;
+	top: 60px;
+	left: 0px;
 }
 
 #back-img {

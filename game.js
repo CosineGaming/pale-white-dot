@@ -31,7 +31,7 @@ function update()
 			addResources(body.resources);
 		}
 	});
-	draw();
+	drawUpdate();
 }
 
 function build(name)
@@ -104,21 +104,40 @@ function getBody(name)
 function drawOnce()
 {
 	$.each(buildable, function(item, cost) {
-		var tooltip = $("<ul>").addClass("tooltip");
+		var tooltip = $("<ul>").addClass("tooltip").append($("<p>").append(buildDescriptions[item]));
 		$("#build-menu").append(tooltip);
 		$.each(cost, function(resource, count) {
-			tooltip.append($("<li>").append(resource + ": " + count));
+			tooltip.append($("<li>").append(names[resource] + ": " + count));
 		});
 		$("#build-menu").append($("<li>").append(
 			$("<a>").append(item).click(function() {
 				build(item);
 			}).hover(function(e) {
-				tooltip.show().css( { top: e.pageY, left: e.pageX } );
+				tooltip.show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
 			}, function(e) {
-				tooltip.fadeOut(500)
+				tooltip.fadeOut(100)
 			})
 		));
 	});
+}
+
+// I noticed a pattern of drawing a list from a planet object. DRY.
+function drawList(obj, field, formatFunc, overrideList)
+{
+	if (overrideList) {
+		obj = {};
+		obj[field] = overrideList;
+	}
+	$("#l-" + field + " ul").empty();
+	if (obj && obj.hasOwnProperty(field)) {
+		$("#l-" + field).show();
+		$.each(obj[field], function(name, count) {
+			$("#l-" + field + " ul").append($("<li>").append(formatFunc(name, count)));
+		});
+	}
+	else {
+		$("#l-" + field).hide();
+	}
 }
 
 function draw()
@@ -160,31 +179,18 @@ function draw()
 		$("#not-owned-menu").hide();
 	}
 
-	// Update moons list
-	if (planets[focusedBody]) {
-		// Focused body is planet
-		$("#moons-label").show();
-		$("#moons").show().empty();
-		$.each(planets[focusedBody].moons, function(name, moon) {
-			$("#moons").append($("<li>").append($("<a>").attr("href", "#" + name).append(name.capitalize())));
-		});
-	}
-	else {
-		$("#moons").hide();
-		$("#moons-label").hide();
-	}
+	drawList(focusedBodyObj, "moons", function(name, moon) {
+		return $("<a>").attr("href", "#" + name).append(name.capitalize());
+	});
 
-	$("#built").empty();
-	if (focusedBodyObj && focusedBodyObj.hasOwnProperty("built")) {
-		$("#built-label").show();
-		$.each(focusedBodyObj.built, function(name, count) {
-			$("#built").append($("<li>").append(count + " "  + name))
-		});
-	}
-	else {
-		$("#built-label").hide();
-	}
-	
+	drawList(focusedBodyObj, "built", function(name, count) {
+		return count + " "  + name + (count > 1 ? "s" : "");
+	});
+
+	drawList(focusedBodyObj, "resources", function(resource, count) {
+		return count + " " + names[resource] + "/s";
+	});
+
 	drawUpdate();
 
 }
