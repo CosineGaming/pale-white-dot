@@ -137,6 +137,10 @@ function init()
 	if (window.location.hash) {
 		hashChange();
 	}
+	else {
+		window.location.hash = "#luna";
+		hashChange();
+	}
 
 	draw();
 

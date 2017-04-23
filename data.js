@@ -32,6 +32,12 @@ var descriptions = {
 // Possibly making object and adding to it in modules
 var planets = {
 	"mercury" : {
+		"resources" : {
+			"metal" : 100,
+			"gas" : 5,
+			"water" : 0,
+			"natural" : 0
+		}
 	},
 	"venus" : {
 		"resources" : {
