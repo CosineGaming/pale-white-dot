@@ -52,10 +52,14 @@ function draw()
 	$("#focused-body").attr("src", "assets/" + imgSrc + ".png");
 	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
 	$("#focused-label").html(focusedBody.capitalize());
+
+	// Make sure the owned bodies is up to date TODO: Move?
 	$("#owned").empty();
 	bodies(function(body, name) {
 		if (body.owner == "player") {
-			$("#owned").append($("<li>").append(name.capitalize()));
+			$("#owned").append($("<li>").append(
+				$("<a>").attr("href", "#" + name).append(name.capitalize())
+			));
 		}
 	});
 	if (planets[focusedBody]) {

@@ -23,6 +23,10 @@ a {
 	text-decoration: none;
 }
 
+a:hover {
+	cursor: pointer;
+}
+
 img {
 	image-rendering: optimizeSpeed;	 /* STOP SMOOTHING, GIVE ME SPEED  */
 	image-rendering: -moz-crisp-edges;  /* Firefox*/
