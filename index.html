@@ -16,9 +16,15 @@
 
 	<main>
 		<div class="body-section">
-			<div class="ghost" style="float: right;">
-				<h3 id="moons-label">Moons:</h3>
-				<ul id="moons"></ul>
+			<div style="float: right;">
+				<div class="ghost">
+					<h3 id="moons-label">Moons:</h3>
+					<ul id="moons"></ul>
+				</div>
+				<div class="ghost">
+					<h3 id="built-label">Contains:</h3>
+					<ul id="built"></ul>
+				</div>
 			</div>
 			<h2 id="focused-label" class="ghost"></h2>
 			<a id="back">&lt;<img id="back-img" /><span
@@ -27,11 +33,22 @@
 			<img src="assets/solar-system.png" id="focused-body"
 				usemap="#ss-map" style="" />
 		</div>
-		<div class="sidebar">
+		<div class="status-sidebar">
 			<h3>Resources:</h3>
 			<ul id="resources" class="resources"></ul>
 			<h3>Owned bodies:</h3>
 			<ul id="owned" class="owned"></ul>
+		</div>
+		<div class="interaction-sidebar">
+			<div id="owned-menu">
+				<h3>Build:</h3>
+				<ul id="build-menu"></ul>
+				<p id="no-build"></p>
+			</div>
+			<div id="not-owned-menu">
+				<h3>Interact:</h3><!-- TODO: Find a better word? -->
+				<ul id="interact-menu"></ul>
+			</div>
 		</div>
 	</main>
 
