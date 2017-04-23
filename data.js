@@ -34,6 +34,12 @@ var planets = {
 	"mercury" : {
 	},
 	"venus" : {
+		"resources" : {
+			"metal" : 50,
+			"gas" : 70,
+			"water" : 0,
+			"natural" : 0
+		}
 	},
 	"earth" : {
 		"resources" : { // We're doing stereotypes here. Fuck science.
@@ -44,14 +50,44 @@ var planets = {
 		}
 	},
 	"mars" : {
+		"resources" : {
+			"metal" : 40,
+			"gas" : 4,
+			"water" : 50,
+			"natural" : 3
+		}
 	},
 	"jupiter" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 500,
+			"water" : 0,
+			"natural" : 0
+		}
 	},
 	"saturn" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 400,
+			"water" : 0,
+			"natural" : 0
+		}
 	},
 	"uranus" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 200,
+			"water" : 0,
+			"natural" : 0
+		}
 	},
 	"neptune" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 100,
+			"water" : 0,
+			"natural" : 0
+		}
 	},
 	"pluto" : { // eh whatever
 	}
@@ -63,15 +99,58 @@ planets["earth"].moons = {
 			"metal" : 30,
 			"gas" : 3,
 			"water" : 20,
-			"natural" : 2
+			"natural" : 4
 		},
 		"owner" : "player"
 	}
 };
 
 planets["mars"].moons = {
-	"phobos" : {}, 
+	"phobos" : {},
 	"delmos" : {}
+};
+
+planets["jupiter"].moons = {
+	"io" : {},
+	"europa" : {},
+	"ganymede" : {}, // Jet...
+	"callisto" : {},
+	"Jupiter Coalition" : {} // Hmm what to do with naming programmatically vs visually
+};
+
+// Saturn moons
+
+planets["uranus"].moons = {
+	"miranda" : {},
+	"ariel" : {},
+	"umbriel" : {},
+	"titania" : {},
+	"oberon" : {}
+};
+
+// Breaking standards here with the capitalized names
+var buildable = {
+	"Starship" : {
+		"metal" : 1000,
+		"water" : 200
+	},
+	"Fighter" : {
+		"metal" : 500,
+		"water" : 20
+	},
+	"Planetary Defense" : {
+		"metal" : 600,
+		"gas" : 2000,
+		"water" : 500,
+		"organic" : 100
+	},
+};
+
+availImgs = {
+	"earth":0,
+	"luna":0,
+	"solar-system":0,
+	"stars":0,
 };
 
 // I don't want to have to make maps for every image but I don't want to place evrything
