@@ -36,13 +36,22 @@ function update()
 
 function build(name)
 {
-	var insufficient = null;
+	var canBuild = true;
 	$.each(buildable[name], function(resource, count) {
 		if (count > resources[resource]) {
-			insufficient = resource;
+			canBuild = false;
+			// Add a little marker of what's insufficient
+			// Don't break the loop because we list everything that's insufficient
+			$("#owned-menu").append(
+				$("<p>").append(
+					"Insufficient " + resource
+				).addClass("no-build").fadeOut(3000, function() {
+					$(this).remove();
+				})
+			);
 		}
 	});
-	if (!insufficient) {
+	if (canBuild) {
 		addResources(buildable[name], -1);
 		var body = getBody(focusedBody);
 		if (!body.hasOwnProperty("built")) {
@@ -53,9 +62,6 @@ function build(name)
 		}
 		body.built[name]++;
 		draw();
-	}
-	else {
-		$("#no-build").html("Insufficient " + insufficient).show().fadeOut(3000);
 	}
 }
 
@@ -92,10 +98,20 @@ function getBody(name)
 function drawOnce()
 {
 	$.each(buildable, function(item, cost) {
+		var tooltip = $("<ul>").addClass("tooltip");
+		$("#build-menu").append(tooltip);
+		$.each(cost, function(resource, count) {
+			tooltip.append($("<li>").append(resource + ": " + count));
+		});
 		$("#build-menu").append($("<li>").append(
 			$("<a>").append(item).click(function() {
-			build(item);
-		})));
+				build(item);
+			}).hover(function(e) {
+				tooltip.show().css( { top: e.pageY, left: e.pageX } );
+			}, function(e) {
+				tooltip.fadeOut(500)
+			})
+		));
 	});
 }
 
