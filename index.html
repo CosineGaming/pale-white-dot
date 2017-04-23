@@ -13,21 +13,28 @@
 	<link rel="stylesheet" href="game.css" />
 </head>
 <body>
-	<!--backup<pre>
-                        -----      -----                        
-                       /     \    /     \     /---\     /---\   
-   .   o   o   .      |       |  |       |   |     |   |     |  
-                       \     /    \     /     \---/     \---/   
-                        -----      -----                        
-	</pre>-->
-	<img src="assets/solar-system.png" id="focused-body"
-		usemap="#ss-map" />
-	<ul id="resources" class="resources" style="position: absolute; left:
-		50px; top: 50px;"></ul>
-	<h3 style="position: absolute; text-align: right; left: 500px; top:
-		50px;">Owned bodies:</h3>
-	<ul id="owned" class="owned" style="position: absolute; text-align:
-		right; left: 500px; top: 80px;"></ul>
+
+	<main>
+		<div class="body-section">
+			<div class="ghost" style="float: right;">
+				<h3 id="moons-label">Moons:</h3>
+				<ul id="moons"></ul>
+			</div>
+			<h2 id="focused-label" class="ghost"></h2>
+			<a id="back">&lt;<img id="back-img" /><span
+					id="back-fallback"></span></a>
+			<img id="home-link" />
+			<img src="assets/solar-system.png" id="focused-body"
+				usemap="#ss-map" style="" />
+		</div>
+		<div class="sidebar">
+			<h3>Resources:</h3>
+			<ul id="resources" class="resources"></ul>
+			<h3>Owned bodies:</h3>
+			<ul id="owned" class="owned"></ul>
+		</div>
+	</main>
+
 	<!-- Maps -->
 	<map name="solar-system-map" id="solar-system-map">
 		<!-- #$-:Image map file created by GIMP Image Map plug-in -->

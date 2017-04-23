@@ -18,6 +18,11 @@ body {
 	-ms-interpolation-mode: nearest-neighbor;   /* IE8+   */
 }
 
+a {
+	color: #6de2ed;
+	text-decoration: none;
+}
+
 img {
 	image-rendering: optimizeSpeed;	 /* STOP SMOOTHING, GIVE ME SPEED  */
 	image-rendering: -moz-crisp-edges;  /* Firefox*/
@@ -28,16 +33,40 @@ img {
 	-ms-interpolation-mode: nearest-neighbor;   /* IE8+   */
 }
 
-#focused-body {
-	width: 640px;
-}
-
 ul {
 	list-style: none;
-	background-color: rgba(1,2,8,0.75); /* The body background color, so it only shows up over graphics */
-	padding: 20px;
 }
 
 li {
-	padding: 5px;
+	padding: 5px 0;
+}
+
+main {
+	position: relative;
+	width: 850px;
+	margin: 0 auto;
+}
+
+.sidebar {
+	margin-top: 20px;
+	float: right;
+}
+
+.body-section {
+	width: 640px;
+	float: left;
+}
+
+.ghost {
+	padding: 20px;
+	background-color: rgba(1,2,8,0.75); /* The body background color, so it only shows up over graphics */
+}
+
+#focused-body {
+	width: 640px;
+	z-index: -1000;
+}
+
+#back-img {
+	width: 96px;
 }
