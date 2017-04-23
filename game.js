@@ -13,10 +13,13 @@ String.prototype.capitalize = function() {
 }
 
 // Adds resources listed in from to resources (doesn't subtract from `from`)
-function aquireResources(from)
+function addResources(from, mult)
 {
+	if (typeof mult == "undefined") {
+		mult = 1;
+	}
 	$.each(from, function(resource, count) {
-		resources[resource] += count;
+		resources[resource] += count * mult;
 	});
 }
 
@@ -25,10 +28,35 @@ function update()
 {
 	bodies(function(body) {
 		if (body.owner == "player") {
-			aquireResources(body.resources);
+			addResources(body.resources);
 		}
 	});
-	drawUpdate();
+	draw();
+}
+
+function build(name)
+{
+	var insufficient = null;
+	$.each(buildable[name], function(resource, count) {
+		if (count > resources[resource]) {
+			insufficient = resource;
+		}
+	});
+	if (!insufficient) {
+		addResources(buildable[name], -1);
+		var body = getBody(focusedBody);
+		if (!body.hasOwnProperty("built")) {
+			body.built = {};
+		}
+		if (!(name in body.built)) {
+			body.built[name] = 0;
+		}
+		body.built[name]++;
+		draw();
+	}
+	else {
+		$("#no-build").html("Insufficient " + insufficient).show().fadeOut(3000);
+	}
 }
 
 // Loops through every planet or moon and passes it to func
@@ -43,8 +71,38 @@ function bodies(func)
 	});
 }
 
+function getBody(name)
+{
+	if (planets.hasOwnProperty(name)) {
+		return planets[name];
+	}
+	else {
+		var body = null;
+		$.each(planets, function(planetName, planet) {
+			if (planet.hasOwnProperty("moons") && planet.moons.hasOwnProperty(name)) {
+				body = planet.moons[name];
+				return false; // Break out of loop, not return from function
+			}
+		});
+		return body;
+	}
+	return null;
+}
+
+function drawOnce()
+{
+	$.each(buildable, function(item, cost) {
+		$("#build-menu").append($("<li>").append(
+			$("<a>").append(item).click(function() {
+			build(item);
+		})));
+	});
+}
+
 function draw()
 {
+
+	// Update the graphics and image map to the new focus
 	var imgSrc = focusedBody;
 	if (!(focusedBody in availImgs)) {
 		imgSrc = fallbackImg;
@@ -62,6 +120,25 @@ function draw()
 			));
 		}
 	});
+
+	// Display appropriate interaction menu
+	var focusedBodyObj = getBody(focusedBody);
+	if (focusedBodyObj) {
+		if (focusedBodyObj.hasOwnProperty("owner") && focusedBodyObj.owner == "player") {
+			$("#owned-menu").show();
+			$("#not-owned-menu").hide();
+		}
+		else {
+			$("#not-owned-menu").show();
+			$("#owned-menu").hide();
+		}
+	}
+	else {
+		$("#owned-menu").hide();
+		$("#not-owned-menu").hide();
+	}
+
+	// Update moons list
 	if (planets[focusedBody]) {
 		// Focused body is planet
 		$("#moons-label").show();
@@ -74,6 +151,20 @@ function draw()
 		$("#moons").hide();
 		$("#moons-label").hide();
 	}
+
+	$("#built").empty();
+	if (focusedBodyObj && focusedBodyObj.hasOwnProperty("built")) {
+		$("#built-label").show();
+		$.each(focusedBodyObj.built, function(name, count) {
+			$("#built").append($("<li>").append(count + " "  + name))
+		});
+	}
+	else {
+		$("#built-label").hide();
+	}
+	
+	drawUpdate();
+
 }
 
 function drawUpdate()
@@ -131,6 +222,7 @@ function init()
 	// TODO: Decide fun interval
 	setInterval(update, 1000);
 
+	drawOnce();
 	draw();
 
 	$("map").imageMapResize();
