@@ -137,7 +137,7 @@ planets["uranus"].moons = {
 // Breaking standards here with the capitalized names
 var buildable = {
 	"Starship" : {
-		"metal" : 1000,
+		"metal" : 1500,
 		"water" : 200
 	},
 	"Fighter" : {
@@ -148,8 +148,47 @@ var buildable = {
 		"metal" : 600,
 		"gas" : 2000,
 		"water" : 500,
-		"organic" : 100
+		"natural" : 100
 	},
+	"Mine" : {
+		"metal" : 200,
+		"gas" : 50,
+		"water" : 75,
+		"natural" : 20
+	},
+	"Skymine" : {
+		"metal" : 500,
+		"gas" : 200,
+		"water" : 50,
+		"natural" : 10
+	},
+	"Controlled Ag" : {
+		"metal" : 50,
+		"gas" : 100,
+		"water" : 500,
+		"natural" : 200
+	}
+};
+
+var buildMultipliers = {
+	"Mine" : {
+		"metal" : 1.2
+	},
+	"Skymine" : {
+		"gas" : 1.5
+	},
+	"Controlled Ag" : {
+		"natural" : 1.1
+	}
+};
+
+var buildDescriptions = {
+	"Starship" : "A warship that can carry up to 5 fighters to distant planets. Requires gas to run.",
+	"Fighter" : "A small ship that can nip enemies in the local area. Requires gas to run.",
+	"Planetary Defense" : "A necessity to keeping a planet in your own hands.",
+	"Mine" : "Mine deep, where the minerals are rich. Increase metal production by 20%",
+	"Skymine" : "Labs that sail in the atmosphere, purifying gas. Increase gas production by 50%",
+	"Controlled Ag" : "An isolated bubble with earth-like conditions to grow food. Increase organic production by 10%"
 };
 
 availImgs = {
@@ -159,17 +198,3 @@ availImgs = {
 	"stars":0,
 };
 
-// I don't want to have to make maps for every image but I don't want to place evrything
-// Am I going to have to use canvas??
-// Uuuggghhhh
-// Nah I can use top and left... right? Is it worth it???
-// Canvas isn't soooo bad but it can be annoying and it's more than I need.
-// I've REALLY gotta figure out /exactly/ what I'm doing for graphics.
-// If I used canvas I could make everything graphical...
-// But canvas text rendering is a BITCH
-// And let's be real, it's mostly text.
-// I don't have a strong enough vision. I'm not certain what exactly I'm doing.
-// I want to be able to click those planets
-// And I don't want to keep fucking with this dumb positioning CSS
-// I think it's probably worth canvas... but I'm not ready yetA
-// I also need to think about sizing... do I want responsive design?

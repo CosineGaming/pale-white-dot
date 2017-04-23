@@ -61,6 +61,12 @@ function build(name)
 			body.built[name] = 0;
 		}
 		body.built[name]++;
+		if (name in buildMultipliers) {
+			$.each(buildMultipliers[name], function(resource, multiplier) {
+				var yields = body.resources;
+				yields[resource] = Math.ceil(multiplier * yields[resource]);
+			});
+		}
 		draw();
 	}
 }

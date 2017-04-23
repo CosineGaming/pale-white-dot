@@ -76,11 +76,18 @@ main {
 
 .tooltip {
 	padding: 20px;
-	background-color: rgba(1,2,8,0.75); /* The body background color, so it only shows up over graphics */
+	background-color: rgba(3,6,26,0.75); /* The body background color, so it only shows up over graphics */
 	position: absolute;
-	top: 0;
-	left: 0;
+	max-width: 250px;
+	text-align: left;
 	display: none;
+}
+
+.tooltip p {
+	padding-bottom: 10px;
+}
+.tooltip li {
+	padding: 0px;
 }
 
 .no-build {
