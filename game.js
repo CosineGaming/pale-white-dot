@@ -6,108 +6,169 @@ var focusedBody = "solar-system";
 
 var fallbackImg = "fallback";
 
-// Something something prototype.js bad form something something
-// Fuck you. Anyway, thanks http://stackoverflow.com/a/3291856/1556332
-String.prototype.capitalize = function() {
-	return this.charAt(0).toUpperCase() + this.slice(1);
-}
-
-// Adds resources listed in from to resources (doesn't subtract from `from`)
-function addResources(from, mult)
-{
-	if (typeof mult == "undefined") {
-		mult = 1;
-	}
-	$.each(from, function(resource, count) {
-		resources[resource] += count * mult;
-	});
-}
+var attacking = false;
 
 // Called when incrementals update
 function update()
 {
 	bodies(function(body) {
-		if (body.owner == "player") {
-			addResources(body.resources);
+		if (body.hasOwnProperty("owner")) {
+			addResources(body.resources, body.owner, 1, body.built);
 		}
 	});
+
+	ai();
+
+	var updateAI = 0.05; // Once every 50 secons
+	if (Math.random() < updateAI)
+	{
+		//
+	}
+
+	if (attacking) {
+		attackFrame();
+	}
+
 	drawUpdate();
 }
 
-function build(name)
+function build(name, team, toBody)
 {
+	if (!team) {
+		team = "player";
+	}
+	if (!toBody) {
+		toBody = focusedBody;
+	}
 	var canBuild = true;
 	$.each(buildable[name], function(resource, count) {
-		if (count > resources[resource]) {
+		if (count > teams[team].resources[resource]) {
 			canBuild = false;
-			// Add a little marker of what's insufficient
-			// Don't break the loop because we list everything that's insufficient
-			$("#owned-menu").append(
-				$("<p>").append(
-					"Insufficient " + resource
-				).addClass("no-build").fadeOut(3000, function() {
-					$(this).remove();
-				})
-			);
+			if (team == "player") {
+				// Add a little marker of what's insufficient
+				// Don't break the loop because we list everything that's insufficient
+				$("#owned-menu").append(
+					$("<p>").append(
+						"Insufficient " + resource
+					).addClass("no-build").fadeOut(3000, function() {
+						$(this).remove();
+					})
+				);
+			}
 		}
 	});
 	if (canBuild) {
-		addResources(buildable[name], -1);
-		var body = getBody(focusedBody);
+		addResources(buildable[name], team, -1);
+		var body = getBody(toBody);
 		if (!body.hasOwnProperty("built")) {
 			body.built = {};
 		}
-		if (!(name in body.built)) {
-			body.built[name] = 0;
-		}
-		body.built[name]++;
-		if (name in buildMultipliers) {
-			$.each(buildMultipliers[name], function(resource, multiplier) {
-				var yields = body.resources;
-				yields[resource] = Math.ceil(multiplier * yields[resource]);
-			});
-		}
+		incrementOrOne(body.built, name);
+		//if (name in buildMultipliers) {
+			//$.each(buildMultipliers[name], function(resource, multiplier) {
+				//var yields = body.resources;
+				//if (yields) {
+					//yields[resource] = Math.ceil(multiplier * yields[resource]);
+				//}
+			//});
+		//}
 		draw();
-	}
-}
-
-// Loops through every planet or moon and passes it to func
-// Passes (actual body object, identifier name, parent object, parent name)
-function bodies(func)
-{
-	$.each(planets, function(name, planet) {
-		func(planet, name);
-		$.each(planet.moons, function(moonName, moon) {
-			func(moon, moonName);
-		})
-	});
-}
-
-function getBody(name)
-{
-	if (planets.hasOwnProperty(name)) {
-		return planets[name];
+		return true;
 	}
 	else {
-		var body = null;
-		$.each(planets, function(planetName, planet) {
-			if (planet.hasOwnProperty("moons") && planet.moons.hasOwnProperty(name)) {
-				body = planet.moons[name];
-				return false; // Break out of loop, not return from function
+		return false;
+	}
+}
+
+// Attacking happens in one-second frames for  d r a m a t i c   e f f e c t
+function attackFrame()
+{
+
+	var enemy = getBody(focusedBody);
+	var toDelete = {};
+	var options = {};
+	if (!$.isEmptyObject(enemy.built)) {
+		$.each(ships, function(type, ship) {
+			if (type in enemy.built) {
+				options[type] = 0; // Value irrelevant, just need it in key format
 			}
 		});
-		return body;
 	}
-	return null;
+	if (!$.isEmptyObject(fleet) && !$.isEmptyObject(options)) {
+		$.each(fleet, function(type, count) {
+			for (var i=0; i<count; i++) {
+				if (Math.random() < ships[type].killChance) {
+					var attackingType = randFromList(Object.keys(options));
+					if (Math.random() > ships[attackingType].saveChance) { // Is not less than, it WASN'T saved
+						incrementOrOne(toDelete, attackingType);
+						if (toDelete[attackingType] >= enemy.built[attackingType]) {
+							delete options[attackingType];
+						}
+					}
+				}
+			}
+		});
+		// Enemies' returning fire TODO: Refactor with attacking fire
+		$.each(enemy.built, function(type, count) {
+			if (type in ships) {
+				// Enemy ship
+				for (var i=0; i<count; i++) {
+					if (Math.random() < ships[type].killChance) {
+						if (Object.keys(fleet).length) {
+							var attackingType = randFromList(Object.keys(fleet));
+							if (Math.random() > ships[attackingType].saveChance) { // Is not less than, it WASN'T saved
+								fleet[attackingType] -= 1;
+								if (fleet[attackingType] == 0) {
+									delete fleet[attackingType];
+								}
+							}
+						}
+						else {
+							return false; // Break out of jQuery loop
+						}
+					}
+				}
+			}
+		});
+	}
+	$.each(toDelete, function(type, count) {
+		enemy.built[type] -= count;
+		if (enemy.built[type] == 0) {
+			delete enemy.built[type];
+			delete options[type];
+		}
+	});
+	if ($.isEmptyObject(fleet)) {
+		// We died! :(
+		attacking = false;
+		$("#lost").show();
+	}
+	else if ($.isEmptyObject(options)) {
+		// We killed them and we're still alive!
+		attacking = false;
+		enemy.owner = "player";
+	}
+
+	draw();
+
+}
+
+function attack()
+{
+	attacking = true;
+	attackFrame();
 }
 
 function drawOnce()
 {
+
+	// Initialize build menu based on data.js, to be hidden and shown whenever
 	$.each(buildable, function(item, cost) {
 		var tooltip = $("<ul>").addClass("tooltip").append($("<p>").append(buildDescriptions[item]));
 		$("#build-menu").append(tooltip);
 		$.each(cost, function(resource, count) {
-			tooltip.append($("<li>").append(names[resource] + ": " + count));
+			// IDs used to later color things we can't afford red. We can't have spaces.
+			tooltip.append($("<li>").append(names[resource] + ": " + count).attr("id", item.replace(" ", "-") + resource));
 		});
 		$("#build-menu").append($("<li>").append(
 			$("<a>").append(item).click(function() {
@@ -119,6 +180,10 @@ function drawOnce()
 			})
 		));
 	});
+
+	// Similarly, initialize the interact menu
+	// (TODO)
+
 }
 
 // I noticed a pattern of drawing a list from a planet object. DRY.
@@ -129,7 +194,7 @@ function drawList(obj, field, formatFunc, overrideList)
 		obj[field] = overrideList;
 	}
 	$("#l-" + field + " ul").empty();
-	if (obj && obj.hasOwnProperty(field)) {
+	if (obj && obj.hasOwnProperty(field) && !$.isEmptyObject(obj[field])) {
 		$("#l-" + field).show();
 		$.each(obj[field], function(name, count) {
 			$("#l-" + field + " ul").append($("<li>").append(formatFunc(name, count)));
@@ -173,10 +238,20 @@ function draw()
 			$("#not-owned-menu").show();
 			$("#owned-menu").hide();
 		}
+		$("#team-label").show();
+		var label = "Unclaimed";
+		if (focusedBodyObj.hasOwnProperty("owner")) {
+			label = teamNames[focusedBodyObj.owner];
+		}
+		if (attacking) {
+			label += " (Contested!)";
+		}
+		$("#team-label").html(label);
 	}
 	else {
 		$("#owned-menu").hide();
 		$("#not-owned-menu").hide();
+		$("#team-label").hide();
 	}
 
 	drawList(focusedBodyObj, "moons", function(name, moon) {
@@ -184,12 +259,46 @@ function draw()
 	});
 
 	drawList(focusedBodyObj, "built", function(name, count) {
-		return count + " "  + name + (count > 1 ? "s" : "");
+		var entry = count + " "  + name + (count > 1 ? "s" : "");
+		if (focusedBodyObj.owner == "player" && name in ships) { // TODO: Do this programatically (mabye when we have a fighting system?)
+			entry = $("<a>").click(function() {
+				focusedBodyObj.built[name] -= 1;
+				if (focusedBodyObj.built[name] == 0) {
+					delete focusedBodyObj.built[name];
+				}
+				incrementOrOne(fleet, name);
+				$("#fleet-tooltip").hide();
+				draw();
+			}).hover(function(e) {
+				$("#fleet-tooltip").show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
+			}, function(e) {
+				$("#fleet-tooltip").fadeOut(100)
+			}).append(entry);
+		}
+		return entry;
 	});
 
 	drawList(focusedBodyObj, "resources", function(resource, count) {
-		return count + " " + names[resource] + "/s";
+		return getMultiplied(focusedBodyObj.built, resource, count) + " " + names[resource] + "/s";
 	});
+
+	drawList(null, "fleet", function(name, count) {
+		return $("<a>").click(function() {
+			if (focusedBodyObj.owner && focusedBodyObj.owner == "player") {
+				fleet[name] -= 1;
+				if (fleet[name] == 0) {
+					delete fleet[name];
+				}
+				incrementOrOne(focusedBodyObj.built, name);
+				$("#fleet-tooltip-back").hide();
+				draw();
+			}
+		}).hover(function(e) {
+			$("#fleet-tooltip-back").show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
+		}, function(e) {
+			$("#fleet-tooltip-back").fadeOut(100)
+		}).append(count + " " + name + (count > 1 ? "s" : ""));
+	}, fleet);
 
 	drawUpdate();
 
@@ -198,16 +307,42 @@ function draw()
 function drawUpdate()
 {
 	$("#resources").empty();
-	$.each(resources, function(resource, count) {
+	$.each(teams["player"].resources, function(resource, count) {
 		$("#resources").append(
 			$("<li>").attr("title", descriptions[resource]).append(
 				names[resource] + ": " + count
 		));
 	});
+
+	// Color things we can't afford red in the tooltips
+	$.each(buildable, function(item, cost) {
+		$.each(cost, function(resource, count) {
+			if (count > teams["player"].resources[resource]) {
+				$("#" + item.replace(" ", "-") + resource).addClass("no-build");
+			}
+			else {
+				// Don't remember it
+				$("#" + item.replace(" ", "-") + resource).removeClass("no-build");
+			}
+		});
+	});
+
+	// Factions might change while viewing one planet
+	var sortedByPower = Object.keys(teams).sort(function(a, b) {
+		return totalResources(teams[b]) - totalResources(teams[a]);
+	});
+	drawList(null, "factions", function(index, name) {
+		return teamNames[name] + " (" + totalResources(teams[name]) + ")";
+	}, sortedByPower);
 }
 
 function hashChange()
 {
+
+	while (attacking) {
+		attackFrame();
+	}
+	$("#lost").hide();
 
 	var lastBody = focusedBody;
 	focusedBody = window.location.hash.substr(1);
@@ -252,6 +387,8 @@ function init()
 
 	drawOnce();
 	draw();
+
+	//imageMapResize();
 
 	$("map").imageMapResize();
 

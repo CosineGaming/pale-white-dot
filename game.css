@@ -6,6 +6,8 @@
 body {
 	background-color: #010208;
 	color: #d1f4f2;
+	--bg-color: #010208;
+	--color: #d1f4f2;
 	/* Thanks for the idea Alec <3 */
 	background-image: url("assets/stars.png");
 	background-size: 1600px;
@@ -43,6 +45,15 @@ ul {
 
 li {
 	padding: 5px 0;
+}
+
+h3 {
+	padding-top: 10px;
+}
+
+input {
+	background-color: var(--color);
+	color: var(--bg-color);
 }
 
 main {
@@ -106,3 +117,4 @@ main {
 #back-img {
 	width: 96px;
 }
+

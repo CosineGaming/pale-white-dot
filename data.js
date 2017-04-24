@@ -3,21 +3,70 @@
 // ld-38
 // GPL3
 
-// Starting resources reflect a colony
-var resources = {
-	"metal" : 100,
-	"money" : 1000,
-	"gas" : 100,
-	"water" : 100,
-	"natural" : 100,
-};
-
 var names = {
 	"money" : "Money",
 	"water" : "Water",
 	"natural" : "Organic",
 	"metal" : "Metal",
 	"gas" : "Gas",
+};
+
+var fleet = {};
+
+var teams = {
+	"player" : {
+		"resources" : {
+			"money" : 60,
+			"water" : 10,
+			"natural" : 10,
+			"metal" : 10,
+			"gas" : 10,
+		}
+	},
+	"terran" : {
+		"resources" : {
+			"money" : 100,
+			"water" : 60,
+			"natural" : 80,
+			"metal" : 50,
+			"gas" : 5
+		}
+	},
+	"mars" : {
+		"resources" : {
+			"money" : 10,
+			"water" : 6,
+			"natural" : 20,
+			"metal" : 50,
+			"gas" : 20
+		}
+	},
+	"rebel" : {
+		"resources" : {
+			"money" : 2,
+			"water" : 10,
+			"natural" : 10,
+			"metal" : 20,
+			"gas" : 50
+		}
+	},
+	"gas" : {
+		"resources" : {
+			"money" : 200,
+			"water" : 5,
+			"natural" : 2,
+			"metal" : 10,
+			"gas" : 500
+		}
+	}
+};
+
+var teamNames = {
+	"player" : "Lunar Federation (you)",
+	"terran" : "Terran Republic",
+	"mars" : "Kingdom of Mars",
+	"rebel" : "Sengali Rebels",
+	"gas" : "Gaseous League"
 };
 
 var descriptions = {
@@ -28,72 +77,78 @@ var descriptions = {
 	, "natural" : "Organic resources like wood and food. Only found in Earth and controlled habitats"
 };
 
-// This is gonna get too big... figure out a way to refactor
-// Possibly making object and adding to it in modules
 var planets = {
 	"mercury" : {
 		"resources" : {
-			"metal" : 100,
-			"gas" : 5,
+			"metal" : 10,
+			"gas" : 1,
 			"water" : 0,
 			"natural" : 0
-		}
+		},
+		"owner" : "terran"
 	},
 	"venus" : {
 		"resources" : {
-			"metal" : 50,
-			"gas" : 70,
+			"metal" : 5,
+			"gas" : 7,
 			"water" : 0,
 			"natural" : 0
-		}
+		},
+		"owner" : "terran"
 	},
 	"earth" : {
 		"resources" : { // We're doing stereotypes here. Fuck science.
-			"metal" : 40,
-			"gas" : 10,
-			"water" : 500,
-			"natural" : 200
-		}
+			"metal" : 4,
+			"gas" : 1,
+			"water" : 20,
+			"natural" : 10
+		},
+		"owner" : "terran"
 	},
 	"mars" : {
 		"resources" : {
-			"metal" : 40,
-			"gas" : 4,
-			"water" : 50,
-			"natural" : 3
-		}
+			"metal" : 20,
+			"gas" : 1,
+			"water" : 5,
+			"natural" : 1
+		},
+		"owner" : "mars"
 	},
 	"jupiter" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 500,
+			"gas" : 50,
 			"water" : 0,
 			"natural" : 0
-		}
+		},
+		"owner" : "mars"
 	},
 	"saturn" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 400,
+			"gas" : 40,
 			"water" : 0,
 			"natural" : 0
-		}
+		},
+		"owner" : "gas"
 	},
 	"uranus" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 200,
+			"gas" : 20,
 			"water" : 0,
 			"natural" : 0
-		}
+		},
+		"owner" : "gas"
 	},
 	"neptune" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 100,
+			"gas" : 10,
 			"water" : 0,
 			"natural" : 0
-		}
+		},
+		"owner" : "rebel"
 	},
 	"pluto" : { // eh whatever
 	}
@@ -102,83 +157,139 @@ var planets = {
 planets["earth"].moons = {
 	"luna" : {
 		"resources" : {
-			"metal" : 30,
-			"gas" : 3,
-			"water" : 20,
-			"natural" : 4
+			"metal" : 4,
+			"gas" : 1,
+			"water" : 2,
+			"natural" : 2
 		},
 		"owner" : "player"
 	}
 };
 
 planets["mars"].moons = {
-	"phobos" : {},
-	"delmos" : {}
+	"phobos" : {
+		"owner" : "mars"
+	},
+	"delmos" : {
+		"owner" : "mars"
+	}
 };
 
 planets["jupiter"].moons = {
-	"io" : {},
-	"europa" : {},
-	"ganymede" : {}, // Jet...
-	"callisto" : {},
-	"Jupiter Coalition" : {} // Hmm what to do with naming programmatically vs visually
+	"io" : {
+		"owner" : "gas"
+	},
+	"europa" : {
+		"owner" : "gas"
+	},
+	"ganymede" : {
+		"resources" : {
+			"metal" : 3,
+			"gas" : 2,
+			"water" : 4,
+			"natural" : 4
+		},
+		"owner" : "mars",
+	}, // Jet...
+	"callisto" : {
+		"owner" : "gas"
+	},
+	"Jupiter Coalition" : {
+		"owner" : "rebel"
+	} // Hmm what to do with naming programmatically vs visually
 };
 
 // Saturn moons
 
 planets["uranus"].moons = {
-	"miranda" : {},
-	"ariel" : {},
-	"umbriel" : {},
-	"titania" : {},
-	"oberon" : {}
+	"miranda" : {
+		"owner" : "gas"
+	},
+	"ariel" : {
+		"owner" : "rebel"
+	},
+	"umbriel" : {
+		"owner" : "rebel"
+	},
+	"titania" : {
+		"owner" : "gas"
+	},
+	"oberon" : {
+		"owner" : "gas"
+	}
 };
+
+// Nepture moons
 
 // Breaking standards here with the capitalized names
 var buildable = {
 	"Starship" : {
-		"metal" : 1500,
-		"water" : 200
-	},
-	"Fighter" : {
-		"metal" : 500,
+		"metal" : 200,
 		"water" : 20
 	},
+	"Fighter" : {
+		"metal" : 60,
+		"water" : 4
+	},
 	"Planetary Defense" : {
-		"metal" : 600,
-		"gas" : 2000,
-		"water" : 500,
-		"natural" : 100
-	},
-	"Mine" : {
-		"metal" : 200,
-		"gas" : 50,
-		"water" : 75,
-		"natural" : 20
-	},
-	"Skymine" : {
-		"metal" : 500,
+		"metal" : 60,
 		"gas" : 200,
 		"water" : 50,
 		"natural" : 10
 	},
-	"Controlled Ag" : {
+	"Extraction Well" : {
 		"metal" : 50,
-		"gas" : 100,
-		"water" : 500,
-		"natural" : 200
-	}
+		"gas" : 20,
+		"water" : 20,
+		"natural" : 3
+	},
+	"Controlled Ag" : {
+		"metal" : 5,
+		"gas" : 10,
+		"water" : 50,
+		"natural" : 20
+	},
+	"Mine" : {
+		"metal" : 20,
+		"gas" : 5,
+		"water" : 8,
+		"natural" : 2
+	},
+	"Skymine" : {
+		"metal" : 50,
+		"gas" : 20,
+		"water" : 5,
+		"natural" : 1
+	},
 };
 
 var buildMultipliers = {
+	"Extraction Well" : {
+		"water" : 0.75
+	},
 	"Mine" : {
-		"metal" : 1.2
+		"metal" : 0.5
 	},
 	"Skymine" : {
-		"gas" : 1.5
+		"gas" : 0.2
 	},
 	"Controlled Ag" : {
-		"natural" : 1.1
+		"natural" : 0.5
+	}
+};
+
+var ships = {
+	"Starship" : {
+		"killChance" : 0.6,
+		"saveChance" : 0.5
+	},
+	"Fighter" : {
+		"killChance" : 0.3,
+		"saveChance" : 0.1
+	},
+	"Planetary Defense" : {
+		"killChance" : 0.2,
+		"saveChance" : 0.8
 	}
 };
 
@@ -186,15 +297,22 @@ var buildDescriptions = {
 	"Starship" : "A warship that can carry up to 5 fighters to distant planets. Requires gas to run.",
 	"Fighter" : "A small ship that can nip enemies in the local area. Requires gas to run.",
 	"Planetary Defense" : "A necessity to keeping a planet in your own hands.",
-	"Mine" : "Mine deep, where the minerals are rich. Increase metal production by 20%",
-	"Skymine" : "Labs that sail in the atmosphere, purifying gas. Increase gas production by 50%",
-	"Controlled Ag" : "An isolated bubble with earth-like conditions to grow food. Increase organic production by 10%"
+	"Extraction Well" : "Crack into ice and extract frozen or liquid water. Increase water production.",
+	"Mine" : "Mine deep, where the minerals are rich. Increase metal production.",
+	"Skymine" : "Labs that sail in the atmosphere, purifying gas. Increase gas production.",
+	"Controlled Ag" : "An isolated bubble with earth-like conditions to grow food. Increase organic production."
 };
 
+// 1 = I'd like to remake if possible
+// (Just for my own use, no code. The reason is object is for faster search)
 availImgs = {
-	"earth":0,
-	"luna":0,
+	"earth":1,
+	"luna":1,
 	"solar-system":0,
 	"stars":0,
+	"jupiter":1,
+	"saturn":1,
+	"uranus":1,
+	"neptune":1,
 };
 

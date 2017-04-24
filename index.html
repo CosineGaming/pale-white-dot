@@ -9,6 +9,8 @@
 		crossorigin="anonymous"></script>
 	<script src="image-map-resize.min.js"></script>
 	<script src="data.js"></script>
+	<script src="util.js"></script>
+	<script src="ai.js"></script>
 	<script src="game.js"></script>
 	<link rel="stylesheet" href="game.css" />
 </head>
@@ -31,6 +33,7 @@
 				</div>
 			</div>
 			<h2 id="focused-label" class="ghost"></h2>
+			<h3 id="team-label"></h3>
 			<a id="back">&lt;<img id="back-img" /><span
 					id="back-fallback"></span></a>
 			<img id="home-link" />
@@ -40,8 +43,17 @@
 		<div class="status-sidebar">
 			<h3>Resources:</h3>
 			<ul id="resources" class="resources"></ul>
+			<div id="l-fleet">
+				<h3>Attack fleet:</h3>
+				<ul></ul>
+			</div>
+			<p class="no-build" id="lost">Fleet annihilated!</p>
 			<h3>Owned bodies:</h3>
 			<ul id="owned" class="owned"></ul>
+			<div id="l-factions">
+				<h3>Factions:</h3>
+				<ul></ul>
+			</div>
 		</div>
 		<div class="interaction-sidebar">
 			<div id="owned-menu">
@@ -50,9 +62,15 @@
 			</div>
 			<div id="not-owned-menu">
 				<h3>Interact:</h3><!-- TODO: Find a better word? -->
-				<ul id="interact-menu"></ul>
+				<ul>
+					<li><a onclick="javascript:attack();">Attack</a></li>
+				</ul>
 			</div>
 		</div>
+		<p class="tooltip" id="fleet-tooltip">Click to add to fleet. You can use your fleet
+			to attack another planet.</p>
+		<p class="tooltip" id="fleet-tooltip-back">Click to add to planet. You
+			cannot add to an enemy planet. To attack, press attack on the left.</p>
 	</main>
 
 	<!-- Maps -->
