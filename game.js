@@ -64,14 +64,6 @@ function build(name, team, toBody)
 			body.built = {};
 		}
 		incrementOrOne(body.built, name);
-		//if (name in buildMultipliers) {
-			//$.each(buildMultipliers[name], function(resource, multiplier) {
-				//var yields = body.resources;
-				//if (yields) {
-					//yields[resource] = Math.ceil(multiplier * yields[resource]);
-				//}
-			//});
-		//}
 		draw();
 		return true;
 	}
@@ -181,9 +173,6 @@ function drawOnce()
 		));
 	});
 
-	// Similarly, initialize the interact menu
-	// (TODO)
-
 }
 
 // I noticed a pattern of drawing a list from a planet object. DRY.
@@ -215,6 +204,7 @@ function draw()
 	}
 	$("#focused-body").attr("src", "assets/" + imgSrc + ".png");
 	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
+	$("#" + focusedBody + "-map").imageMapResize();
 	$("#focused-label").html(focusedBody.capitalize());
 
 	// Make sure the owned bodies is up to date TODO: Move?
@@ -260,7 +250,7 @@ function draw()
 
 	drawList(focusedBodyObj, "built", function(name, count) {
 		var entry = count + " "  + name + (count > 1 ? "s" : "");
-		if (focusedBodyObj.owner == "player" && name in ships) { // TODO: Do this programatically (mabye when we have a fighting system?)
+		if (focusedBodyObj.owner == "player" && name in ships) {
 			entry = $("<a>").click(function() {
 				focusedBodyObj.built[name] -= 1;
 				if (focusedBodyObj.built[name] == 0) {
@@ -382,26 +372,18 @@ function hashChange()
 function init()
 {
 
-	// TODO: Decide fun interval
 	setInterval(update, 1000);
 
 	drawOnce();
 	draw();
 
-	//imageMapResize();
-
-	$("map").imageMapResize();
-
 	// This way must be slower! Why do you do it this way?
 	// The answer is so that the back button functions appropriately.
 	$(window).on("hashchange", hashChange);
-	if (window.location.hash) {
-		hashChange();
-	}
-	else {
+	if (!window.location.hash) {
 		window.location.hash = "#luna";
-		hashChange();
 	}
+	hashChange();
 
 	draw();
 

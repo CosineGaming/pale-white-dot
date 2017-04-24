@@ -106,11 +106,29 @@ main {
 	color: #d190bb;
 }
 
+.link-back {
+	position: absolute;
+	bottom: 50px;
+	left: 0;
+	right: 0;
+	text-align: center;
+	color: #1a4aa0;
+}
+
+.link-back a {
+	color: #196aff;
+}
+
+#click-through {
+	position: absolute;
+	margin-left: 430px;
+}
+
 #focused-body {
 	width: 640px;
 	z-index: -1000;
 	position: absolute;
-	top: 60px;
+	top: 75px;
 	left: 0px;
 }
 
