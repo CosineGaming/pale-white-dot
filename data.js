@@ -294,8 +294,8 @@ var ships = {
 };
 
 var buildDescriptions = {
-	"Starship" : "A warship that can carry up to 5 fighters to distant planets. Requires gas to run.",
-	"Fighter" : "A small ship that can nip enemies in the local area. Requires gas to run.",
+	"Starship" : "60% chance of hitting, 50% chance of not getting hit.", // TODO: require gas to run
+	"Fighter" : "30% chance of hitting, 10% chance of not getting hit.",
 	"Planetary Defense" : "A necessity to keeping a planet in your own hands.",
 	"Extraction Well" : "Crack into ice and extract frozen or liquid water. Increase water production.",
 	"Mine" : "Mine deep, where the minerals are rich. Increase metal production.",
