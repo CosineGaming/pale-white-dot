@@ -244,6 +244,27 @@ function drawList(obj, field, formatFunc, overrideList)
 	}
 }
 
+// If count is negative, removes from fleet
+function addToFleet(from, type, count)
+{
+
+	if (!count) {
+		count = 1;
+	}
+	incrementOrOne(from.built, type, -1 * count);
+	if (from.built[type] <= 0) {
+		delete from.built[type];
+	}
+	incrementOrOne(fleet, type, count);
+	if (fleet[type] <= 0) {
+		delete fleet[type];
+	}
+	$("#fleet-tooltip").hide();
+	$("#fleet-tooltip-back").hide();
+	draw();
+
+}
+
 function draw()
 {
 
@@ -298,47 +319,56 @@ function draw()
 		return $("<a>").attr("href", "#" + name).append(name.capitalize());
 	});
 
+	var shipInList = false;
 	drawList(focusedBodyObj, "built", function(name, count) {
 		var entry = count + " "  + name + (count > 1 ? "s" : "");
 		if (focusedBodyObj.owner == "player" && name in ships) {
-			entry = $("<a>").click(function() {
-				focusedBodyObj.built[name] -= 1;
-				if (focusedBodyObj.built[name] == 0) {
-					delete focusedBodyObj.built[name];
-				}
-				incrementOrOne(fleet, name);
-				$("#fleet-tooltip").hide();
-				draw();
-			}).hover(function(e) {
-				$("#fleet-tooltip").show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
-			}, function(e) {
-				$("#fleet-tooltip").fadeOut(100)
+			shipInList = true;
+			entry = addTooltip($("<a>"), $("#fleet-tooltip")).click(function() {
+				addToFleet(focusedBodyObj, name);
 			}).append(entry);
 		}
 		return entry;
 	});
+	if (shipInList && focusedBodyObj.owner == "player") {
+		$("#l-built ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
+			function() {
+				$.each(focusedBodyObj.built, function(type, count) {
+					if (type in ships) {
+						addToFleet(focusedBodyObj, type, count);
+					}
+				});
+			}
+		)));
+	}
 
 	drawList(focusedBodyObj, "resources", function(resource, count) {
 		return getMultiplied(focusedBodyObj.built, resource, count) + " " + names[resource] + "/s";
 	});
 
 	drawList(null, "fleet", function(name, count) {
-		return $("<a>").click(function() {
-			if (focusedBodyObj.owner && focusedBodyObj.owner == "player") {
-				fleet[name] -= 1;
-				if (fleet[name] == 0) {
-					delete fleet[name];
-				}
-				incrementOrOne(focusedBodyObj.built, name);
-				$("#fleet-tooltip-back").hide();
-				draw();
-			}
-		}).hover(function(e) {
-			$("#fleet-tooltip-back").show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
-		}, function(e) {
-			$("#fleet-tooltip-back").fadeOut(100)
-		}).append(count + " " + name + (count > 1 ? "s" : ""));
+		var ship = addTooltip($("<a>"), $("#fleet-tooltip-back")).append(count + " " + name + (count > 1 ? "s" : ""));
+		if (focusedBodyObj  && focusedBodyObj.owner && focusedBodyObj.owner != "player") {
+			ship.addClass("no-link");
+		}
+		else {
+			ship.click(function() {
+				addToFleet(focusedBodyObj, name, -1);
+			});
+		}
+		return ship;
 	}, fleet);
+	if (focusedBodyObj && focusedBodyObj.owner == "player") {
+		$("#l-fleet ul").append($("<li>").append($("<a>").append("All to body").click(
+			function() {
+				$.each(fleet, function(type, count) {
+					if (type in ships) {
+						addToFleet(focusedBodyObj, type, -1 * count);
+					}
+				});
+			}
+		)));
+	}
 
 	drawUpdate();
 
