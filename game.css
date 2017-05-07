@@ -1,6 +1,13 @@
 * {
 	margin: 0;
 	padding: 0;
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+	     -moz-user-select: none; /* Firefox */
+	      -ms-user-select: none; /* Internet Explorer/Edge */
+	          user-select: none; /* Non-prefixed version, currently
+	                                 supported by Chrome and Opera */
 }
 
 body {
@@ -32,7 +39,7 @@ a:hover {
 img {
 	image-rendering: optimizeSpeed;	 /* STOP SMOOTHING, GIVE ME SPEED  */
 	image-rendering: -moz-crisp-edges;  /* Firefox*/
-	image-rendering: -o-crisp-edges;	/* Opera  */
+	image-rendering: -o-crisp-edges;    /* Opera  */
 	image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
 	image-rendering: pixelated; /* Chrome */
 	image-rendering: optimize-contrast; /* CSS3 Proposed  */
@@ -73,6 +80,14 @@ main {
 	float: left;
 	width: 200px;
 	text-align: right;
+}
+
+.no-link {
+	color: var(--color);
+}
+
+.no-link:hover {
+	cursor: default;
 }
 
 .body-section {
