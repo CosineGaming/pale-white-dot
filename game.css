@@ -61,13 +61,13 @@ main {
 	margin: 0 auto;
 }
 
-.status-sidebar {
+#status-sidebar {
 	margin-top: 20px;
 	float: right;
 	width: 200px;
 }
 
-.interaction-sidebar {
+#interaction-sidebar {
 	margin-top: 20px;
 	margin-right: 40px;
 	float: left;

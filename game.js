@@ -32,7 +32,35 @@ function update()
 	drawUpdate();
 }
 
-function build(name, team, toBody)
+function purchase(team, cost, count)
+{
+	if (!count) {
+		count = 1;
+	}
+	var success = true;
+	$.each(cost, function(resource, required) {
+		if (required * count > teams[team].resources[resource]) {
+			if (team == "player") {
+				// Add a little marker of what's insufficient
+				// Don't break the loop because we list everything that's insufficient
+				$("#interaction-sidebar").append(
+					$("<p>").append(
+						"Insufficient " + names[resource]
+					).addClass("no-build").fadeOut(3000, function() {
+						$(this).remove();
+					})
+				);
+			}
+			success = false;
+		}
+	});
+	if (success) {
+		addResources(cost, team, -1 * count);
+	}
+	return success;
+}
+
+function build(name, team, toBody, buildMax)
 {
 	if (!team) {
 		team = "player";
@@ -40,30 +68,17 @@ function build(name, team, toBody)
 	if (!toBody) {
 		toBody = focusedBody;
 	}
-	var canBuild = true;
-	$.each(buildable[name], function(resource, count) {
-		if (count > teams[team].resources[resource]) {
-			canBuild = false;
-			if (team == "player") {
-				// Add a little marker of what's insufficient
-				// Don't break the loop because we list everything that's insufficient
-				$("#owned-menu").append(
-					$("<p>").append(
-						"Insufficient " + resource
-					).addClass("no-build").fadeOut(3000, function() {
-						$(this).remove();
-					})
-				);
-			}
-		}
-	});
+	var count = 1;
+	if (buildMax) {
+		count = getMaxBuyable(teams[team].resources, buildable[name]);
+	}
+	var canBuild = purchase(team, buildable[name], count);
 	if (canBuild) {
-		addResources(buildable[name], team, -1);
 		var body = getBody(toBody);
 		if (!body.hasOwnProperty("built")) {
 			body.built = {};
 		}
-		incrementOrOne(body.built, name);
+		incrementOrOne(body.built, name, count);
 		draw();
 		return true;
 	}
@@ -147,8 +162,38 @@ function attackFrame()
 
 function attack()
 {
-	attacking = true;
-	attackFrame();
+
+	if (purchase("player", attackCost)) {
+		attacking = true;
+		attackFrame();
+	}
+
+}
+
+function addTooltip(element, tooltip)
+{
+	tooltip.addClass("tooltip");
+	element.hover(function(e) {
+		tooltip.show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
+	}, function(e) {
+		tooltip.fadeOut(100)
+	});
+	return element;
+}
+
+function costList(cost, idPrepend)
+{
+	if (typeof idPrepend == "undefined") {
+		idPrepend = "";
+	}
+	else {
+		idPrepend += "-";
+	}
+	var list = $("<ul>");
+	$.each(cost, function(resource, count) {
+		list.append($("<li>").append(names[resource] + ": " + count).attr("id", idPrepend + resource));
+	});
+	return list;
 }
 
 function drawOnce()
@@ -172,6 +217,9 @@ function drawOnce()
 			})
 		));
 	});
+	var tooltip = costList(attackCost, "attack");
+	$("#not-owned-menu").append(tooltip);
+	addTooltip($("#attack"), tooltip).click(attack);
 
 }
 
@@ -294,6 +342,23 @@ function draw()
 
 }
 
+// Color things we can't afford red in the tooltips
+// Accepts an object `cost` which contains resource:count pairs
+// Also accepts `idFunction` which accepts `resource`
+// idFunction should return the id of the element listing price for `resource`
+function drawAffordable(cost, idFunction)
+{
+	$.each(cost, function(resource, count) {
+		if (count > teams["player"].resources[resource]) {
+			$("#" + idFunction(resource)).addClass("no-build");
+		}
+		else {
+			// Don't remember it
+			$("#" + idFunction(resource)).removeClass("no-build");
+		}
+	});
+}
+
 function drawUpdate()
 {
 	$("#resources").empty();
@@ -315,6 +380,19 @@ function drawUpdate()
 				$("#" + item.replace(" ", "-") + resource).removeClass("no-build");
 			}
 		});
+		var maxLink = $("#max-" + item.replace(" ", "-"));
+		var max = getMaxBuyable(teams["player"].resources, cost);
+		if (max >= 5) {
+			max = Math.floor(max / 5) * 5;
+			$("#max-" + item.replace(" ", "-") + " a").html(max);
+			maxLink.show();
+		}
+		else {
+			maxLink.hide();
+		}
+	});
+	drawAffordable(attackCost, function(resource) {
+		return "attack-" + resource;
 	});
 
 	// Factions might change while viewing one planet

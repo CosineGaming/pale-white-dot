@@ -263,6 +263,10 @@ var buildable = {
 	},
 };
 
+var attackCost = {
+	"gas" : 200,
+};
+
 var buildMultipliers = {
 	"Extraction Well" : {
 		"water" : 0.75
