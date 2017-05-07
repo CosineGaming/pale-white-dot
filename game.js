@@ -201,20 +201,22 @@ function drawOnce()
 
 	// Initialize build menu based on data.js, to be hidden and shown whenever
 	$.each(buildable, function(item, cost) {
-		var tooltip = $("<ul>").addClass("tooltip").append($("<p>").append(buildDescriptions[item]));
+		var tooltip = $("<div>").append($("<p>").append(buildDescriptions[item]));
+		tooltip.append(costList(cost, item.replace(" ", "-")));
 		$("#build-menu").append(tooltip);
-		$.each(cost, function(resource, count) {
-			// IDs used to later color things we can't afford red. We can't have spaces.
-			tooltip.append($("<li>").append(names[resource] + ": " + count).attr("id", item.replace(" ", "-") + resource));
-		});
+		var max = getMaxBuyable(teams["player"].resources, cost);
 		$("#build-menu").append($("<li>").append(
-			$("<a>").append(item).click(function() {
-				build(item);
-			}).hover(function(e) {
-				tooltip.show().css( { top: e.pageY + 5, left: e.pageX + 5 } );
-			}, function(e) {
-				tooltip.fadeOut(100)
-			})
+			addTooltip($("<a>"), tooltip).click(function() { build(item); } ).append(item)
+		).append(
+			$("<span>").attr("id", "max-" + item.replace(" ", "-")).append(
+				" ("
+			).append(
+				addTooltip($("<a>"), $("<p>").append(
+					"Build " + max
+				)).append("max").click(function() {
+					build(item, null, null, true);
+				})
+			).append(")").hide()
 		));
 	});
 	var tooltip = costList(attackCost, "attack");
@@ -369,16 +371,9 @@ function drawUpdate()
 		));
 	});
 
-	// Color things we can't afford red in the tooltips
 	$.each(buildable, function(item, cost) {
-		$.each(cost, function(resource, count) {
-			if (count > teams["player"].resources[resource]) {
-				$("#" + item.replace(" ", "-") + resource).addClass("no-build");
-			}
-			else {
-				// Don't remember it
-				$("#" + item.replace(" ", "-") + resource).removeClass("no-build");
-			}
+		drawAffordable(cost, function(resource) {
+			return item.replace(" ", "-") + "-" + resource;
 		});
 		var maxLink = $("#max-" + item.replace(" ", "-"));
 		var max = getMaxBuyable(teams["player"].resources, cost);

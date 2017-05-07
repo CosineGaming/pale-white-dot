@@ -9,12 +9,15 @@ String.prototype.capitalize = function()
 	return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
-function incrementOrOne(obj, prop)
+function incrementOrOne(obj, prop, count)
 {
+	if (typeof count == "undefined") {
+		count = 1;
+	}
 	if (!obj.hasOwnProperty(prop)) {
 		obj[prop] = 0;
 	}
-	obj[prop]++;
+	obj[prop] += count;
 }
 
 // Adds modifiers from built things like mines
@@ -45,6 +48,17 @@ function addResources(from, to, mult, built)
 		}
 		teams[to].resources[resource] += amount * mult;
 	});
+}
+
+function getMaxBuyable(buyer, buying) {
+	var max = -1;
+	$.each(buying, function(resource, count) {
+		var buyable = Math.floor(buyer[resource]/count);
+		if (max == -1 || buyable < max) {
+			max = buyable;
+		}
+	});
+	return max;
 }
 
 // Loops through every planet or moon and passes it to func
