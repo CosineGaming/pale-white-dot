@@ -15,12 +15,19 @@ var fleet = {};
 
 var teams = {
 	"player" : {
+		// "resources" : {
+		// 	"money" : 60,
+		// 	"water" : 10,
+		// 	"natural" : 10,
+		// 	"metal" : 10,
+		// 	"gas" : 10,
+		// }
 		"resources" : {
-			"money" : 60,
-			"water" : 10,
-			"natural" : 10,
-			"metal" : 10,
-			"gas" : 10,
+			"money" : 60000,
+			"water" : 10000,
+			"natural" : 10000,
+			"metal" : 10000,
+			"gas" : 10000,
 		}
 	},
 	"terran" : {
@@ -224,42 +231,44 @@ planets["uranus"].moons = {
 // Breaking standards here with the capitalized names
 var buildable = {
 	"Starship" : {
-		"metal" : 200,
-		"water" : 20
+		"metal" : 500,
+		"water" : 50,
+		"natural" : 75
 	},
 	"Fighter" : {
-		"metal" : 60,
-		"water" : 4
+		"metal" : 100,
+		"water" : 20,
+		"natural" : 15
 	},
 	"Planetary Defense" : {
-		"metal" : 60,
-		"gas" : 200,
+		"metal" : 200,
+		"gas" : 400,
 		"water" : 50,
-		"natural" : 10
+		"natural" : 25
 	},
 	"Extraction Well" : {
-		"metal" : 50,
-		"gas" : 20,
-		"water" : 20,
-		"natural" : 3
+		"metal" : 100,
+		"gas" : 40,
+		"water" : 40,
+		"natural" : 5
 	},
 	"Controlled Ag" : {
-		"metal" : 5,
-		"gas" : 10,
-		"water" : 50,
-		"natural" : 20
+		"metal" : 10,
+		"gas" : 20,
+		"water" : 100,
+		"natural" : 40
 	},
 	"Mine" : {
-		"metal" : 20,
-		"gas" : 5,
-		"water" : 8,
-		"natural" : 2
+		"metal" : 40,
+		"gas" : 10,
+		"water" : 15,
+		"natural" : 20
 	},
 	"Skymine" : {
-		"metal" : 50,
-		"gas" : 20,
-		"water" : 5,
-		"natural" : 1
+		"metal" : 100,
+		"gas" : 40,
+		"water" : 10,
+		"natural" : 10
 	},
 };
 
