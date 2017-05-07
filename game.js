@@ -87,73 +87,83 @@ function build(name, team, toBody, buildMax)
 	}
 }
 
-// Attacking happens in one-second frames for  d r a m a t i c   e f f e c t
-function attackFrame()
+// Fires attacker on defender, returns object with counts of defenders who died
+function attackFleet(attacker, defender)
 {
-
-	var enemy = getBody(focusedBody);
-	var toDelete = {};
 	var options = {};
-	if (!$.isEmptyObject(enemy.built)) {
-		$.each(ships, function(type, ship) {
-			if (type in enemy.built) {
-				options[type] = 0; // Value irrelevant, just need it in key format
-			}
-		});
-	}
-	if (!$.isEmptyObject(fleet) && !$.isEmptyObject(options)) {
-		$.each(fleet, function(type, count) {
+	var toDelete = {};
+	$.each(ships, function(type, ship) {
+		if (type in defender) {
+			options[type] = 0; // Value irrelevant, just need it in key format
+		}
+	});
+	$.each(attacker, function(type, count) {
+		if (type in ships) {
 			for (var i=0; i<count; i++) {
+				if (Object.keys(options).length == 0) {
+					return false; // Break out of jQuery loop
+				}
 				if (Math.random() < ships[type].killChance) {
 					var attackingType = randFromList(Object.keys(options));
-					if (Math.random() > ships[attackingType].saveChance) { // Is not less than, it WASN'T saved
+					if (Math.random() > ships[attackingType].saveChance) { // Is not less than: it WASN'T saved
 						incrementOrOne(toDelete, attackingType);
-						if (toDelete[attackingType] >= enemy.built[attackingType]) {
+						if (toDelete[attackingType] >= defender[attackingType]) {
 							delete options[attackingType];
 						}
 					}
 				}
 			}
-		});
-		// Enemies' returning fire TODO: Refactor with attacking fire
-		$.each(enemy.built, function(type, count) {
-			if (type in ships) {
-				// Enemy ship
-				for (var i=0; i<count; i++) {
-					if (Math.random() < ships[type].killChance) {
-						if (Object.keys(fleet).length) {
-							var attackingType = randFromList(Object.keys(fleet));
-							if (Math.random() > ships[attackingType].saveChance) { // Is not less than, it WASN'T saved
-								fleet[attackingType] -= 1;
-								if (fleet[attackingType] == 0) {
-									delete fleet[attackingType];
-								}
-							}
-						}
-						else {
-							return false; // Break out of jQuery loop
-						}
-					}
-				}
-			}
-		});
-	}
-	$.each(toDelete, function(type, count) {
-		enemy.built[type] -= count;
-		if (enemy.built[type] == 0) {
-			delete enemy.built[type];
-			delete options[type];
 		}
 	});
-	if ($.isEmptyObject(fleet)) {
+	return toDelete;
+}
+
+// Takes output of `attackFleet` and removes it from an actual fleet
+// Returns `true` if `fromFleet` has completely died, false otherwise
+function removeCasualties(fromFleet, dead) {
+	$.each(dead, function(type, count) {
+		fromFleet[type] -= count;
+		if (fromFleet[type] <= 0) {
+			delete fromFleet[type];
+		}
+	});
+	var dead = true;
+	$.each(ships, function(type, ship) {
+		if (type in fromFleet) {
+			dead = false;
+		}
+	});
+	return dead;
+}
+
+// Attacking happens in one-second frames for  d r a m a t i c   e f f e c t
+function attackFrame()
+{
+
+	var enemyBody = getBody(focusedBody);
+	var enemy;
+	// Support attacking planets with /nothing/
+	if (enemyBody.built) {
+		enemy = enemyBody.built;
+	}
+	else {
+		enemy = {};
+	}
+	// Returning fire
+	var enemyDeaths = attackFleet(fleet, enemy);
+	// Attackers don't need returning fire
+	var weDied = removeCasualties(fleet, attackFleet(enemy, fleet));
+	// Apply returning fire
+	var enemyDied = removeCasualties(enemy, enemyDeaths);
+	if (weDied) {
 		// We died! :(
 		attacking = false;
 		$("#lost").show();
 	}
-	else if ($.isEmptyObject(options)) {
+	else if (enemyDied) {
 		// We killed them and we're still alive!
 		attacking = false;
-		enemy.owner = "player";
+		enemyBody.owner = "player";
 	}
 
 	draw();
