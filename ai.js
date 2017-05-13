@@ -1,3 +1,7 @@
+// AI Library functions
+// In other words, the part that makes the enemy factions do stuff
+// TODO: Object-oriented? (Note question mark).
+
 function randFromList(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
@@ -31,10 +35,15 @@ function aiBuild(name, team) {
 	}
 }
 
+function aiAttack(name, team) {
+	//
+}
+
 function ai() {
 	$.each(teams, function(name, team) {
 		if (name != "player") {
 			aiBuild(name, team);
+			aiAttack(name, team);
 		}
 	});
 }

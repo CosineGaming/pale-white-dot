@@ -20,6 +20,15 @@ function incrementOrOne(obj, prop, count)
 	obj[prop] += count;
 }
 
+// Create a property as a new object if it doesn't exist
+// Return the /property/ (not the parent object)
+function objOrCreate(obj, prop) {
+	if (!obj.hasOwnProperty(prop)) {
+		obj[prop] = {};
+	}
+	return obj[prop];
+}
+
 // Adds modifiers from built things like mines
 function getMultiplied(built, resource, original)
 {
