@@ -179,7 +179,7 @@ planets["mars"].moons = {
 	"phobos" : {
 		"owner" : "mars"
 	},
-	"delmos" : {
+	"deimos" : {
 		"owner" : "mars"
 	}
 };
@@ -309,8 +309,8 @@ var ships = {
 };
 
 var buildDescriptions = {
-	"Starship" : "60% chance of hitting, 50% chance of not getting hit.", // TODO: require gas to run
-	"Fighter" : "30% chance of hitting, 10% chance of not getting hit.",
+	"Starship" : "60% chance of hitting, 50% chance of not getting hit. Requires gas to use.", // TODO: require gas to run
+	"Fighter" : "30% chance of hitting, 10% chance of not getting hit. Requires gas to use.",
 	"Planetary Defense" : "A necessity to keeping a planet in your own hands.",
 	"Extraction Well" : "Crack into ice and extract frozen or liquid water. Increase water production.",
 	"Mine" : "Mine deep, where the minerals are rich. Increase metal production.",

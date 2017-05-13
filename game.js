@@ -221,10 +221,10 @@ function drawOnce()
 			$("<span>").attr("id", "max-" + item.replace(" ", "-")).append(
 				" ("
 			).append(
-				addTooltip($("<a>"), $("<p>").append(
-					"Build " + max
-				)).append("max").click(function() {
-					build(item, null, null, true);
+				$("<a>").append("max").click(function() {
+					var amount = getMaxBuyable(teams["player"].resources, cost);
+					amount = Math.floor(amount / 5) * 5;
+					build(item, null, null, amount);
 				})
 			).append(")").hide()
 		));
@@ -358,7 +358,7 @@ function draw()
 
 	drawList(null, "fleet", function(name, count) {
 		var ship = addTooltip($("<a>"), $("#fleet-tooltip-back")).append(count + " " + name + (count > 1 ? "s" : ""));
-		if (focusedBodyObj  && focusedBodyObj.owner && focusedBodyObj.owner != "player") {
+		if (!focusedBodyObj || focusedBodyObj.owner != "player") {
 			ship.addClass("no-link");
 		}
 		else {
