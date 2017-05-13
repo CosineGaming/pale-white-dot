@@ -13,21 +13,23 @@ var names = {
 
 var fleet = {};
 
+// For Debug mode
+var opResources = {
+	"money" : 60000,
+	"water" : 10000,
+	"natural" : 10000,
+	"metal" : 10000,
+	"gas" : 10000,
+}
+
 var teams = {
 	"player" : {
-		// "resources" : {
-		// 	"money" : 60,
-		// 	"water" : 10,
-		// 	"natural" : 10,
-		// 	"metal" : 10,
-		// 	"gas" : 10,
-		// }
 		"resources" : {
-			"money" : 60000,
-			"water" : 10000,
-			"natural" : 10000,
-			"metal" : 10000,
-			"gas" : 10000,
+			"money" : 60,
+			"water" : 10,
+			"natural" : 10,
+			"metal" : 10,
+			"gas" : 10,
 		}
 	},
 	"terran" : {

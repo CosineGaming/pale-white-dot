@@ -487,6 +487,11 @@ function init()
 
 	setInterval(update, 1000);
 
+	var debug = false;
+	if (debug) {
+		teams.player.resources = opResources;
+	}
+
 	drawOnce();
 	draw();
 
