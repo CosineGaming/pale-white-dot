@@ -26,7 +26,7 @@ function update()
 	}
 
 	if (attacking) {
-		attackFrame();
+		graphicalAttackFrame();
 	}
 
 	drawUpdate();
@@ -74,10 +74,7 @@ function build(name, team, toBody, count)
 	var canBuild = purchase(team, buildable[name], count);
 	if (canBuild) {
 		var body = getBody(toBody);
-		if (!body.hasOwnProperty("built")) {
-			body.built = {};
-		}
-		incrementOrOne(body.built, name, count);
+		incrementOrOne(objOrCreate(body, "built"), name, count);
 		draw();
 		return true;
 	}
@@ -136,10 +133,16 @@ function removeCasualties(fromFleet, dead) {
 }
 
 // Attacking happens in one-second frames for  d r a m a t i c   e f f e c t
-function attackFrame()
+function attackFrame(team, body)
 {
 
-	var enemyBody = getBody(focusedBody);
+	var resolved = false;
+
+	var enemyBody = body;
+	if (!body)
+	{
+		enemyBody = getBody(focusedBody);
+	}
 	var enemy;
 	// Support attacking planets with /nothing/
 	if (enemyBody.built) {
@@ -148,33 +151,62 @@ function attackFrame()
 	else {
 		enemy = {};
 	}
+	var attacker = team;
+	if (!team) {
+		attacker = "player";
+	}
+	var attackingFleet = teams[attacker].fleet;
+
 	// Returning fire
-	var enemyDeaths = attackFleet(fleet, enemy);
+	var enemyDeaths = attackFleet(attackingFleet, enemy);
 	// Attackers don't need returning fire
-	var weDied = removeCasualties(fleet, attackFleet(enemy, fleet));
+	var weDied = removeCasualties(attackingFleet, attackFleet(enemy, attackingFleet));
 	// Apply returning fire
 	var enemyDied = removeCasualties(enemy, enemyDeaths);
 	if (weDied) {
 		// We died! :(
-		attacking = false;
-		$("#lost").show();
+		resolved = true;
+		if (attacker == "player") {
+			$("#lost").show();
+		}
 	}
 	else if (enemyDied) {
 		// We killed them and we're still alive!
-		attacking = false;
-		enemyBody.owner = "player";
+		resolved = true;
+		enemyBody.owner = attacker;
 	}
 
+	return resolved;
+
+}
+
+function resolveAttack(team, body)
+{
+	while (!attackFrame(team, body)) {
+		// Continue attacking until returns resoluved
+		// (Do nothing here)
+	}
+}
+
+function graphicalAttackFrame() {
+
+	if (attackFrame()) {
+		attacking = false;
+	}
 	draw();
 
 }
 
-function attack()
+function attack(team, body)
 {
 
-	if (purchase("player", attackCost)) {
+	if (!team || !body) { // Displayed, frame-by-frame
+		team = "player";
 		attacking = true;
-		attackFrame();
+		graphicalAttackFrame();
+	}
+	else {
+		resolveAttack(team, body);
 	}
 
 }
@@ -220,7 +252,11 @@ function drawOnce()
 	});
 	var tooltip = costList(attackCost, "attack");
 	$("#not-owned-menu").append(tooltip);
-	addTooltip($("#attack"), tooltip).click(attack);
+	addTooltip($("#attack"), tooltip).click(function() {
+		if (purchase("player", attackCost)) {
+			attack();
+		}
+	});
 
 }
 
@@ -244,22 +280,22 @@ function drawList(obj, field, formatFunc, overrideList)
 }
 
 // If count is negative, removes from fleet
-function addToFleet(from, type, count)
+function addToFleet(from, type, count, team)
 {
 
+	if (!team) {
+		team = "player";
+	}
 	if (!count) {
 		count = 1;
 	}
-	if (!from.built) {
-		from.built = {};
-	}
-	incrementOrOne(from.built, type, -1 * count);
+	incrementOrOne(objOrCreate(from, "built"), type, -1 * count);
 	if (from.built[type] <= 0) {
 		delete from.built[type];
 	}
-	incrementOrOne(fleet, type, count);
-	if (fleet[type] <= 0) {
-		delete fleet[type];
+	incrementOrOne(objOrCreate(teams[team], "fleet"), type, count);
+	if (teams.player.fleet[type] <= 0) {
+		delete teams.player.fleet[type];
 	}
 	$("#fleet-tooltip").hide();
 	$("#fleet-tooltip-back").hide();
@@ -359,11 +395,11 @@ function draw()
 			});
 		}
 		return ship;
-	}, fleet);
+	}, teams.player.fleet);
 	if (focusedBodyObj && focusedBodyObj.owner == "player") {
 		$("#l-fleet ul").append($("<li>").append($("<a>").append("All to body").click(
 			function() {
-				$.each(fleet, function(type, count) {
+				$.each(teams.player.fleet, function(type, count) {
 					if (type in ships) {
 						addToFleet(focusedBodyObj, type, -1 * count);
 					}
@@ -410,16 +446,13 @@ function drawUpdate()
 		});
 		var buildItem = $("#max-" + item.replace(" ", "-"));
 		var max = getMaxBuyable(teams["player"].resources, cost);
-		// Each powers of 10 buildable
-		for (var i=10; i<=max; i*=10) {
-			var count = i; // Need to copy because for loop will modify. Stored in function for later
+		// Each power of 10 that is buildable
+		for (let count=10; count<=max; count*=10) {
 			buildItem.append(
-				$("<span>").addClass("multiple-link").append( // .attr("id", "max-" + item.replace(" ", "-"))
+				$("<span>").addClass("multiple-link").append(
 					" ("
 				).append(
 					$("<a>").append(count).click(function() {
-						//var amount = getMaxBuyable(teams["player"].resources, cost);
-						//amount = Math.floor(amount / 5) * 5;
 						build(item, null, null, count);
 					})
 				).append(")")
@@ -442,8 +475,8 @@ function drawUpdate()
 function hashChange()
 {
 
-	while (attacking) {
-		attackFrame();
+	if (attacking) {
+		resolveAttack();
 	}
 	$("#lost").hide();
 
