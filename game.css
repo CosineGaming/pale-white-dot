@@ -78,7 +78,6 @@ main {
 	margin-top: 20px;
 	margin-right: 40px;
 	float: left;
-	width: 200px;
 	text-align: right;
 }
 
@@ -136,7 +135,7 @@ main {
 
 #click-through {
 	position: absolute;
-	margin-left: 430px;
+	margin-left: 410px;
 }
 
 #focused-body {

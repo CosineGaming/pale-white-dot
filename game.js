@@ -214,18 +214,8 @@ function drawOnce()
 		tooltip.append(costList(cost, item.replace(" ", "-")));
 		$("#build-menu").append(tooltip);
 		var max = getMaxBuyable(teams["player"].resources, cost);
-		$("#build-menu").append($("<li>").append(
+		$("#build-menu").append($("<li>").attr("id", "max-" + item.replace(" ", "-")).append(
 			addTooltip($("<a>"), tooltip).click(function() { build(item); } ).append(item)
-		).append(
-			$("<span>").attr("id", "max-" + item.replace(" ", "-")).append(
-				" ("
-			).append(
-				$("<a>").append("max").click(function() {
-					var amount = getMaxBuyable(teams["player"].resources, cost);
-					amount = Math.floor(amount / 5) * 5;
-					build(item, null, null, amount);
-				})
-			).append(")").hide()
 		));
 	});
 	var tooltip = costList(attackCost, "attack");
@@ -413,19 +403,27 @@ function drawUpdate()
 		));
 	});
 
+	$(".multiple-link").remove();
 	$.each(buildable, function(item, cost) {
 		drawAffordable(cost, function(resource) {
 			return item.replace(" ", "-") + "-" + resource;
 		});
-		var maxLink = $("#max-" + item.replace(" ", "-"));
+		var buildItem = $("#max-" + item.replace(" ", "-"));
 		var max = getMaxBuyable(teams["player"].resources, cost);
-		if (max >= 5) {
-			max = Math.floor(max / 5) * 5;
-			$("#max-" + item.replace(" ", "-") + " a").html(max);
-			maxLink.show();
-		}
-		else {
-			maxLink.hide();
+		// Each powers of 10 buildable
+		for (var i=10; i<=max; i*=10) {
+			var count = i; // Need to copy because for loop will modify. Stored in function for later
+			buildItem.append(
+				$("<span>").addClass("multiple-link").append( // .attr("id", "max-" + item.replace(" ", "-"))
+					" ("
+				).append(
+					$("<a>").append(count).click(function() {
+						//var amount = getMaxBuyable(teams["player"].resources, cost);
+						//amount = Math.floor(amount / 5) * 5;
+						build(item, null, null, count);
+					})
+				).append(")")
+			);
 		}
 	});
 	drawAffordable(attackCost, function(resource) {
