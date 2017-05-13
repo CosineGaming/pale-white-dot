@@ -60,7 +60,7 @@ function purchase(team, cost, count)
 	return success;
 }
 
-function build(name, team, toBody, buildMax)
+function build(name, team, toBody, count)
 {
 	if (!team) {
 		team = "player";
@@ -68,9 +68,8 @@ function build(name, team, toBody, buildMax)
 	if (!toBody) {
 		toBody = focusedBody;
 	}
-	var count = 1;
-	if (buildMax) {
-		count = getMaxBuyable(teams[team].resources, buildable[name]);
+	if (!count) {
+		count = 1;
 	}
 	var canBuild = purchase(team, buildable[name], count);
 	if (canBuild) {
@@ -260,6 +259,9 @@ function addToFleet(from, type, count)
 
 	if (!count) {
 		count = 1;
+	}
+	if (!from.built) {
+		from.built = {};
 	}
 	incrementOrOne(from.built, type, -1 * count);
 	if (from.built[type] <= 0) {
