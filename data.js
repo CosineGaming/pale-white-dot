@@ -308,6 +308,11 @@ var ships = {
 	}
 };
 
+// List of ships that are only for defense and cannot be added to fleet
+var defenseShips = {
+	"Planetary Defense" : 0
+};
+
 var buildDescriptions = {
 	"Starship" : "60% chance of hitting, 50% chance of not getting hit. Requires gas to use.", // TODO: require gas to run
 	"Fighter" : "30% chance of hitting, 10% chance of not getting hit. Requires gas to use.",

@@ -324,7 +324,7 @@ function draw()
 	var shipInList = false;
 	drawList(focusedBodyObj, "built", function(name, count) {
 		var entry = count + " "  + name + (count > 1 ? "s" : "");
-		if (focusedBodyObj.owner == "player" && name in ships) {
+		if (focusedBodyObj.owner == "player" && name in ships && !(name in defenseShips)) {
 			shipInList = true;
 			entry = addTooltip($("<a>"), $("#fleet-tooltip")).click(function() {
 				addToFleet(focusedBodyObj, name);
@@ -336,7 +336,7 @@ function draw()
 		$("#l-built ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
 			function() {
 				$.each(focusedBodyObj.built, function(type, count) {
-					if (type in ships) {
+					if (type in ships && !(type in defenseShips)) {
 						addToFleet(focusedBodyObj, type, count);
 					}
 				});
