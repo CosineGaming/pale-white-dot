@@ -7,7 +7,7 @@ Ludum Dare 38
                         \     /    \     /     \---/     \---/   
                          -----      -----                        
 
-Ludum Dare 38: A Small World
+Ludum Dare 38: A Small World (Post-compo version)
 
 It's an incremental game in the solar system
 

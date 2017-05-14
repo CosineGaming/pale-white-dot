@@ -117,12 +117,12 @@ main {
 	padding: 0px;
 }
 
-.no-build {
+.red {
 	color: #d190bb;
 }
 
-.margin-top {
-	margin-top: 20px;
+.green {
+	color: #5ed099;
 }
 
 .link-back {

@@ -42,7 +42,7 @@ function aiBuild(name, team) {
 
 function aiFleet(teamName, team) {
 
-	var fleetChance = 1/20;
+	var fleetChance = 1/5;
 	if (Math.random() < fleetChance) {
 		var fleetSize = 0;
 		$.each(team.fleet, function(_, count) {
@@ -104,20 +104,34 @@ function aiAttack(teamName, team) {
 				});
 				outcomeText = $("<p>").append(
 					"The " + teamNames[teamName] + " took "
-				).append(planetLink).append(
-					" from the " + teamNames[oldOwner] + "!"
-				).addClass("no-build");
+				).append(planetLink);
+				if (oldOwner) {
+					outcomeText.append(
+						" from the " + teamNames[oldOwner] + "!"
+					);
+				}
+				else {
+					outcomeText.append("!");
+				}
+				if (oldOwner == "player") {
+					outcomeText.addClass("red");
+				}
 			}
 			else {
-				outcomeText = $("<p>").append(
-					"The " + teamNames[oldOwner] + " defended "
-				).append(planetLink).append(
-					" from the " + teamNames[teamName] + "."
-				);
+				if (oldOwner == "player") {
+					outcomeText = $("<p>").append(
+						"The " + teamNames[oldOwner] + " defended "
+					).append(planetLink).append(
+						" from the " + teamNames[teamName] + "."
+					);
+					outcomeText.addClass("green");
+				}
 			}
-			$("#status-sidebar").addClass("margin-top").append(outcomeText.fadeOut(10000, function() {
-				$(this).remove();
-			}));
+			if (outcomeText) {
+				$("#status-sidebar").append(outcomeText.delay(8000).fadeOut(2000, function() {
+					$(this).remove();
+				}));
+			}
 			draw();
 		}
 	}

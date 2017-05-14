@@ -49,7 +49,7 @@ function purchase(team, cost, count)
 				$("#interaction-sidebar").append(
 					$("<p>").append(
 						"Insufficient " + names[resource]
-					).addClass("no-build").fadeOut(3000, function() {
+					).addClass("red").fadeOut(3000, function() {
 						$(this).remove();
 					})
 				);
@@ -471,11 +471,11 @@ function drawAffordable(cost, idFunction)
 {
 	$.each(cost, function(resource, count) {
 		if (count > teams["player"].resources[resource]) {
-			$("#" + idFunction(resource)).addClass("no-build");
+			$("#" + idFunction(resource)).addClass("red");
 		}
 		else {
 			// Don't remember it
-			$("#" + idFunction(resource)).removeClass("no-build");
+			$("#" + idFunction(resource)).removeClass("red");
 		}
 	});
 }

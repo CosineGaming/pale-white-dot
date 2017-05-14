@@ -177,18 +177,42 @@ planets["earth"].moons = {
 
 planets["mars"].moons = {
 	"phobos" : {
+		"resources" : {
+			"metal" : 2,
+			"gas" : 0,
+			"water" : 0,
+			"natural" : 0
+		},
 		"owner" : "mars"
 	},
 	"deimos" : {
+		"resources" : {
+			"metal" : 2,
+			"gas" : 0,
+			"water" : 1,
+			"natural" : 0
+		},
 		"owner" : "mars"
 	}
 };
 
 planets["jupiter"].moons = {
 	"io" : {
-		"owner" : "gas"
+		"resources" : {
+			"metal" : 10,
+			"gas" : 2,
+			"water" : 0,
+			"natural" : 0
+		},
+		"owner" : "mars"
 	},
 	"europa" : {
+		"resources" : {
+			"metal" : 5,
+			"gas" : 1,
+			"water" : 10,
+			"natural" : 2
+		},
 		"owner" : "gas"
 	},
 	"ganymede" : {
@@ -198,12 +222,24 @@ planets["jupiter"].moons = {
 			"water" : 4,
 			"natural" : 4
 		},
-		"owner" : "mars",
+		"owner" : "gas",
 	}, // Jet...
 	"callisto" : {
-		"owner" : "gas"
+		"resources" : {
+			"metal" : 4,
+			"gas" : 1,
+			"water" : 5,
+			"natural" : 2
+		},
+		"owner" : "mars"
 	},
-	"Jupiter Coalition" : {
+	"Jupiter-Coalition" : {
+		"resources" : {
+			"metal" : 8,
+			"gas" : 0,
+			"water" : 0,
+			"natural" : 0
+		},
 		"owner" : "rebel"
 	} // Hmm what to do with naming programmatically vs visually
 };
@@ -296,15 +332,15 @@ var buildMultipliers = {
 var ships = {
 	"Starship" : {
 		"killChance" : 0.6,
-		"saveChance" : 0.5
+		"saveChance" : 0.4
 	},
 	"Fighter" : {
 		"killChance" : 0.3,
 		"saveChance" : 0.1
 	},
 	"Planetary Defense" : {
-		"killChance" : 0.2,
-		"saveChance" : 0.8
+		"killChance" : 0.3,
+		"saveChance" : 0.9
 	}
 };
 
@@ -314,7 +350,7 @@ var defenseShips = {
 };
 
 var buildDescriptions = {
-	"Starship" : "60% chance of hitting, 50% chance of not getting hit. Requires gas to use.", // TODO: require gas to run
+	"Starship" : "60% chance of hitting, 50% chance of not getting hit. Requires gas to use.",
 	"Fighter" : "30% chance of hitting, 10% chance of not getting hit. Requires gas to use.",
 	"Planetary Defense" : "A necessity to keeping a planet in your own hands.",
 	"Extraction Well" : "Crack into ice and extract frozen or liquid water. Increase water production.",
