@@ -268,13 +268,18 @@ function drawList(obj, field, formatFunc, overrideList)
 		obj[field] = overrideList;
 	}
 	$("#l-" + field + " ul").empty();
+	var hide = true;
 	if (obj && obj.hasOwnProperty(field) && !$.isEmptyObject(obj[field])) {
 		$("#l-" + field).show();
 		$.each(obj[field], function(name, count) {
-			$("#l-" + field + " ul").append($("<li>").append(formatFunc(name, count)));
+			var format = formatFunc(name, count);
+			if (format) {
+				$("#l-" + field + " ul").append($("<li>").append(formatFunc(name, count)));
+				hide = false;
+			}
 		});
 	}
-	else {
+	if (hide) {
 		$("#l-" + field).hide();
 	}
 }
@@ -357,19 +362,46 @@ function draw()
 		return $("<a>").attr("href", "#" + name).append(name.capitalize());
 	});
 
-	var shipInList = false;
+	function builtString(name, count) {
+		return count + " "  + name + (count > 1 ? "s" : "");
+	}
+
+	// We split `built` rendering into civilian & military for UI ease
+	// Civilian structures
 	drawList(focusedBodyObj, "built", function(name, count) {
-		var entry = count + " "  + name + (count > 1 ? "s" : "");
-		if (focusedBodyObj.owner == "player" && name in ships && !(name in defenseShips)) {
-			shipInList = true;
-			entry = addTooltip($("<a>"), $("#fleet-tooltip")).click(function() {
-				addToFleet(focusedBodyObj, name);
-			}).append(entry);
+		if (!(name in ships))
+		{
+			return builtString(name, count);
 		}
-		return entry;
+		else {
+			return false;
+		}
 	});
+	// Military structures
+	var shipInList = false;
+	// We talk about a `defenses` object so it puts it in the right list
+	// But really we're just taking selectively from `built`
+	// We have to wrap in if because we're not using drawList to access focusedBodyObj TODO: Fix; refactor completely
+	if (focusedBodyObj) {
+		drawList(null, "defenses", function(name, count) {
+			if (name in ships) {
+				var entry = builtString(name, count);
+				if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
+					shipInList = true;
+					entry = addTooltip($("<a>"), $("#fleet-tooltip")).click(function() {
+						addToFleet(focusedBodyObj, name);
+					}).append(entry);
+				}
+				return entry;
+			}
+			else {
+				return false;
+			}
+		}, focusedBodyObj.built);
+	}
+	// Add all to fleet link
 	if (shipInList && focusedBodyObj.owner == "player") {
-		$("#l-built ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
+		$("#l-defenses ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
 			function() {
 				$.each(focusedBodyObj.built, function(type, count) {
 					if (type in ships && !(type in defenseShips)) {
