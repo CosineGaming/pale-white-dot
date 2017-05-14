@@ -20,8 +20,7 @@ function update()
 	ai();
 
 	var updateAI = 0.05; // Once every 50 secons
-	if (Math.random() < updateAI)
-	{
+	if (Math.random() < updateAI) {
 		//
 	}
 
@@ -32,6 +31,10 @@ function update()
 	drawUpdate();
 }
 
+// CHecks if you can afford something /and removes those resources/ if you can
+// team: /name/
+// cost: /resource object/
+// count: /number/ to buy
 function purchase(team, cost, count)
 {
 	if (!count) {
@@ -133,15 +136,18 @@ function removeCasualties(fromFleet, dead) {
 }
 
 // Attacking happens in one-second frames for  d r a m a t i c   e f f e c t
+// Returns 0 for unresolved, "attacker" for attacker win, and "defender" for defender win
 function attackFrame(team, body)
 {
 
 	var resolved = false;
 
-	var enemyBody = body;
-	if (!body)
-	{
+	var enemyBody;
+	if (!body) {
 		enemyBody = getBody(focusedBody);
+	}
+	else {
+		enemyBody = getBody(body);
 	}
 	var enemy;
 	// Support attacking planets with /nothing/
@@ -155,7 +161,13 @@ function attackFrame(team, body)
 	if (!team) {
 		attacker = "player";
 	}
-	var attackingFleet = teams[attacker].fleet;
+	var attackingFleet;
+	if (teams[attacker].fleet) {
+		attackingFleet = teams[attacker].fleet;
+	}
+	else {
+		attackingFleet = {};
+	}
 
 	// Returning fire
 	var enemyDeaths = attackFleet(attackingFleet, enemy);
@@ -165,14 +177,14 @@ function attackFrame(team, body)
 	var enemyDied = removeCasualties(enemy, enemyDeaths);
 	if (weDied) {
 		// We died! :(
-		resolved = true;
+		resolved = "defender";
 		if (attacker == "player") {
 			$("#lost").show();
 		}
 	}
 	else if (enemyDied) {
 		// We killed them and we're still alive!
-		resolved = true;
+		resolved = "attacker";
 		enemyBody.owner = attacker;
 	}
 
@@ -180,12 +192,15 @@ function attackFrame(team, body)
 
 }
 
+// Returns "attacker" for attacker win and "defender" for defender win
 function resolveAttack(team, body)
 {
-	while (!attackFrame(team, body)) {
+	var resolution = false;
+	while (!resolution) {
 		// Continue attacking until returns resoluved
-		// (Do nothing here)
+		resolution = attackFrame(team, body);
 	}
+	return resolution;
 }
 
 function graphicalAttackFrame() {
@@ -206,7 +221,7 @@ function attack(team, body)
 		graphicalAttackFrame();
 	}
 	else {
-		resolveAttack(team, body);
+		return resolveAttack(team, body);
 	}
 
 }
@@ -285,6 +300,10 @@ function drawList(obj, field, formatFunc, overrideList)
 }
 
 // If count is negative, removes from fleet
+// From: body /object/ from which it is subtracted
+// Type: ship /name/ that is added
+// Count: number to add / negative to subtract
+// Team: team /name/ to who's fleet it should be added
 function addToFleet(from, type, count, team)
 {
 
@@ -299,8 +318,8 @@ function addToFleet(from, type, count, team)
 		delete from.built[type];
 	}
 	incrementOrOne(objOrCreate(teams[team], "fleet"), type, count);
-	if (teams.player.fleet[type] <= 0) {
-		delete teams.player.fleet[type];
+	if (teams[team].fleet[type] <= 0) {
+		delete teams[team].fleet[type];
 	}
 	$("#fleet-tooltip").hide();
 	$("#fleet-tooltip-back").hide();
@@ -554,7 +573,9 @@ function init()
 
 	var debug = false;
 	if (debug) {
-		teams.player.resources = opResources;
+		$.each(teams, function(teamName, team) {
+			team.resources = $.extend({}, opResources);
+		});
 	}
 
 	drawOnce();

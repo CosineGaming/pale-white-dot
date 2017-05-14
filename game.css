@@ -121,6 +121,10 @@ main {
 	color: #d190bb;
 }
 
+.margin-top {
+	margin-top: 20px;
+}
+
 .link-back {
 	position: absolute;
 	bottom: 50px;
