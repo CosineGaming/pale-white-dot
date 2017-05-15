@@ -207,6 +207,7 @@ function graphicalAttackFrame() {
 
 	if (attackFrame()) {
 		attacking = false;
+		$("#attacking-display").hide();
 	}
 	draw();
 
@@ -216,9 +217,25 @@ function attack(team, body)
 {
 
 	if (!team || !body) { // Displayed, frame-by-frame
-		team = "player";
-		attacking = true;
-		graphicalAttackFrame();
+		if (teams.player.fleet && !$.isEmptyObject(teams.player.fleet)) {
+			team = "player";
+			attacking = true;
+			$("#attacking-display").show();
+			graphicalAttackFrame();
+		}
+		else {
+			$("#not-owned-menu").append(
+				$("<div>").append(
+					$("<p>").append(
+						"Make sure you have moved some ships from bodies to your fleet."
+					)
+				).append(
+					$("<p>").append(
+						"Click on a ship at one of your bodies to add it to your fleet."
+					)
+				).delay(12000).fadeOut(2000).addClass("red")
+			);
+		}
 	}
 	else {
 		return resolveAttack(team, body);
@@ -265,7 +282,9 @@ function drawOnce()
 			addTooltip($("<a>"), tooltip).click(function() { build(item); } ).append(item)
 		));
 	});
-	var tooltip = costList(attackCost, "attack");
+	var tooltip = $("<div>").append($("<p>").append(
+		"Attack with your current constructed fleet."
+	)).append(costList(attackCost, "attack"));
 	$("#not-owned-menu").append(tooltip);
 	addTooltip($("#attack"), tooltip).click(function() {
 		if (purchase("player", attackCost)) {

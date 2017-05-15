@@ -138,6 +138,11 @@ main {
 	color: #196aff;
 }
 
+#attacking-display {
+	width: 380px;
+	display: none;
+}
+
 #click-through {
 	position: absolute;
 	margin-left: 410px;
