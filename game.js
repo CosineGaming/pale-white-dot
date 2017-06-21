@@ -486,7 +486,8 @@ function draw()
 			$("#not-owned-menu").show();
 			$("#owned-menu").hide();
 		}
-		$(".team-label").show();
+		$("#team-label").show();
+		$("#trade").show();
 		var label = "Unclaimed";
 		if (focusedBodyObj.hasOwnProperty("owner")) {
 			label = teamNames[focusedBodyObj.owner];
@@ -501,6 +502,7 @@ function draw()
 		$("#owned-menu").hide();
 		$("#not-owned-menu").hide();
 		$("#team-label").hide();
+		$("#trade").hide();
 	}
 
 	drawList(focusedBodyObj, "moons", function(name, moon) {
