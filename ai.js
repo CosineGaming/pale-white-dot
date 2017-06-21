@@ -81,7 +81,6 @@ function aiFleet(teamName, team) {
 				addToFleet(body, type, 1, teamName);
 			}
 		}
-		draw();
 	}
 
 }
@@ -138,13 +137,28 @@ function aiAttack(teamName, team) {
 
 }
 
+function tradePrice(team, resource, count, cap) {
+	var moneyValue = 1000;
+	var variation = 0.1;
+	var multiplier = variation * Math.random() - variation / 2 + 1;
+	var price = count * (multiplier * moneyValue / (teams[team].resources[resource] + 1));
+	price = Math.ceil(price);
+	// When buying, offer only as much as we can afford
+	if (cap) {
+		var max = teams[team].resources["money"];
+		if (price > max) {
+			price = max;
+		}
+	}
+	return price;
+}
+
 function ai() {
 	$.each(teams, function(name, team) {
 		if (name != "player") {
 			aiBuild(name, team);
 			aiFleet(name, team);
 			aiAttack(name, team);
-			draw();
 		}
 	});
 }

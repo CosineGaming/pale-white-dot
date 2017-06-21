@@ -6,7 +6,7 @@
 var names = {
 	"money" : "Money",
 	"water" : "Water",
-	"natural" : "Organic",
+	"natural" : "Organics",
 	"metal" : "Metal",
 	"gas" : "Gas",
 };
@@ -25,7 +25,7 @@ var opResources = {
 var teams = {
 	"player" : {
 		"resources" : {
-			"money" : 60,
+			"money" : 600,
 			"water" : 10,
 			"natural" : 10,
 			"metal" : 10,
@@ -34,7 +34,7 @@ var teams = {
 	},
 	"terran" : {
 		"resources" : {
-			"money" : 100,
+			"money" : 1000,
 			"water" : 60,
 			"natural" : 80,
 			"metal" : 50,
@@ -43,7 +43,7 @@ var teams = {
 	},
 	"mars" : {
 		"resources" : {
-			"money" : 10,
+			"money" : 100,
 			"water" : 6,
 			"natural" : 20,
 			"metal" : 50,
@@ -52,7 +52,7 @@ var teams = {
 	},
 	"rebel" : {
 		"resources" : {
-			"money" : 2,
+			"money" : 20,
 			"water" : 10,
 			"natural" : 10,
 			"metal" : 20,
@@ -61,7 +61,7 @@ var teams = {
 	},
 	"gas" : {
 		"resources" : {
-			"money" : 200,
+			"money" : 2000,
 			"water" : 5,
 			"natural" : 2,
 			"metal" : 10,

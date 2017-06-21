@@ -59,8 +59,19 @@ h3 {
 }
 
 input {
-	background-color: var(--color);
-	color: var(--bg-color);
+	background-color: var(--bg-color);
+	color: var(--color);
+	height: 30px;
+	width: 50px;
+	border: 1px solid var(--color);
+	/* Allow selection; disabled because web-app */
+	-webkit-touch-callout: text; /* iOS Safari */
+	  -webkit-user-select: text; /* Safari */
+	   -khtml-user-select: text; /* Konqueror HTML */
+	     -moz-user-select: text; /* Firefox */
+	      -ms-user-select: text; /* Internet Explorer/Edge */
+	          user-select: text; /* Non-prefixed version, currently
+	                                 supported by Chrome and Opera */
 }
 
 main {
