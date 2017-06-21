@@ -25,6 +25,28 @@ function selectBody(team, selectorFunc) {
 	return randFromList(selected);
 }
 
+function aiTrade(name, team) {
+	var tradeChance = 1/30;
+	if (Math.random() < tradeChance) {
+		var possibleTeams = Object.keys(teams);
+		// Don't select ourselves
+		possibleTeams.splice(possibleTeams.indexOf(name), 1);
+		// Don't select the player
+		possibleTeams.splice(possibleTeams.indexOf("player"), 1);
+		var tradeWith = randFromList(possibleTeams);
+		var give = randFromList(Object.keys(names));
+		var want = randFromList(Object.keys(names));
+		var max = team.resources[give];
+		var tradeMax = teams[tradeWith].resources[want];
+		var otherMax = tradePrice(tradeWith, want, give, tradeMax);
+		if (otherMax < max) {
+			max = otherMax;
+		}
+		var amount = Math.ceil(Math.random() * max);
+		trade(name, tradeWith, give, want, amount);
+	}
+}
+
 function aiBuild(name, team) {
 	if (team.nextBuild) {
 		// Don't build on planets engaged in battle
@@ -145,6 +167,7 @@ function tradePrice(team, givenResource, desiredResource, givenCount) {
 function ai() {
 	$.each(teams, function(name, team) {
 		if (name != "player") {
+			aiTrade(name, team);
 			aiBuild(name, team);
 			aiFleet(name, team);
 			aiAttack(name, team);

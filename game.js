@@ -253,30 +253,10 @@ function attack(team, body)
 
 function trade(from, to, fromResource, toResource, fromCount, toCount)
 {
-	if (typeof toCount == undefined) {
+	if (typeof toCount == "undefined") {
 		toCount = tradePrice(to, fromResource, toResource, fromCount);
 	}
 	var success = true;
-	// if (teams[from].resources[fromResource] < fromCount)
-	// {
-	// 	success = false;
-	// 	if (from == "player") {
-	// 		eventMessage("Insufficient " + names[fromResource]);
-	// 	}
-	// 	else if (to == "player") {
-	// 		eventMessage(teamNames[from] + " has insufficient " + names[resource]);
-	// 	}
-	// }
-	// if (teams[to].resources[toResource] < toCount)
-	// {
-	// 	success = false;
-	// 	if (to == "player") {
-	// 		eventMessage("Insufficient funds")
-	// 	}
-	// 	else if (from == "player") {
-	// 		eventMessage(teamNames[to] + " has insufficient funds");
-	// 	}
-	// }
 	if (success) {
 		teams[from].resources[fromResource] -= fromCount;
 		teams[to  ].resources[fromResource] += fromCount;
