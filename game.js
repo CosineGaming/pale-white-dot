@@ -656,9 +656,38 @@ function drawUpdate()
 	var sortedByPower = Object.keys(teams).sort(function(a, b) {
 		return totalResources(teams[b]) - totalResources(teams[a]);
 	});
+	if (sortedByPower[0] == "player" && !teams["player"].dismissedWin) {
+		$("#win-screen").show();
+		teams["player"].dismissedWin = true;
+	}
 	drawList(null, "factions", function(index, name) {
-		return teamNames[name] + " (" + totalResources(teams[name]) + ")";
+		return $("<span>").append(
+				$("<a>").append(teamNames[name]).click(function() {
+					focusTeam(name);
+				})
+			).append(" (" + totalResources(teams[name]) + ")");
 	}, sortedByPower);
+}
+
+function focusTeam(team)
+{
+	var bestBody;
+	var bodyResources = 0;
+	bodies(function(body, name) {
+		if (body.owner == team) {
+			var totalResources = 0;
+			$.each(body.resources, function(resource, count) {
+				totalResources += getMultiplied(body.built, resource, count);
+			});
+			if (totalResources > bodyResources) {
+				bestBody = name;
+				bodyResources = totalResources;
+			}
+		}
+	});
+	if (bestBody) {
+		window.location.hash = "#" + bestBody;
+	}
 }
 
 function hashChange()
