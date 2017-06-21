@@ -26,7 +26,7 @@ function selectBody(team, selectorFunc) {
 }
 
 function aiTrade(name, team) {
-	var tradeChance = 1/30;
+	var tradeChance = 1/20;
 	if (Math.random() < tradeChance) {
 		var possibleTeams = Object.keys(teams);
 		// Don't select ourselves
@@ -109,7 +109,7 @@ function aiFleet(teamName, team) {
 
 function aiAttack(teamName, team) {
 
-	var attackChance = 1/60;
+	var attackChance = 1/30;
 	if (team.fleet && !$.isEmptyObject(team.fleet) && Math.random() < attackChance) {
 		if (purchase(teamName, attackCost, 1)) {
 			var toAttack = selectBody(null, function(name, body) {

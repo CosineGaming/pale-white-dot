@@ -86,7 +86,7 @@ var descriptions = {
 	, "natural" : "Organic resources like wood and food. Only found in Earth and controlled habitats"
 };
 
-var planets = {
+var planets = { // We're doing stereotypes here. Fuck science.
 	"mercury" : {
 		"resources" : {
 			"metal" : 10,
@@ -94,23 +94,23 @@ var planets = {
 			"water" : 0,
 			"natural" : 0
 		},
-		"owner" : "terran"
+		"owner" : "rebel"
 	},
 	"venus" : {
 		"resources" : {
 			"metal" : 5,
-			"gas" : 7,
+			"gas" : 3,
 			"water" : 0,
 			"natural" : 0
 		},
 		"owner" : "terran"
 	},
 	"earth" : {
-		"resources" : { // We're doing stereotypes here. Fuck science.
-			"metal" : 4,
+		"resources" : {
+			"metal" : 15,
 			"gas" : 1,
 			"water" : 20,
-			"natural" : 10
+			"natural" : 15
 		},
 		"owner" : "terran"
 	},
@@ -118,15 +118,15 @@ var planets = {
 		"resources" : {
 			"metal" : 20,
 			"gas" : 1,
-			"water" : 5,
-			"natural" : 1
+			"water" : 8,
+			"natural" : 8
 		},
 		"owner" : "mars"
 	},
 	"jupiter" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 50,
+			"gas" : 40,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -135,7 +135,7 @@ var planets = {
 	"saturn" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 40,
+			"gas" : 30,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -144,7 +144,7 @@ var planets = {
 	"uranus" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 20,
+			"gas" : 10,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -153,7 +153,7 @@ var planets = {
 	"neptune" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 10,
+			"gas" : 8,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -169,7 +169,7 @@ planets["earth"].moons = {
 			"metal" : 4,
 			"gas" : 1,
 			"water" : 2,
-			"natural" : 2
+			"natural" : 4
 		},
 		"owner" : "player"
 	}
@@ -269,14 +269,16 @@ planets["uranus"].moons = {
 // Breaking standards here with the capitalized names
 var buildable = {
 	"Starship" : {
-		"metal" : 500,
-		"water" : 50,
-		"natural" : 75
+		"metal" : 3000,
+		"gas" : 1000,
+		"water" : 600,
+		"natural" : 1000
 	},
 	"Fighter" : {
-		"metal" : 100,
-		"water" : 20,
-		"natural" : 15
+		"metal" : 500,
+		"gas" : 200,
+		"water" : 500,
+		"natural" : 50
 	},
 	"Planetary Defense" : {
 		"metal" : 200,
@@ -311,7 +313,9 @@ var buildable = {
 };
 
 var attackCost = {
-	"gas" : 200,
+	"gas" : 5000,
+	"water" : 800,
+	"natural" : 300
 };
 
 var buildMultipliers = {
