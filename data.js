@@ -22,53 +22,7 @@ var opResources = {
 	"gas" : 10000,
 }
 
-var teams = {
-	"player" : {
-		"resources" : {
-			"money" : 600,
-			"water" : 10,
-			"natural" : 10,
-			"metal" : 10,
-			"gas" : 10,
-		}
-	},
-	"terran" : {
-		"resources" : {
-			"money" : 1000,
-			"water" : 60,
-			"natural" : 80,
-			"metal" : 50,
-			"gas" : 5
-		}
-	},
-	"mars" : {
-		"resources" : {
-			"money" : 100,
-			"water" : 6,
-			"natural" : 20,
-			"metal" : 50,
-			"gas" : 20
-		}
-	},
-	"rebel" : {
-		"resources" : {
-			"money" : 20,
-			"water" : 10,
-			"natural" : 10,
-			"metal" : 20,
-			"gas" : 50
-		}
-	},
-	"gas" : {
-		"resources" : {
-			"money" : 2000,
-			"water" : 5,
-			"natural" : 2,
-			"metal" : 10,
-			"gas" : 500
-		}
-	}
-};
+var teams = {};
 
 var teamNames = {
 	"player" : "Lunar Federation (you)",

@@ -738,6 +738,19 @@ function hashChange()
 function init()
 {
 
+	// Initialize the team objects
+	var startingMoney = 500 + 1;
+	var startingResource = 0;
+	$.each(teamNames, function(team, _) {
+		teams[team] = {};
+		teams[team].resources = {};
+		$.each(names, function(resource, _) {
+			teams[team].resources[resource] = startingResource;
+		});
+		teams[team].resources["money"] = startingMoney;
+	});
+	teams["player"].resources["money"] -= 1; // So we don't win right off
+
 	setInterval(update, 1000);
 
 	var debug = false;
