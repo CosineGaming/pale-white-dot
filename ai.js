@@ -137,20 +137,9 @@ function aiAttack(teamName, team) {
 
 }
 
-function tradePrice(team, resource, count, cap) {
-	var moneyValue = 1000;
-	var variation = 0.1;
-	var multiplier = variation * Math.random() - variation / 2 + 1;
-	var price = count * (multiplier * moneyValue / (teams[team].resources[resource] + 1));
-	price = Math.ceil(price);
-	// When buying, offer only as much as we can afford
-	if (cap) {
-		var max = teams[team].resources["money"];
-		if (price > max) {
-			price = max;
-		}
-	}
-	return price;
+function tradePrice(team, givenResource, desiredResource, givenCount) {
+	var price = givenCount * teams[team].resources[desiredResource] / (teams[team].resources[givenResource] + 1);
+	return Math.ceil(price);
 }
 
 function ai() {

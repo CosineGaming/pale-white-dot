@@ -37,7 +37,7 @@
 				</div>
 			</div>
 			<h2 id="focused-label" class="ghost"></h2>
-			<h3 class="team-label"></h3>
+			<h3 id="team-label"></h3>
 			<a id="back">&lt;<img id="back-img" /><span
 					id="back-fallback"></span></a>
 			<div id="attacking-display" class="ghost">
@@ -75,21 +75,19 @@
 			</div>
 			<div id="not-owned-menu">
 				<h3><a id="attack">Attack</a></h3>
-				<h3><span class="team-label"></span>'s resources</h3>
+				<h3><span id="trade-team-label"></span>'s resources</h3>
 				<ul id="trade-resources"></ul>
 				<div id="trade">
-					<h3>Sell:</h3>
-					-<input type="number" id="sell-count" value="10" step="5" />
-					<select id="sell-resource" class="resource-select">
-					</select>
-					<p>+$<span id="sell-price"></span></p>
-					<a id="sell" onclick="sell();">Sell</a>
-					<h3>Buy:</h3>
-					+<input type="number" id="buy-count" value="10" step="5" />
-					<select id="buy-resource" class="resource-select">
-					</select>
-					<p>-$<span id="buy-price"></span></p>
-					<a id="buy" onclick="buy()">Buy</a>
+					<h3>Trade:</h3>
+					<label for="give-count">I will give:</label><br />
+					<input type="number" id="give-count" value="10" step="5" />
+					<select id="give-resource" class="resource-select">
+					</select><br />
+					<label for="want-count">for:</label><br />
+					<input type="number" id="want-count" value="10" step="5" />
+					<select id="want-resource" class="resource-select">
+					</select><br />
+					<a id="trade" onclick="playerTrade()">Trade</a>
 				</div>
 			</div>
 		</div>

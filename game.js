@@ -54,10 +54,10 @@ function purchase(team, cost, count)
 
 function eventMessage(text, fade, classes)
 {
-	if (!fade) {
+	if (typeof fade == "undefined") {
 		fade = 3000;
 	}
-	if (!classes) {
+	if (typeof classes == "undefined") {
 		classes = "red";
 	}
 	$("#interaction-sidebar").append(
@@ -251,90 +251,106 @@ function attack(team, body)
 
 }
 
-function trade(from, to, resource, count, price)
+function trade(from, to, fromResource, toResource, fromCount, toCount)
 {
-	if (typeof price == undefined) {
-		price = tradePrice(from, resource, count);
+	if (typeof toCount == undefined) {
+		toCount = tradePrice(to, fromResource, toResource, fromCount);
 	}
-	var fromResources = teams[from].resources;
-	var toResources = teams[to].resources;
 	var success = true;
-	if (teams[from].resources[resource] < count)
-	{
-		success = false;
-		if (from == "player") {
-			eventMessage("Insufficient " + names[resource]);
-		}
-		else if (to == "player") {
-			eventMessage(teamNames[from] + " has insufficient " + names[resource]);
-		}
-	}
-	if (teams[to].resources["money"] < price)
-	{
-		success = false;
-		if (to == "player") {
-			eventMessage("Insufficient funds")
-		}
-		else if (from == "player") {
-			eventMessage(teamNames[to] + " has insufficient funds");
-		}
-	}
+	// if (teams[from].resources[fromResource] < fromCount)
+	// {
+	// 	success = false;
+	// 	if (from == "player") {
+	// 		eventMessage("Insufficient " + names[fromResource]);
+	// 	}
+	// 	else if (to == "player") {
+	// 		eventMessage(teamNames[from] + " has insufficient " + names[resource]);
+	// 	}
+	// }
+	// if (teams[to].resources[toResource] < toCount)
+	// {
+	// 	success = false;
+	// 	if (to == "player") {
+	// 		eventMessage("Insufficient funds")
+	// 	}
+	// 	else if (from == "player") {
+	// 		eventMessage(teamNames[to] + " has insufficient funds");
+	// 	}
+	// }
 	if (success) {
-		teams[from].resources[resource] -= count;
-		teams[to  ].resources[resource] += count;
-		teams[from].resources["money"]  += price;
-		teams[to  ].resources["money"]  -= price;
+		teams[from].resources[fromResource] -= fromCount;
+		teams[to  ].resources[fromResource] += fromCount;
+		teams[from].resources[toResource]  += toCount;
+		teams[to  ].resources[toResource]  -= toCount;
+		drawUpdate();
+		return true;
 	}
-	drawUpdate();
+	return false;
 }
 
 function playerTrade(type)
 {
-	var resource = $("#" + type + "-resource").val();
-	var count = parseInt($("#" + type + "-count").val());
-	var price = parseInt($("#" + type + "-price").html());
+	var giveResource = $("#give-resource").val();
+	var wantResource = $("#want-resource").val();
+	var giveCount = parseInt($("#give-count").val());
+	var wantCount = parseInt($("#want-count").val());
 	var focusedBodyObj = getBody(focusedBody);
-	var from = focusedBodyObj.owner;
-	var to = "player";
-	if (type == "sell") {
-		to = from;
-		from = "player";
-	}
-	trade(from, to, resource, count, price);
+	var from = "player";
+	var to = focusedBodyObj.owner;
+	trade(from, to, giveResource, wantResource, giveCount, wantCount);
+	eventMessage("Successfully traded " + giveCount + " " + names[giveResource] + " for " + wantCount + " " + names[wantResource], 3000, "");
 	updatePrices();
 }
 
 function buy()  { playerTrade("buy");  }
 function sell() { playerTrade("sell"); }
 
-function updatePrices()
+function updatePrices(e, type)
 {
 	var focusedBodyObj = getBody(focusedBody);
 	if (focusedBodyObj) {
-		$.each(["buy", "sell"], function(_, type) {
-			var resource = $("#" + type + "-resource").val();
-			var count = $("#" + type + "-count").val()
-			var price = tradePrice(focusedBodyObj.owner, resource, count, type == "sell");
-			$("#" + type + "-price").html(price);
-		});
-		var resource = $("#sell-resource").val();
-		var available = teams["player"].resources[resource];
-		if ($("#sell-count").val() > available) {
-			$("#sell-count").val(available);
-			eventMessage("Cannot sell more " + names[resource]);
+		var type = "give";
+		var other = "want";
+		// If we change the resource, then change the same field rather than the other
+		if ((e && (e.target.id == "give-resource" || e.target.id == "want-count")) || (type && type == "want")) {
+			type = "want";
+			other = "give";
 		}
-		var price = parseInt($("#buy-price").html());
-		available = teams["player"].resources["money"];
-		if (price > available) {
-			var count = $("#buy-count").val();
-			var resource = $("#buy-resource").val();
-			while (price > available) {
-				price = tradePrice(focusedBodyObj.owner, resource, count);
-				count -= 1;
+		var resource      = $("#" + type  + "-resource");
+		var otherResource = $("#" + other + "-resource");
+		var count         = $("#" + type  + "-count");
+		var otherCount    = $("#" + other + "-count");
+		var price = tradePrice(focusedBodyObj.owner, resource.val(), otherResource.val(), parseInt(count.val()));
+		otherCount.val(price);
+
+		var wantResource = resource;
+		var giveResource = otherResource;
+		var wantCount = count;
+		var giveCount = otherCount;
+		if (type == "give") {
+			// Changed the give value, other is want
+			wantResource = otherResource;
+			giveResource = resource;
+			wantCount = otherCount;
+			giveCount = count;
+		}
+		var wantMax = teams[focusedBodyObj.owner].resources[wantResource.val()];
+		if (parseInt(wantCount.val()) > wantMax) {
+			if (e) { // If this was called from an event
+				eventMessage(teamNames[focusedBodyObj.owner] + " doesn't have " + wantCount.val() + " " + names[wantResource.val()]);
 			}
-			$("#buy-count").val(count);
-			$("#buy-price").html(price);
-			eventMessage("Cannot afford more " + names[$("#buy-resource").val()]);
+			wantCount.val(wantMax);
+			var price = tradePrice(focusedBodyObj.owner, wantResource.val(), giveResource.val(), parseInt(wantCount.val()));
+			giveCount.val(price)
+		}
+		var giveMax = teams["player"].resources[giveResource.val()];
+		if (parseInt(giveCount.val()) > giveMax) {
+			if (e) {
+				eventMessage("You do not have " + giveCount.val() + " " + names[giveResource.val()]);
+			}
+			giveCount.val(giveMax);
+			var price = tradePrice(focusedBodyObj.owner, giveResource.val(), wantResource.val(), parseInt(giveCount.val()));
+			wantCount.val(price)
 		}
 	}
 }
@@ -390,9 +406,7 @@ function drawOnce()
 
 	// Render drop-downs for trading
 	$.each(names, function(key, value) {
-		if (key != "money") {
-			$(".resource-select").append($("<option>").attr("value", key).append(value));
-		}
+		$(".resource-select").append($("<option>").attr("value", key).append(value));
 	});
 
 }
@@ -487,11 +501,12 @@ function draw()
 		var label = "Unclaimed";
 		if (focusedBodyObj.hasOwnProperty("owner")) {
 			label = teamNames[focusedBodyObj.owner];
+			$("#trade-team-label").html(label);
 		}
 		if (attacking) {
 			label += " (Contested!)";
 		}
-		$(".team-label").html(label);
+		$("#team-label").html(label);
 	}
 	else {
 		$("#owned-menu").hide();
