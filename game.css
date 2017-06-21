@@ -149,6 +149,17 @@ main {
 	color: #196aff;
 }
 
+#win-screen, #lose-screen {
+	position: absolute;
+	display: none;
+	width: 40%;
+	padding: 75px;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	top: 40px;
+}
+
 #attacking-display {
 	width: 380px;
 	display: none;

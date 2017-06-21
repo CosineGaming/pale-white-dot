@@ -458,13 +458,22 @@ function draw()
 
 	// Make sure the owned bodies is up to date TODO: Move?
 	$("#owned").empty();
+	var lost = true;
 	bodies(function(body, name) {
 		if (body.owner == "player") {
 			$("#owned").append($("<li>").append(
-						$("<a>").attr("href", "#" + name).append(name.capitalize())
-						));
+				$("<a>").attr("href", "#" + name).append(name.capitalize())
+				));
+			lost = false;
 		}
 	});
+	// If we have a fleet, we could still potentially take a planet
+	if (!$.isEmptyObject(fleet)) {
+		lost = false;
+	}
+	if (lost) {
+		$("#lose-screen").show();
+	}
 
 	// Display appropriate interaction menu
 	var focusedBodyObj = getBody(focusedBody);

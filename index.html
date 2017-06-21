@@ -91,6 +91,27 @@
 				</div>
 			</div>
 		</div>
+		<div id="win-screen" class="ghost">
+			<h2>You win!</h2>
+			<p>
+				You are now the dominant power in the solar system, controlling
+				considerable resources, geopolitical power, and military might.
+			</p><br />
+			<a onclick="$('#win-screen').hide();">Keep playing</a>
+		</div>
+		<div id="lose-screen" class="ghost">
+			<h2>You lose!</h2>
+			<p>
+				You have no planet, no moon, not even a military on which
+				to rest your power. You are sailing a lonely ship in a Solar
+				System that you now have no power in.
+			</p>
+			<p>
+				Maybe next time you should take the time to ensure your moon is
+				well-protected before the others decide to torch it.
+			</p><br />
+			<a onclick="window.location.reload();">Restart</a>
+		</div>
 		<p class="tooltip" id="fleet-tooltip">Click to add to fleet. You can use your fleet
 			to attack another planet.</p>
 		<p class="tooltip" id="fleet-tooltip-back">Click to add to planet. You
