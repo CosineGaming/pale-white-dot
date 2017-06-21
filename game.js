@@ -226,10 +226,12 @@ function attack(team, body)
 
 	if (!team || !body) { // Displayed, frame-by-frame
 		if (teams.player.fleet && !$.isEmptyObject(teams.player.fleet)) {
-			team = "player";
-			attacking = true;
-			$("#attacking-display").show();
-			graphicalAttackFrame();
+			if (purchase("player", attackCost)) {
+				team = "player";
+				attacking = true;
+				$("#attacking-display").show();
+				graphicalAttackFrame();
+			}
 		}
 		else {
 			$("#not-owned-menu").append(
@@ -379,9 +381,7 @@ function drawOnce()
 	)).append(costList(attackCost, "attack"));
 	$("#not-owned-menu").append(tooltip);
 	addTooltip($("#attack"), tooltip).click(function() {
-		if (purchase("player", attackCost)) {
-			attack();
-		}
+		attack();
 	});
 
 	// Render drop-downs for trading
