@@ -738,6 +738,13 @@ function hashChange()
 function init()
 {
 
+	// Initialize preload for all images
+	bodies(function(_, name) {
+		if (name in availImgs) {
+			$("<img>").attr("src", "assets/" + name + ".png");
+		}
+	});
+
 	// Initialize the team objects
 	var startingMoney = 500 + 1;
 	var startingResource = 0;
