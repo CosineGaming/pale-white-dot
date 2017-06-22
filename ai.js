@@ -160,7 +160,9 @@ function aiAttack(teamName, team) {
 }
 
 function tradePrice(team, givenResource, desiredResource, givenCount) {
-	var price = givenCount * (teams[team].resources[desiredResource] + 1) / (teams[team].resources[givenResource] + 1);
+	// We use math.max(1,n) because not divide by zero, and not provide resources for free.
+	// We use instead of +1 because a) it makes it so it's usually acurrate, and because it might be -1 (bug)
+	var price = givenCount * Math.max(1, teams[team].resources[desiredResource]) / Math.max(1, teams[team].resources[givenResource] + 1);
 	return Math.ceil(price);
 }
 
