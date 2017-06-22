@@ -160,7 +160,7 @@ function aiAttack(teamName, team) {
 }
 
 function tradePrice(team, givenResource, desiredResource, givenCount) {
-	var price = givenCount * teams[team].resources[desiredResource] / (teams[team].resources[givenResource] + 1);
+	var price = givenCount * (teams[team].resources[desiredResource] + 1) / (teams[team].resources[givenResource] + 1);
 	return Math.ceil(price);
 }
 
