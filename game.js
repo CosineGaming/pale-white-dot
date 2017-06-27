@@ -734,6 +734,8 @@ function hashChange()
 		}
 	}
 
+	document.title = focusedBody.capitalize() + " - Pale White Dot";
+
 	// Update the stars so that it looks like we've moved, not a static background
 	document.body.style.backgroundPosition = Math.random() * 800 + "px " + Math.random() * 800 + "px";
 
@@ -760,6 +762,7 @@ function init()
 			$("<img>").attr("src", "assets/" + name + ".png");
 		}
 	});
+	$("<img>").attr("src", "assets/" + fallbackImg + ".png");
 
 	// Initialize the team objects
 	var startingMoney = 500 + 1;
