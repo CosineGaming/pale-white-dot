@@ -8,6 +8,9 @@ function randFromList(list) {
 
 function selectBuild(team) {
 	var options = Object.keys(buildable);
+	if (teams[team].fleet && !$.isEmptyObject(teams[team].fleet)) {
+		options.push("attack");
+	}
 	teams[team].nextBuild = randFromList(options);
 }
 
@@ -49,6 +52,10 @@ function aiTrade(name, team) {
 
 function aiBuild(name, team) {
 	if (team.nextBuild) {
+		if (team.nextBuild == "attack") {
+			// Attack is managed by aiAttack, which is done whether the attempt to build as attack or not
+			return;
+		}
 		// Don't build on planets engaged in battle
 		var to = selectBody(name, function(name, body) {
 			return !(attacking && name == focusedBody);
@@ -64,7 +71,7 @@ function aiBuild(name, team) {
 
 function aiFleet(teamName, team) {
 
-	var fleetChance = 1/5;
+	var fleetChance = 1/1;
 	if (Math.random() < fleetChance) {
 		var fleetSize = 0;
 		$.each(team.fleet, function(_, count) {
@@ -109,9 +116,12 @@ function aiFleet(teamName, team) {
 
 function aiAttack(teamName, team) {
 
-	var attackChance = 1/30;
+	var attackChance = 1/1;
 	if (team.fleet && !$.isEmptyObject(team.fleet) && Math.random() < attackChance) {
 		if (purchase(teamName, attackCost, 1)) {
+			if (team.nextBuild == "attack") {
+				selectBuild(teamName);
+			}
 			var toAttack = selectBody(null, function(name, body) {
 				return body.owner != teamName;
 			});
