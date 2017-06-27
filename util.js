@@ -108,3 +108,12 @@ function totalResources(obj) {
 	return total;
 }
 
+function ownedBodies(team) {
+	var total = 0;
+	bodies(function(body) {
+		if (body.owner == team) {
+			total++;
+		}
+	});
+	return total;
+}

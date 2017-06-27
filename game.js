@@ -656,19 +656,35 @@ function drawUpdate()
 
 	// Factions might change while viewing one planet
 	var sortedByPower = Object.keys(teams).sort(function(a, b) {
-		return totalResources(teams[b]) - totalResources(teams[a]);
+		// Sort first by bodies, then by resources
+		var bodiesDiff = ownedBodies(b) - ownedBodies(a);
+		var resourcesDiff = 0.9 * (totalResources(teams[b]) > totalResources(teams[a])); // This function is always <1, which makes it a secondary sort to bodies
+		return bodiesDiff + resourcesDiff;
 	});
+	drawList(null, "factions", function(index, name) {
+		var bodyCount = ownedBodies(name);
+		var resources = totalResources(teams[name]);
+		if (resources >= 1000) {
+			resources = Math.floor(resources/1000) + "k"
+		}
+		return $("<span>").append(
+			$("<div>").append(
+				$("<a>").append(teamNames[name]).click(function() {
+					focusTeam(name);
+				})
+			).append(
+				$("<p>").append(bodyCount).append(" bodies, ").append(resources).append(" resources")
+			)
+		);
+	}, sortedByPower);
+
+	// Win condition
+	// TODO: Figure out a better win condition
 	if (sortedByPower[0] == "player" && !teams["player"].dismissedWin) {
 		$("#win-screen").show();
 		teams["player"].dismissedWin = true;
 	}
-	drawList(null, "factions", function(index, name) {
-		return $("<span>").append(
-				$("<a>").append(teamNames[name]).click(function() {
-					focusTeam(name);
-				})
-			).append(" (" + totalResources(teams[name]) + ")");
-	}, sortedByPower);
+
 }
 
 function focusTeam(team)
