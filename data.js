@@ -13,6 +13,8 @@ var names = {
 
 var fleet = {};
 
+var winMargin = 1/2;
+
 // For Debug mode
 var opResources = {
 	"money" : 60000,
@@ -80,7 +82,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	"jupiter" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 40,
+			"gas" : 20,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -89,7 +91,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	"saturn" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 30,
+			"gas" : 15,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -267,7 +269,7 @@ var buildable = {
 };
 
 var attackCost = {
-	"gas" : 5000,
+	"gas" : 2500,
 	"water" : 800,
 	"natural" : 300
 };
