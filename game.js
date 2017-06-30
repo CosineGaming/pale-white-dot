@@ -318,9 +318,7 @@ function init()
 
 	var debug = false;
 	if (debug) {
-		$.each(teams, function(teamName, team) {
-			team.resources = $.extend({}, opResources);
-		});
+		debugResources();
 	}
 
 	drawOnce();
