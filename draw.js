@@ -1,6 +1,7 @@
 // draw.js, includes everything that is exclusively for rendering information to the screen
 // GPLv3
 
+var lastBuiltImages = {};
 
 function drawOnce()
 {
@@ -125,10 +126,12 @@ function drawList(obj, field, formatFunc, overrideList)
 
 function drawBuiltImages(newPlanet)
 {
-	var focusedBodyObj = getBody(focusedBody);
+	return; // Needs work still (TODO)
 	if (newPlanet) {
 		$("#built-images").empty();
+		lastBuiltImages = {};
 	}
+	var focusedBodyObj = getBody(focusedBody);
 	if (!focusedBodyObj) {
 		return;
 	}
@@ -137,11 +140,20 @@ function drawBuiltImages(newPlanet)
 	var width = bodyImg.width();
 	var height = bodyImg.height();
 	$.each(focusedBodyObj.built, function(name, count) {
-		var img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
-		img.css({"z-index": -10});
-		img.css({left: origin.left + Math.random() * width, top: origin.top + Math.random() * height});
-		$("#built-images").append(img);
+		var changedCount = count;
+		if (name in lastBuiltImages) {
+			changedCount = count - lastBuiltImages[name];
+		}
+		for (var i=0; i<changedCount; i++) {
+			var img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
+			img.css({"z-index": -10});
+			img.css({left: origin.left + Math.random() * width, top: origin.top + Math.random() * height});
+			$("#built-images").append(img);
+		}
 	});
+	if (focusedBodyObj.built) {
+		lastBuiltImages = $.extend({}, focusedBodyObj.built);
+	}
 }
 
 function drawNewPlanet()
@@ -172,26 +184,6 @@ function drawNewPlanet()
 
 	updatePrices();
 
-}
-function drawBuiltImages(newPlanet)
-{
-	var focusedBodyObj = getBody(focusedBody);
-	if (newPlanet) {
-		$("#built-images").empty();
-	}
-	if (!focusedBodyObj) {
-		return;
-	}
-	var bodyImg = $("#focused-body");
-	var origin = bodyImg.position();
-	var width = bodyImg.width();
-	var height = bodyImg.height();
-	$.each(focusedBodyObj.built, function(name, count) {
-		var img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
-		img.css({"z-index": -10});
-		img.css({left: origin.left + Math.random() * width, top: origin.top + Math.random() * height});
-		$("#built-images").append(img);
-	});
 }
 
 function drawNewPlanet()
