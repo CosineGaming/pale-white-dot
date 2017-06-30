@@ -149,15 +149,18 @@ main {
 	color: #196aff;
 }
 
-.ship {
+.build-img {
+	width: 60px;
+}
+
+.stack {
 	position: relative;
 	display: block;
 }
 
-
-.ship img {
+.stack img {
 	position: absolute;
-	width: 90px;
+	width: 60px;
 	-webkit-filter: drop-shadow(-3px -3px 3px rgba(1, 2, 8, 1));
 	filter: drop-shadow(-3px -3px 3px rgba(1, 2, 8, 1));
 }
@@ -165,6 +168,21 @@ main {
 .clickable-img {
 	-webkit-filter: drop-shadow(0 0 6px #010208);
 	filter: drop-shadow(0 0 6px #6de2ed);
+	cursor: pointer;
+}
+
+.owned-body-img {
+	height: 20px;
+	margin-right: 5px;
+}
+
+/* #built-images { */
+/* 	width: 100%; */
+/* 	height: 100%; */
+/* } */
+
+#built-images img {
+	position: absolute;
 }
 
 #win-screen, #lose-screen {

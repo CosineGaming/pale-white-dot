@@ -9,12 +9,17 @@ function drawOnce()
 	// Initialize build menu based on data.js, to be hidden and shown whenever
 	$.each(buildable, function(item, cost) {
 		var tooltip = $("<div>").append($("<p>").append(buildDescriptions[item]));
-		tooltip.append(costList(cost, item.replace(" ", "-")));
+		var itemId = item.replace(" ", "-");
+		tooltip.append(costList(cost, itemId));
 		$("#build-menu").append(tooltip);
 		var max = getMaxBuyable(teams["player"].resources, cost);
-		$("#build-menu").append($("<li>").attr("id", "max-" + item.replace(" ", "-")).append(
-			addTooltip($("<a>"), tooltip).click(function() { build(item); } ).append(item)
-		));
+		$("#build-menu").append(
+			addTooltip($("<li>"), tooltip).attr("id", "max-" + itemId).append(
+				$("<img>").attr("src", "assets/" + itemId + ".png").addClass("build-img clickable-img").click(function() { build(item); } )
+			).append($("<br />")).append(
+				$("<a>").append(item).click(function() { build(item); } )
+			)
+		);
 	});
 	var tooltip = $("<div>").append($("<p>").append(
 		"Attack with your current constructed fleet."
@@ -60,6 +65,28 @@ function costList(cost, idPrepend)
 	return list;
 }
 
+// Get the stacking images effect seen on defenses / contains
+function stackImages(element, name, count)
+{
+	var e = element;
+	e.addClass("stack");
+	var offset = 6;
+	var stackSize = Math.min(count, 5);
+	var img; // We put it here so it doesn't fall out of scope and we can use it for padding-top later
+	for (var i=0; i<stackSize; i++) {
+		img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
+		img.css({left: i * offset, top: i * offset});
+		e.append(img);
+	}
+	var scale = 2; // TODO: Find a way to use jQuery to load to not make this a pain
+	e.append(
+		$("<p>").append(count + " " + name + (count > 1 ? "s" : "")).css(
+			{"padding-top": scale * img.get(0).height + stackSize*offset}
+		)
+	);
+	return e;
+}
+
 // Returns an element for a ship on a body on in your fleet
 // Appropriately links to addToFleet / etc if needed
 function shipElement(name, count, focusedBodyObj, addToBody)
@@ -81,22 +108,7 @@ function shipElement(name, count, focusedBodyObj, addToBody)
 			addToFleet(focusedBodyObj, name, addToBody ? -1 : 1);
 		});
 	}
-	e.addClass("ship");
-	var startY = 0;
-	var offset = 6;
-	var stackSize = Math.min(count, 5);
-	for (var i=0; i<stackSize; i++) {
-		var img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
-		e.children("p").css({"padding-top": 60});
-		img.on("load", function() {
-			e.children("p").css({"padding-top": img.height() + stackSize*offset});
-		});
-		img.css({left: i * offset, top: startY + i * offset});
-		e.append(img);
-	}
-	e.append(
-		$("<p>").append(count + " " + name + (count > 1 ? "s" : ""))
-	);
+	stackImages(e, name, count);
 	return e;
 }
 
@@ -221,13 +233,18 @@ function drawNewOwner()
 
 	checkLost();
 
-	// Make sure the owned bodies is up to date TODO: Move?
+	// Make sure the owned bodies is up to date
 	$("#owned").empty();
 	bodies(function(body, name) {
 		if (body.owner == "player") {
-			$("#owned").append($("<li>").append(
-				$("<a>").attr("href", "#" + name).append(name.capitalize())
-			));
+			var link = $("<a>");
+			if (name in availImgs) {
+				link.append(
+					$("<img>").attr("src", "assets/" + name + ".png").addClass("owned-body-img clickable-img")
+				);
+			}
+			link.attr("href", "#" + name).append(name.capitalize());
+			$("#owned").append($("<li>").append(link));
 		}
 	});
 
@@ -279,7 +296,8 @@ function drawBuilt()
 	drawList(focusedBodyObj, "built", function(name, count) {
 		if (!(name in ships))
 		{
-			return builtString(name, count);
+			var e = $("<div>");
+			return stackImages($("<div>"), name, count);
 		}
 		else {
 			return false;
@@ -290,20 +308,18 @@ function drawBuilt()
 	// We talk about a `defenses` object so it puts it in the right list
 	// But really we're just taking selectively from `built`
 	// We have to wrap in if because we're not using drawList to access focusedBodyObj TODO: Fix; refactor completely
-	if (focusedBodyObj) {
-		drawList(null, "defenses", function(name, count) {
-			if (name in ships) {
-				entry = shipElement(name, count, focusedBodyObj);
-				if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
-					shipInList = true;
-				}
-				return entry;
+	drawList(null, "defenses", function(name, count) {
+		if (name in ships) {
+			entry = shipElement(name, count, focusedBodyObj);
+			if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
+				shipInList = true;
 			}
-			else {
-				return false;
-			}
-		}, focusedBodyObj.built);
-	}
+			return entry;
+		}
+		else {
+			return false;
+		}
+	}, focusedBodyObj ? focusedBodyObj.built : undefined);
 	// Add all to fleet link
 	if (shipInList && focusedBodyObj.owner == "player") {
 		$("#l-defenses ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
