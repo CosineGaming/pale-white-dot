@@ -159,7 +159,7 @@ function aiAttack(teamName, team) {
 				}
 			}
 			if (outcomeText) {
-				$("#status-sidebar").append(outcomeText.delay(8000).fadeOut(2000, function() {
+				$("#status-sidebar").append(outcomeText.delay(12000).fadeOut(2000, function() {
 					$(this).remove();
 				}));
 			}
