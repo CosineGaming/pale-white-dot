@@ -163,7 +163,9 @@ function aiAttack(teamName, team) {
 					$(this).remove();
 				}));
 			}
-			draw();
+			if (toAttack == focusedBody || oldOwner == "player") {
+				drawNewOwner();
+			}
 		}
 	}
 

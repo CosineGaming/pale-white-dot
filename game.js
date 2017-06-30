@@ -85,7 +85,7 @@ function build(name, team, toBody, count)
 		var body = getBody(toBody);
 		incrementOrOne(objOrCreate(body, "built"), name, count);
 		if (focusedBody == toBody) {
-			draw();
+			drawBuilt();
 		}
 		return true;
 	}
@@ -216,8 +216,10 @@ function graphicalAttackFrame() {
 	if (attackFrame()) {
 		attacking = false;
 		$("#attacking-display").hide();
+		drawNewOwner();
 	}
-	draw();
+	drawFleet();
+	drawBuilt();
 
 }
 
@@ -389,6 +391,8 @@ function drawOnce()
 		$(".resource-select").append($("<option>").attr("value", key).append(value));
 	});
 
+	drawUpdate();
+
 }
 
 // I noticed a pattern of drawing a list from a planet object. DRY.
@@ -439,7 +443,8 @@ function addToFleet(from, type, count, team)
 	}
 	$("#fleet-tooltip").hide();
 	$("#fleet-tooltip-back").hide();
-	draw();
+	drawBuilt();
+	drawFleet();
 
 }
 
@@ -481,7 +486,7 @@ function shipElement(name, count, focusedBodyObj, addToBody)
 	return e;
 }
 
-function draw()
+function drawNewPlanet()
 {
 
 	// Update the graphics and image map to the new focus
@@ -489,19 +494,34 @@ function draw()
 	if (!(focusedBody in availImgs)) {
 		imgSrc = fallbackImg;
 	}
+	
 	$("#focused-body").attr("src", "assets/" + imgSrc + ".png");
 	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
 	$("#" + focusedBody + "-map").imageMapResize();
 	$("#focused-label").html(focusedBody.capitalize());
 
-	// Make sure the owned bodies is up to date TODO: Move?
-	$("#owned").empty();
+	var focusedBodyObj = getBody(focusedBody);
+
+	drawList(focusedBodyObj, "moons", function(name, moon) {
+		return $("<a>").attr("href", "#" + name).append(name.capitalize());
+	});
+
+	drawBuiltImages(true);
+
+	drawNewOwner();
+	drawBuilt();
+	drawFleet();
+
+	updatePrices();
+
+}
+
+function checkLost()
+{
+	
 	var lost = true;
 	bodies(function(body, name) {
 		if (body.owner == "player") {
-			$("#owned").append($("<li>").append(
-				$("<a>").attr("href", "#" + name).append(name.capitalize())
-				));
 			lost = false;
 		}
 	});
@@ -512,6 +532,23 @@ function draw()
 	if (lost) {
 		$("#lose-screen").show();
 	}
+
+}
+
+function drawNewOwner()
+{
+
+	checkLost();
+
+	// Make sure the owned bodies is up to date TODO: Move?
+	$("#owned").empty();
+	bodies(function(body, name) {
+		if (body.owner == "player") {
+			$("#owned").append($("<li>").append(
+				$("<a>").attr("href", "#" + name).append(name.capitalize())
+			));
+		}
+	});
 
 	// Display appropriate interaction menu
 	var focusedBodyObj = getBody(focusedBody);
@@ -543,9 +580,14 @@ function draw()
 		$("#trade").hide();
 	}
 
-	drawList(focusedBodyObj, "moons", function(name, moon) {
-		return $("<a>").attr("href", "#" + name).append(name.capitalize());
-	});
+	drawUpdate();
+
+}
+
+function drawBuilt()
+{
+
+	var focusedBodyObj = getBody(focusedBody);
 
 	function builtString(name, count) {
 		return count + " "  + name + (count > 1 ? "s" : "");
@@ -571,7 +613,7 @@ function draw()
 		drawList(null, "defenses", function(name, count) {
 			if (name in ships) {
 				entry = shipElement(name, count, focusedBodyObj);
-				if (focusedBodyObj.owner == "player") {
+				if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
 					shipInList = true;
 				}
 				return entry;
@@ -594,9 +636,21 @@ function draw()
 		)));
 	}
 
+	// Yields: aka Resource accumulation rate
 	drawList(focusedBodyObj, "resources", function(resource, count) {
 		return getMultiplied(focusedBodyObj.built, resource, count) + " " + names[resource] + "/s";
 	});
+
+	drawBuiltImages(false);
+
+}
+
+function drawFleet()
+{
+
+	var focusedBodyObj = getBody(focusedBody);
+
+	checkLost();
 
 	drawList(null, "fleet", function(name, count) {
 		var ship = shipElement(name, count, focusedBodyObj, true)
@@ -614,10 +668,6 @@ function draw()
 			}
 		)));
 	}
-
-	updatePrices();
-
-	drawUpdate();
 
 }
 
@@ -777,7 +827,7 @@ function hashChange()
 		$("#back-fallback").hide();
 	}
 
-	draw();
+	drawNewPlanet();
 
 }
 
@@ -815,7 +865,7 @@ function init()
 	}
 
 	drawOnce();
-	draw();
+	drawNewPlanet();
 
 	// This way must be slower! Why do you do it this way?
 	// The answer is so that the back button functions appropriately.
@@ -828,7 +878,7 @@ function init()
 	// Browser compatibility fallback
 	$("#trade input, #trade select").on("change", updatePrices);
 
-	draw();
+	drawNewPlanet();
 
 }
 
