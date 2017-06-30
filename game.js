@@ -443,6 +443,44 @@ function addToFleet(from, type, count, team)
 
 }
 
+function shipElement(name, count, focusedBodyObj, addToBody)
+{
+	var e = $("<a>");
+	if (name in defenseShips || !focusedBodyObj || focusedBodyObj.owner != "player") {
+		e = $("<div>");
+	}
+	else {
+		// Can be added to fleet
+		e.addClass("clickable-img");
+		if (addToBody) {
+			addTooltip(e, $("#fleet-tooltip-back"));
+		}
+		else {
+			addTooltip(e, $("#fleet-tooltip"));
+		}
+		e.click(function() {
+			addToFleet(focusedBodyObj, name, addToBody ? -1 : 1);
+		});
+	}
+	e.addClass("ship");
+	var startY = 0;
+	var offset = 6;
+	var stackSize = Math.min(count, 5);
+	for (var i=0; i<stackSize; i++) {
+		var img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
+		e.children("p").css({"padding-top": 60});
+		img.on("load", function() {
+			e.children("p").css({"padding-top": img.height() + stackSize*offset});
+		});
+		img.css({left: i * offset, top: startY + i * offset});
+		e.append(img);
+	}
+	e.append(
+		$("<p>").append(count + " " + name + (count > 1 ? "s" : ""))
+	);
+	return e;
+}
+
 function draw()
 {
 
@@ -532,12 +570,9 @@ function draw()
 	if (focusedBodyObj) {
 		drawList(null, "defenses", function(name, count) {
 			if (name in ships) {
-				var entry = builtString(name, count);
-				if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
+				entry = shipElement(name, count, focusedBodyObj);
+				if (focusedBodyObj.owner == "player") {
 					shipInList = true;
-					entry = addTooltip($("<a>"), $("#fleet-tooltip")).click(function() {
-						addToFleet(focusedBodyObj, name);
-					}).append(entry);
 				}
 				return entry;
 			}
@@ -564,15 +599,8 @@ function draw()
 	});
 
 	drawList(null, "fleet", function(name, count) {
-		var ship = addTooltip($("<a>"), $("#fleet-tooltip-back")).append(count + " " + name + (count > 1 ? "s" : ""));
-		if (!focusedBodyObj || focusedBodyObj.owner != "player") {
-			ship.addClass("no-link");
-		}
-		else {
-			ship.click(function() {
-				addToFleet(focusedBodyObj, name, -1);
-			});
-		}
+		var ship = shipElement(name, count, focusedBodyObj, true)
+		addTooltip(ship, $("#fleet-tooltip-back"));
 		return ship;
 	}, teams.player.fleet);
 	if (focusedBodyObj && focusedBodyObj.owner == "player") {

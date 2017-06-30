@@ -149,6 +149,24 @@ main {
 	color: #196aff;
 }
 
+.ship {
+	position: relative;
+	display: block;
+}
+
+
+.ship img {
+	position: absolute;
+	width: 90px;
+	-webkit-filter: drop-shadow(-3px -3px 3px rgba(1, 2, 8, 1));
+	filter: drop-shadow(-3px -3px 3px rgba(1, 2, 8, 1));
+}
+
+.clickable-img {
+	-webkit-filter: drop-shadow(0 0 6px #010208);
+	filter: drop-shadow(0 0 6px #6de2ed);
+}
+
 #win-screen, #lose-screen {
 	position: absolute;
 	display: none;
