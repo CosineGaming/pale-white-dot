@@ -422,6 +422,8 @@ function drawUpdate()
 		drawResourceList("#trade-resources", focusedBodyObj.owner);
 	}
 
+	$("#year").html(beginYear + Math.floor(elapsedTicks / 60));
+
 	// Update the glow on the attack button if we can attack
 	if (teams["player"].fleet && !$.isEmptyObject(teams["player"].fleet) && getMaxBuyable(teams["player"].resources, attackCost) > 0) {
 		$("#attack img").addClass("clickable-img");

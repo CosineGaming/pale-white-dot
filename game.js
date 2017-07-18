@@ -6,6 +6,8 @@ var focusedBody = "solar-system";
 
 var fallbackImg = "fallback";
 
+var elapsedTicks = 0;
+
 // Called when incrementals update
 function update()
 {
@@ -20,6 +22,8 @@ function update()
 	if (attacking) {
 		graphicalAttackFrame();
 	}
+
+	elapsedTicks += 1;
 
 	drawUpdate();
 }

@@ -3,6 +3,8 @@
 // ld-38
 // GPL3
 
+var beginYear = 2582;
+
 var names = {
 	"money" : "Money",
 	"water" : "Water",
