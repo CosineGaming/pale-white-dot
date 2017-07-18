@@ -7,11 +7,30 @@ function randFromList(list) {
 }
 
 function selectBuild(team) {
+
+	// If we have undefended planets, always defend them
+	var defending = false;
+	teams[team].nextBuildBody = null;
+	bodies(function(body, name) {
+		if (body.owner == team) {
+			if (!body.built || !("Planetary Defense" in body.built)) {
+				teams[team].nextBuildBody = name;
+				teams[team].nextBuild = "Planetary Defense";
+				defending = true;
+			}
+		}
+	});
+	if (defending) {
+		return;
+	}
+
+	// Otherwise pick randomly
 	var options = Object.keys(buildable);
 	if (teams[team].fleet && !$.isEmptyObject(teams[team].fleet)) {
 		options.push("attack");
 	}
 	teams[team].nextBuild = randFromList(options);
+
 }
 
 // Returns a random body for which selectorFunc(name, body) returns true
