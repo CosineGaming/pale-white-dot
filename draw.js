@@ -175,10 +175,15 @@ function drawBuiltImages(newPlanet)
 function drawNewPlanet()
 {
 
+	var focusedBodyObj = getBody(focusedBody);
+
 	// Update the graphics and image map to the new focus
 	var imgSrc = focusedBody;
 	if (!(focusedBody in availImgs)) {
 		imgSrc = fallbackImg;
+	}
+	if (focusedBodyObj && focusedBodyObj.nuked) {
+		imgSrc = "nuked";
 	}
 
 	// The status text prevents clicking on stuff, which sucks on the solar system
@@ -193,8 +198,6 @@ function drawNewPlanet()
 	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
 	$("#" + focusedBody + "-map").imageMapResize();
 	$("#focused-label").html(focusedBody.capitalize());
-
-	var focusedBodyObj = getBody(focusedBody);
 
 	drawList(focusedBodyObj, "moons", function(name, moon) {
 		return $("<a>").attr("href", "#" + name).append(name.capitalize());
@@ -234,7 +237,7 @@ function drawNewOwner()
 
 	// Display appropriate interaction menu
 	var focusedBodyObj = getBody(focusedBody);
-	if (focusedBodyObj) {
+	if (focusedBodyObj && !focusedBodyObj.nuked) {
 		if (focusedBodyObj.hasOwnProperty("owner") && focusedBodyObj.owner == "player") {
 			$("#owned-menu").show();
 			$("#not-owned-menu").hide();
@@ -277,52 +280,59 @@ function drawBuilt()
 		return count + " "  + name + (count > 1 ? "s" : "");
 	}
 
-	// We split `built` rendering into civilian & military for UI ease
-	// Civilian structures
-	drawList(focusedBodyObj, "built", function(name, count) {
-		if (!(name in ships))
-		{
-			var e = $("<div>");
-			return stackImages($("<div>"), name, count);
-		}
-		else {
-			return false;
-		}
-	});
-	// Military structures
-	var shipInList = false;
-	// We talk about a `defenses` object so it puts it in the right list
-	// But really we're just taking selectively from `built`
-	// We have to wrap in if because we're not using drawList to access focusedBodyObj TODO: Fix; refactor completely
-	drawList(null, "defenses", function(name, count) {
-		if (name in ships) {
-			entry = shipElement(name, count, focusedBodyObj);
-			if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
-				shipInList = true;
+	if (focusedBodyObj && !focusedBodyObj.nuked) {
+		// We split `built` rendering into civilian & military for UI ease
+		// Civilian structures
+		drawList(focusedBodyObj, "built", function(name, count) {
+			if (!(name in ships))
+			{
+				var e = $("<div>");
+				return stackImages($("<div>"), name, count);
 			}
-			return entry;
-		}
-		else {
-			return false;
-		}
-	}, focusedBodyObj ? focusedBodyObj.built : undefined);
-	// Add all to fleet link
-	if (shipInList && focusedBodyObj.owner == "player") {
-		$("#l-defenses ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
-			function() {
-				$.each(focusedBodyObj.built, function(type, count) {
-					if (type in ships && !(type in defenseShips)) {
-						addToFleet(focusedBodyObj, type, count);
-					}
-				});
+			else {
+				return false;
 			}
-		)));
-	}
+		});
+		// Military structures
+		var shipInList = false;
+		// We talk about a `defenses` object so it puts it in the right list
+		// But really we're just taking selectively from `built`
+		// We have to wrap in if because we're not using drawList to access focusedBodyObj TODO: Fix; refactor completely
+		drawList(null, "defenses", function(name, count) {
+			if (name in ships) {
+				entry = shipElement(name, count, focusedBodyObj);
+				if (focusedBodyObj.owner == "player" && !(name in defenseShips)) {
+					shipInList = true;
+				}
+				return entry;
+			}
+			else {
+				return false;
+			}
+		}, focusedBodyObj ? focusedBodyObj.built : undefined);
+		// Add all to fleet link
+		if (shipInList && focusedBodyObj.owner == "player") {
+			$("#l-defenses ul").append($("<li>").append($("<a>").append("All ships to fleet").click(
+				function() {
+					$.each(focusedBodyObj.built, function(type, count) {
+						if (type in ships && !(type in defenseShips)) {
+							addToFleet(focusedBodyObj, type, count);
+						}
+					});
+				}
+			)));
+		}
 
-	// Yields: aka Resource accumulation rate
-	drawList(focusedBodyObj, "resources", function(resource, count) {
-		return getMultiplied(focusedBodyObj.built, resource, count) + " " + names[resource] + "/s";
-	});
+		// Yields: aka Resource accumulation rate
+		drawList(focusedBodyObj, "resources", function(resource, count) {
+			return getMultiplied(focusedBodyObj.built, resource, count) + " " + names[resource] + "/s";
+		});
+	}
+	else {
+		$("#l-built").hide();
+		$("#l-defenses").hide();
+		$("#l-resources").hide();
+	}
 
 	drawBuiltImages(false);
 
@@ -408,7 +418,7 @@ function drawUpdate()
 	var focusedBodyObj = getBody(focusedBody);
 
 	drawResourceList("#resources", "player");
-	if (focusedBodyObj) {
+	if (focusedBodyObj && !focusedBodyObj.nuked) {
 		drawResourceList("#trade-resources", focusedBodyObj.owner);
 	}
 

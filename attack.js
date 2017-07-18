@@ -20,11 +20,16 @@ function attackFleet(attacker, defender)
 					return false; // Break out of jQuery loop
 				}
 				if (Math.random() < ships[type].killChance) {
-					var attackingType = randFromList(Object.keys(options));
-					if (Math.random() > ships[attackingType].saveChance) { // Is not less than: it WASN'T saved
-						incrementOrOne(toDelete, attackingType);
-						if (toDelete[attackingType] >= defender[attackingType]) {
-							delete options[attackingType];
+					if (type == "Planetary Nuke") {
+						incrementOrOne(toDelete, "nuke");
+					}
+					else {
+						var attackingType = randFromList(Object.keys(options));
+						if (Math.random() > ships[attackingType].saveChance) { // Is not less than: it WASN'T saved
+							incrementOrOne(toDelete, attackingType);
+							if (toDelete[attackingType] >= defender[attackingType]) {
+								delete options[attackingType];
+							}
 						}
 					}
 				}
@@ -55,6 +60,15 @@ function removeCasualties(fromFleet, dead) {
 	return dead;
 }
 
+function nuke(body) {
+	bodyObj = getBody(body);
+	if (bodyObj) {
+		bodyObj.nuked = true;
+		bodyObj.owner = "";
+		bodyObj.resources = {};
+	}
+}
+
 // Attacking happens in one-second frames for  d r a m a t i c   e f f e c t
 // Returns 0 for unresolved, "attacker" for attacker win, and "defender" for defender win
 function attackFrame(team, body)
@@ -64,11 +78,9 @@ function attackFrame(team, body)
 
 	var enemyBody;
 	if (!body) {
-		enemyBody = getBody(focusedBody);
+		body = focusedBody;
 	}
-	else {
-		enemyBody = getBody(body);
-	}
+	enemyBody = getBody(body);
 	var enemy;
 	// Support attacking planets with /nothing/
 	if (enemyBody.built) {
@@ -91,8 +103,22 @@ function attackFrame(team, body)
 
 	// Returning fire
 	var enemyDeaths = attackFleet(attackingFleet, enemy);
+	var ourDeaths = attackFleet(enemy, attackingFleet);
+	// They can't use planetary nukes on us, it makes no sense
+	delete ourDeaths["nuke"];
 	// Attackers don't need returning fire
-	var weDied = removeCasualties(attackingFleet, attackFleet(enemy, attackingFleet));
+	var weDied = removeCasualties(attackingFleet, ourDeaths);
+	// We should resolve our own casualties first, in case we nuke but we lost something still
+	if ("nuke" in enemyDeaths) {
+		nuke(body);
+		// We need to check this in case it was killed otherwise to prevent NaNs
+		if ("Planetary Nuke" in attackingFleet) {
+			// We remove the nuke, because it just fucking blew up
+			removeCasualties(attackingFleet, {"Planetary Nuke" : 1});
+		}
+		drawNewPlanet();
+		return "nuked";
+	}
 	// Apply returning fire
 	var enemyDied = removeCasualties(enemy, enemyDeaths);
 	if (weDied) {

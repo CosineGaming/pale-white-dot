@@ -224,6 +224,12 @@ planets["uranus"].moons = {
 
 // Breaking standards here with the capitalized names
 var buildable = {
+	"Planetary Nuke" : {
+		"metal" : 4000,
+		"gas" : 4000,
+		"water" : 1500,
+		"natural" : 800
+	},
 	"Starship" : {
 		"metal" : 2500,
 		"gas" : 800,
@@ -303,7 +309,11 @@ var ships = {
 	"Planetary Defense" : {
 		"killChance" : 0.6,
 		"saveChance" : 0.9
-	}
+	},
+	"Planetary Nuke" : {
+		"killChance" : 0.3,
+		"saveChance" : 0.6
+	},
 };
 
 // List of ships that are only for defense and cannot be added to fleet
@@ -315,6 +325,7 @@ var buildDescriptions = {
 	"Starship" : "60% chance of hitting, 50% chance of not getting hit.",
 	"Fighter" : "30% chance of hitting, 10% chance of not getting hit.",
 	"Planetary Defense" : "A super powerful tool for keeping a planet in your own hands.",
+	"Planetary Nuke" : "When successful, annihilates an entire planet, and all its defenses.",
 	"Extraction Well" : "Crack into ice and extract frozen or liquid water. Increase water production.",
 	"Mine" : "Mine deep, where the minerals are rich. Increase metal production.",
 	"Skymine" : "Labs that sail in the atmosphere, purifying gas. Increase gas production.",

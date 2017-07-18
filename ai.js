@@ -39,8 +39,10 @@ function selectBody(team, selectorFunc) {
 	var selected = [];
 	bodies(function(body, name) {
 		if (!team || (body.owner && body.owner == team)) {
-			if (!selectorFunc || selectorFunc(name, body)) {
-				selected.push(name);
+			if (!body.nuked) {
+				if (!selectorFunc || selectorFunc(name, body)) {
+					selected.push(name);
+				}
 			}
 		}
 	});
@@ -99,21 +101,18 @@ function aiFleet(teamName, team) {
 		$.each(team.fleet, function(_, count) {
 			fleetSize += count;
 		});
+		var allowNukesChance = 1/(60*5);
+		var allowNukes = Math.random() < allowNukesChance;
 		// Change apparent fleet size subtly to make look less artificial / robotic / intelligent
 		var variation = 0; //fleetSize * 0.3;
 		// Select bodies with more ships than our fleet
 		var bodyName = selectBody(name, function(name, body) {
 			if (body.owner == teamName) {
 				// We want AI to leave at least one ship at home
-				var foundOffense = false;
 				var foundCount = 0;
 				$.each(ships, function(shipType, _) {
 					if (body.built && shipType in body.built) {
 						foundCount += body.built[shipType];
-						if (!(shipType in defenseShips)) {
-							// We can leave behind defense, but we need to bring offense
-							foundOffense = true;
-						}
 					}
 				});
 				return foundCount > fleetSize + variation * Math.random() - variation/2;
@@ -124,7 +123,9 @@ function aiFleet(teamName, team) {
 			var types = [];
 			$.each(ships, function(name, _) {
 				if (name in body.built && !(name in defenseShips)) {
-					types.push(name);
+					if (allowNukes || name != "Planetary Nuke") {
+						types.push(name);
+					}
 				}
 			});
 			type = randFromList(types);
@@ -150,7 +151,8 @@ function aiAttack(teamName, team) {
 			var oldOwner = getBody(toAttack).owner;
 			var outcomeText;
 			var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.capitalize());
-			if (attack(teamName, toAttack) == "attacker") {
+			var outcome = attack(teamName, toAttack);
+			if (outcome == "attacker") {
 				// Place entire fleet on planet. Will reaccumulate fleet through aiFleet over time, smartly
 				$.each(team.fleet, function(type, count) {
 					addToFleet(getBody(toAttack), type, -1 * count, teamName);
@@ -170,7 +172,7 @@ function aiAttack(teamName, team) {
 					outcomeText.addClass("red");
 				}
 			}
-			else {
+			else if (outcome == "defender") {
 				if (oldOwner == "player") {
 					outcomeText = $("<p>").append(
 						"The " + teamNames[oldOwner] + " defended "
@@ -178,6 +180,16 @@ function aiAttack(teamName, team) {
 						" from the " + teamNames[teamName] + "."
 					);
 					outcomeText.addClass("green");
+				}
+			}
+			else if (outcome == "nuked") {
+				outcomeText = $("<p>").append(
+					"The " + teamNames[teamName] + " NUKED "
+				).append(planetLink).append(
+					", previously held by the " + teamNames[oldOwner] + "!"
+				);
+				if (oldOwner == "player") {
+					outcomeText.addClass("red");
 				}
 			}
 			if (outcomeText) {
