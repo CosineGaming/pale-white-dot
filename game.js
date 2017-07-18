@@ -122,6 +122,7 @@ function trade(from, to, fromResource, toResource, fromCount, toCount)
 		teams[to  ].resources[toResource]   -= toCount;
 		if (teams[to].enemies && teams[to].enemies[from]) {
 			teams[from].resources["money"] -= smugglingCost;
+			teams[to  ].resources["money"] += smugglingCost;
 		}
 		drawUpdate();
 		return true;

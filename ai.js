@@ -204,9 +204,9 @@ function aiAttack(teamName, team) {
 }
 
 function tradePrice(team, givenResource, desiredResource, givenCount) {
-	// We use math.max(1,n) because not divide by zero, and not provide resources for free.
-	// We use instead of +1 because a) it makes it so it's usually acurrate, and because it might be -1 (bug)
-	var price = givenCount * Math.max(1, teams[team].resources[desiredResource]) / Math.max(1, teams[team].resources[givenResource] + 1);
+	// This smoothing number makes it so prices do not fluctuate too wildly, allowing for exploitation
+	var smoothing = 500;
+	var price = givenCount * (teams[team].resources[desiredResource] + smoothing) / (teams[team].resources[givenResource] + smoothing);
 	return Math.ceil(price);
 }
 
