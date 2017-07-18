@@ -219,9 +219,9 @@ planets["uranus"].moons = {
 var buildable = {
 	"Planetary Nuke" : {
 		"metal" : 4000,
-		"gas" : 4000,
-		"water" : 1500,
-		"natural" : 800
+		"gas" : 5000,
+		"water" : 2500,
+		"natural" : 1500
 	},
 	"Starship" : {
 		"metal" : 2500,
