@@ -262,6 +262,8 @@ function drawNewOwner()
 		$("#trade").hide();
 	}
 
+	updatePrices();
+
 	drawUpdate();
 
 }
