@@ -122,14 +122,14 @@ function drawList(obj, field, formatFunc, overrideList)
 		obj = {};
 		obj[field] = overrideList;
 	}
-	$("#l-" + field + " ul").empty();
+	$("#l-" + field + " > ul").empty();
 	var hide = true;
 	if (obj && obj.hasOwnProperty(field) && !$.isEmptyObject(obj[field])) {
 		$("#l-" + field).show();
 		$.each(obj[field], function(name, count) {
 			var format = formatFunc(name, count);
 			if (format) {
-				$("#l-" + field + " ul").append($("<li>").append(formatFunc(name, count)));
+				$("#l-" + field + " > ul").append($("<li>").append(formatFunc(name, count)));
 				hide = false;
 			}
 		});
@@ -433,17 +433,28 @@ function drawUpdate()
 		var resourcesDiff = 0.9 * (totalResources(teams[b]) > totalResources(teams[a])); // This function is always <1, which makes it a secondary sort to bodies
 		return bodiesDiff + resourcesDiff;
 	});
+	var tooltipContainer = $("#l-factions .tooltips");
+	tooltipContainer.empty();
 	drawList(null, "factions", function(index, name) {
 		var bodyCount = ownedBodies(name);
 		var resources = totalResources(teams[name]);
+		var tooltip = $("<div>");
+		var bodyList = $("<ul>");
+		bodies(function(body, bodyName) {
+			if (body.owner == name) {
+				bodyList.append($("<li>").append(bodyName.capitalize()));
+			}
+		});
+		tooltip.append(bodyList);
+		tooltipContainer.append(tooltip);
 		if (resources >= 1000) {
 			resources = Math.floor(resources/1000) + "k"
 		}
 		return $("<span>").append(
 			$("<div>").append(
-				$("<a>").append(teamNames[name]).click(function() {
+				addTooltip($("<a>").append(teamNames[name]).click(function() {
 					focusTeam(name);
-				})
+				}), tooltip)
 			).append(
 				$("<p>").append(bodyCount).append(" bodies, ").append(resources).append(" resources")
 			)
