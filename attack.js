@@ -138,10 +138,17 @@ function attack(team, body)
 	if (!team || !body) { // Displayed, frame-by-frame
 		if (teams.player.fleet && !$.isEmptyObject(teams.player.fleet)) {
 			if (purchase("player", attackCost)) {
+				
+				// The DEFENDING team remembers the ATTACKER as an enemy
+				var enemy = getBody(focusedBody).owner;
+				objOrCreate(teams[enemy], "enemies")["player"] = true;
+				eventMessage("The " + teamNames[enemy] + " declared war on you!", 10000, "red", true);
+
 				team = "player";
 				attacking = true;
 				$("#attacking-display").show();
 				graphicalAttackFrame();
+
 			}
 		}
 		else {
@@ -159,6 +166,16 @@ function attack(team, body)
 		}
 	}
 	else {
+		// The DEFENDING team remembers the ATTACKER as an enemy
+		var bodyObj = getBody(body);
+		if (bodyObj.owner) {
+			// They both declare war on each other
+			objOrCreate(teams[bodyObj.owner], "enemies")[team] = true;
+			objOrCreate(teams[team], "enemies")[bodyObj.owner] = true;
+			if (bodyObj.owner == "player") {
+				eventMessage("The " + teamNames[team] + " declared war on you!", 10000, "red", true);
+			}
+		}
 		return resolveAttack(team, body);
 	}
 

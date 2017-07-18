@@ -34,6 +34,9 @@ function drawOnce()
 		$(".resource-select").append($("<option>").attr("value", key).append(value));
 	});
 
+	// Draw the smuggling cost now so we can have it DRY in data.js
+	$("#smuggling-cost").html(smugglingCost);
+
 	drawUpdate();
 
 }

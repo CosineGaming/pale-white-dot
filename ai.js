@@ -198,6 +198,27 @@ function tradePrice(team, givenResource, desiredResource, givenCount) {
 	return Math.ceil(price);
 }
 
+function aiDiplomacy(name, team) {
+	var reAllyChance = 1/(60*5);
+	if (Math.random() < reAllyChance) {
+		options = [];
+		$.each(team.enemies, function(name, isEnemy) {
+			if (isEnemy) {
+				options.push(name);
+			}
+		});
+		var reAlly = randFromList(options);
+		if (reAlly) {
+			team.enemies[reAlly] = false;
+			if (reAlly == "player") {
+				var outcomeText = "The " + teamNames[name] + " is allies with you again.";
+				eventMessage(outcomeText, 5000, "green", true);
+				updatePrices();
+			}
+		}
+	}
+}
+
 function ai() {
 	$.each(teams, function(name, team) {
 		if (name != "player") {
@@ -205,6 +226,7 @@ function ai() {
 			aiBuild(name, team);
 			aiFleet(name, team);
 			aiAttack(name, team);
+			aiDiplomacy(name, team);
 		}
 	});
 }

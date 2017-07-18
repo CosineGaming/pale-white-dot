@@ -111,16 +111,23 @@ function trade(from, to, fromResource, toResource, fromCount, toCount)
 	if (typeof toCount == "undefined") {
 		toCount = tradePrice(to, fromResource, toResource, fromCount);
 	}
-	var success = true;
-	if (success) {
+	if (!teams[to].enemies || !teams[to].enemies[from] || teams[from].resources["money"] > smugglingCost) {
 		teams[from].resources[fromResource] -= fromCount;
 		teams[to  ].resources[fromResource] += fromCount;
-		teams[from].resources[toResource]  += toCount;
-		teams[to  ].resources[toResource]  -= toCount;
+		teams[from].resources[toResource]   += toCount;
+		teams[to  ].resources[toResource]   -= toCount;
+		if (teams[to].enemies && teams[to].enemies[from]) {
+			teams[from].resources["money"] -= smugglingCost;
+		}
 		drawUpdate();
 		return true;
 	}
-	return false;
+	else {
+		if (from == "player") {
+			eventMessage("Insufficient money to pay smugglers.");
+		}
+		return false;
+	}
 }
 
 function playerTrade(type)
@@ -132,9 +139,10 @@ function playerTrade(type)
 	var focusedBodyObj = getBody(focusedBody);
 	var from = "player";
 	var to = focusedBodyObj.owner;
-	trade(from, to, giveResource, wantResource, giveCount, wantCount);
-	eventMessage("Successfully traded " + giveCount + " " + names[giveResource] + " for " + wantCount + " " + names[wantResource], 3000, "");
-	updatePrices();
+	if (trade(from, to, giveResource, wantResource, giveCount, wantCount)) {
+		eventMessage("Successfully traded " + giveCount + " " + names[giveResource] + " for " + wantCount + " " + names[wantResource], 3000, "");
+		updatePrices();
+	}
 }
 
 function buy()  { playerTrade("buy");  }
@@ -144,6 +152,15 @@ function updatePrices(e, type)
 {
 	var focusedBodyObj = getBody(focusedBody);
 	if (focusedBodyObj) {
+
+		// Enemy cost
+		if (teams[focusedBodyObj.owner].enemies && teams[focusedBodyObj.owner].enemies["player"]) {
+			$("#enemy-fee").show();
+		}
+		else {
+			$("#enemy-fee").hide();
+		}
+
 		var type = "give";
 		var other = "want";
 		// If we change the resource, then change the same field rather than the other
