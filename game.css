@@ -93,6 +93,16 @@ main {
 	text-align: right;
 }
 
+#status-centered {
+	width: 360px;
+	display: none;
+}
+
+.status-below-graphic {
+	position: relative;
+	top: 200px;
+}
+
 .no-link {
 	color: var(--color);
 }

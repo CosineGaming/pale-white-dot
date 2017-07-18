@@ -177,34 +177,12 @@ function drawNewPlanet()
 		imgSrc = fallbackImg;
 	}
 
-	$("#focused-body").attr("src", "assets/" + imgSrc + ".png");
-	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
-	$("#" + focusedBody + "-map").imageMapResize();
-	$("#focused-label").html(focusedBody.capitalize());
-
-	var focusedBodyObj = getBody(focusedBody);
-
-	drawList(focusedBodyObj, "moons", function(name, moon) {
-		return $("<a>").attr("href", "#" + name).append(name.capitalize());
-	});
-
-	drawBuiltImages(true);
-
-	drawNewOwner();
-	drawBuilt();
-	drawFleet();
-
-	updatePrices();
-
-}
-
-function drawNewPlanet()
-{
-
-	// Update the graphics and image map to the new focus
-	var imgSrc = focusedBody;
-	if (!(focusedBody in availImgs)) {
-		imgSrc = fallbackImg;
+	// The status text prevents clicking on stuff, which sucks on the solar system
+	if (focusedBody == "solar-system") {
+		$("#status-centered").addClass("status-below-graphic")
+	}
+	else {
+		$("#status-centered").removeClass("status-below-graphic");
 	}
 
 	$("#focused-body").attr("src", "assets/" + imgSrc + ".png");

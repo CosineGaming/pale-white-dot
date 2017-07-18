@@ -181,9 +181,7 @@ function aiAttack(teamName, team) {
 				}
 			}
 			if (outcomeText) {
-				$("#status-sidebar").append(outcomeText.delay(12000).fadeOut(2000, function() {
-					$(this).remove();
-				}));
+				eventMessage(outcomeText, 10000, "", true);
 			}
 			if (toAttack == focusedBody || oldOwner == "player") {
 				drawNewOwner();

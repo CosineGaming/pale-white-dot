@@ -46,23 +46,37 @@ function purchase(team, cost, count)
 	});
 	if (success) {
 		addResources(cost, team, -1 * count);
+		drawUpdate();
 	}
 	return success;
 }
 
-function eventMessage(text, fade, classes)
+function eventMessage(text, delay, classes, isStatus)
 {
-	if (typeof fade == "undefined") {
-		fade = 3000;
+	var fade = 1500;
+	if (typeof delay == "undefined") {
+		delay = 3000;
 	}
 	if (typeof classes == "undefined") {
 		classes = "red";
 	}
-	$("#interaction-sidebar").append(
-		$("<p>").append(
-			text
-		).addClass(classes).fadeOut(fade, function() {
+	var message = text;
+	if (!(message instanceof jQuery)) {
+		message = $("<p>").append(text);
+	}
+	to = isStatus ? $("#status-centered") : $("#interaction-sidebar");
+	to.show();
+	to.append(
+		message.addClass(classes).delay(delay).fadeOut(fade, function() {
 			$(this).remove();
+			if (isStatus) {
+				if (to.is(":empty")) {
+					to.hide();
+				}
+				else {
+					to.show();
+				}
+			}
 		})
 	);
 }
