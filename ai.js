@@ -138,7 +138,7 @@ function shipStrength(type) {
 function fleetStrength(fleet) {
 	var strength = 0;
 	$.each(fleet, function(type, count) {
-		if (type in ships) {
+		if (type in ships && type != "Planetary Nuke") {
 			strength += shipStrength(type) * count;
 		}
 	});
@@ -154,38 +154,36 @@ function aiAttack(teamName, team) {
 				selectBuild(teamName);
 			}
 			var ourStrength = fleetStrength(team.fleet);
+			var haveNuke = "Planetary Nuke" in team.fleet;
 			var allOthers = [];
 			var allDefeatable = [];
+			var allEnemies = [];
 			var toAttack = selectBody(null, function(name, body) {
-				var rv = body.owner != teamName;
-				if (rv) {
+				var other = body.owner != teamName;
+				if (other) {
 					allOthers.push(name);
 				}
 				var strength = fleetStrength(body.built);
-				rv = rv && (ourStrength > strength);
-				if (rv) {
+				defeatable = ourStrength > strength || haveNuke;
+				if (other && defeatable) {
 					allDefeatable.push(name);
 				}
-				rv = rv && team.enemies && team.enemies[body.owner];
-				return rv;
+				var enemy = team.enemies && team.enemies[body.owner];
+				if (other && enemy) {
+					allEnemies.push(name);
+				}
+				return other && defeatable && enemy;
 			});
 			var oldOwner;
 			if (!toAttack) {
-				// We have no enemies, but we want to attack: better make one
+				// We have no defeatable enemies, but we want to attack: better make one
 				// AKA declare war
-				toAttack = randFromList(allDefeatable);
-				if (!toAttack) {
-					// Our only chance is nuke, if we have it we're good
-					// Otherwise, we can't take anyone, so we won't try
-					if ("Planetary Nuke" in team.fleet) {
-						toAttack = randFromList(allOthers);
-						if (!toAttack) {
-							console.log("I think there are no planets not owned by me. Is that right?");
-						}
-					}
-					else {
-						return;
-					}
+				if (allDefeatable.length != 0) {
+					toAttack = randFromList(allDefeatable);
+				}
+				else {
+					// We don't think there's anyone we can beat
+					return;
 				}
 				oldOwner = getBody(toAttack).owner;
 				if (oldOwner) {
@@ -258,11 +256,11 @@ function tradePrice(team, givenResource, desiredResource, givenCount) {
 }
 
 function declareWar(from, on) {
-	objOrCreate(teams[from], "enemies")[on  ] = true;
-	objOrCreate(teams[on  ], "enemies")[from] = true;
-	if (on == "player") {
+	if (on == "player" && (!teams[from].enemies || !teams[from].enemies[on])) {
 		eventMessage("The " + teamNames[from] + " declared war on you!", 10000, "red", true);
 	}
+	objOrCreate(teams[from], "enemies")[on  ] = true;
+	objOrCreate(teams[on  ], "enemies")[from] = true;
 }
 
 function aiDiplomacy(name, team) {
