@@ -118,19 +118,3 @@ function ownedBodies(team) {
 	return total;
 }
 
-// Debug stuff
-
-function debugResources() {
-	$.each(teams, function(teamName, team) {
-		team.resources = $.extend({}, opResources);
-	});
-}
-
-function getRich() {
-	teams["player"].resources = $.extend({}, opResources);
-}
-
-function speedUp() {
-	update();
-	getAnimationFrame(speedUp);
-}

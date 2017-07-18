@@ -45,7 +45,7 @@ var descriptions = {
 var planets = { // We're doing stereotypes here. Fuck science.
 	"mercury" : {
 		"resources" : {
-			"metal" : 10,
+			"metal" : 8,
 			"gas" : 1,
 			"water" : 0,
 			"natural" : 0
@@ -63,7 +63,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	},
 	"earth" : {
 		"resources" : {
-			"metal" : 15,
+			"metal" : 12,
 			"gas" : 1,
 			"water" : 20,
 			"natural" : 15
@@ -72,7 +72,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	},
 	"mars" : {
 		"resources" : {
-			"metal" : 20,
+			"metal" : 15,
 			"gas" : 1,
 			"water" : 8,
 			"natural" : 8
@@ -104,7 +104,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 			"water" : 0,
 			"natural" : 0
 		},
-		"owner" : "gas"
+		"owner" : "terran"
 	},
 	"neptune" : {
 		"resources" : {
@@ -113,7 +113,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 			"water" : 0,
 			"natural" : 0
 		},
-		"owner" : "rebel"
+		"owner" : "gas"
 	},
 	"pluto" : { // eh whatever
 	}
@@ -148,7 +148,7 @@ planets["mars"].moons = {
 			"water" : 1,
 			"natural" : 0
 		},
-		"owner" : "mars"
+		"owner" : "gas"
 	}
 };
 
@@ -160,7 +160,7 @@ planets["jupiter"].moons = {
 			"water" : 0,
 			"natural" : 0
 		},
-		"owner" : "mars"
+		"owner" : "rebel"
 	},
 	"europa" : {
 		"resources" : {
@@ -187,7 +187,7 @@ planets["jupiter"].moons = {
 			"water" : 5,
 			"natural" : 2
 		},
-		"owner" : "mars"
+		"owner" : "rebel"
 	},
 	"Jupiter-Coalition" : {
 		"resources" : {
@@ -225,20 +225,20 @@ planets["uranus"].moons = {
 // Breaking standards here with the capitalized names
 var buildable = {
 	"Starship" : {
-		"metal" : 3000,
-		"gas" : 1000,
+		"metal" : 2500,
+		"gas" : 800,
 		"water" : 600,
 		"natural" : 1000
 	},
 	"Fighter" : {
-		"metal" : 500,
+		"metal" : 400,
 		"gas" : 200,
 		"water" : 500,
 		"natural" : 50
 	},
 	"Planetary Defense" : {
 		"metal" : 200,
-		"gas" : 400,
+		"gas" : 300,
 		"water" : 50,
 		"natural" : 25
 	},
@@ -269,20 +269,22 @@ var buildable = {
 };
 
 var attackCost = {
-	"gas" : 2500,
+	"gas" : 1500,
 	"water" : 800,
 	"natural" : 300
 };
 
+var smugglingCost = 100;
+
 var buildMultipliers = {
 	"Extraction Well" : {
-		"water" : 0.75
+		"water" : 0.5
 	},
 	"Mine" : {
 		"metal" : 0.5
 	},
 	"Skymine" : {
-		"gas" : 0.2
+		"gas" : 0.5
 	},
 	"Controlled Ag" : {
 		"natural" : 0.5
@@ -299,7 +301,7 @@ var ships = {
 		"saveChance" : 0.1
 	},
 	"Planetary Defense" : {
-		"killChance" : 0.3,
+		"killChance" : 0.6,
 		"saveChance" : 0.9
 	}
 };
@@ -310,9 +312,9 @@ var defenseShips = {
 };
 
 var buildDescriptions = {
-	"Starship" : "60% chance of hitting, 50% chance of not getting hit. Requires gas to use.",
-	"Fighter" : "30% chance of hitting, 10% chance of not getting hit. Requires gas to use.",
-	"Planetary Defense" : "A necessity to keeping a planet in your own hands.",
+	"Starship" : "60% chance of hitting, 50% chance of not getting hit.",
+	"Fighter" : "30% chance of hitting, 10% chance of not getting hit.",
+	"Planetary Defense" : "A super powerful tool for keeping a planet in your own hands.",
 	"Extraction Well" : "Crack into ice and extract frozen or liquid water. Increase water production.",
 	"Mine" : "Mine deep, where the minerals are rich. Increase metal production.",
 	"Skymine" : "Labs that sail in the atmosphere, purifying gas. Increase gas production.",
@@ -330,5 +332,12 @@ availImgs = {
 	"saturn":1,
 	"uranus":1,
 	"neptune":1,
+	"venus":0,
+	"mars":0,
+	"mercury":0,
 };
 
+otherPreloads = [
+	"assets/explosion.png",
+	"assets/fallback.png",
+];

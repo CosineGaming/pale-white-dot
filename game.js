@@ -324,13 +324,25 @@ function hashChange()
 function init()
 {
 
+	// This is for balance, to slow (>) or speed (<) things up
+	var priceMultiplier = 1.5;
+	var buildAndAttackCosts = $.extend({}, buildable);
+	buildAndAttackCosts["attack"] = attackCost;
+	$.each(buildAndAttackCosts, function(name, cost) {
+		$.each(cost, function(resource, count) {
+			cost[resource] = Math.round(count * priceMultiplier);
+		});
+	});
+
 	// Initialize preload for all images
 	bodies(function(_, name) {
 		if (name in availImgs) {
 			$("<img>").attr("src", "assets/" + name + ".png");
 		}
 	});
-	$("<img>").attr("src", "assets/" + fallbackImg + ".png");
+	for (var i=0; i<otherPreloads.length; i++) {
+		$("<img>").attr("src", otherPreloads[i]);
+	}
 
 	// Initialize the team objects
 	var startingMoney = 500 + 1;
