@@ -220,7 +220,7 @@ var buildable = {
 	"Planetary Nuke" : {
 		"metal" : 4000,
 		"gas" : 5000,
-		"water" : 2500,
+		"water" : 2000,
 		"natural" : 1500
 	},
 	"Starship" : {
@@ -230,7 +230,7 @@ var buildable = {
 		"natural" : 1000
 	},
 	"Fighter" : {
-		"metal" : 500,
+		"metal" : 1000,
 		"gas" : 100,
 		"water" : 550,
 		"natural" : 50
@@ -242,13 +242,13 @@ var buildable = {
 		"natural" : 500
 	},
 	"Extraction Well" : {
-		"metal" : 75,
+		"metal" : 100,
 		"gas" : 60,
 		"water" : 40,
 		"natural" : 5
 	},
 	"Controlled Ag" : {
-		"metal" : 5,
+		"metal" : 15,
 		"gas" : 20,
 		"water" : 200,
 		"natural" : 30
@@ -260,7 +260,7 @@ var buildable = {
 		"natural" : 80
 	},
 	"Skymine" : {
-		"metal" : 50,
+		"metal" : 150,
 		"gas" : 30,
 		"water" : 20,
 		"natural" : 30
@@ -300,11 +300,11 @@ var ships = {
 		"saveChance" : 0.1
 	},
 	"Planetary Defense" : {
-		"killChance" : 0.6,
+		"killChance" : 0.5,
 		"saveChance" : 0.9
 	},
 	"Planetary Nuke" : {
-		"killChance" : 0.3,
+		"killChance" : 0.2,
 		"saveChance" : 0.6
 	},
 };
