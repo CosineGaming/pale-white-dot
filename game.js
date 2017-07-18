@@ -329,7 +329,7 @@ function init()
 {
 
 	// This is for balance, to slow (>) or speed (<) things up
-	var priceMultiplier = 1.5;
+	var priceMultiplier = 1.2;
 	var buildAndAttackCosts = $.extend({}, buildable);
 	buildAndAttackCosts["attack"] = attackCost;
 	$.each(buildAndAttackCosts, function(name, cost) {

@@ -17,15 +17,6 @@ var fleet = {};
 
 var winMargin = 1/2;
 
-// For Debug mode
-var opResources = {
-	"money" : 60000,
-	"water" : 10000,
-	"natural" : 10000,
-	"metal" : 10000,
-	"gas" : 10000,
-}
-
 var teams = {};
 
 var teamNames = {
@@ -234,68 +225,68 @@ var buildable = {
 	},
 	"Starship" : {
 		"metal" : 2500,
-		"gas" : 800,
+		"gas" : 500,
 		"water" : 600,
 		"natural" : 1000
 	},
 	"Fighter" : {
-		"metal" : 400,
-		"gas" : 200,
-		"water" : 500,
+		"metal" : 500,
+		"gas" : 100,
+		"water" : 550,
 		"natural" : 50
 	},
 	"Planetary Defense" : {
-		"metal" : 200,
-		"gas" : 300,
-		"water" : 50,
-		"natural" : 25
+		"metal" : 50,
+		"gas" : 75,
+		"water" : 800,
+		"natural" : 500
 	},
 	"Extraction Well" : {
-		"metal" : 100,
-		"gas" : 40,
+		"metal" : 75,
+		"gas" : 60,
 		"water" : 40,
 		"natural" : 5
 	},
 	"Controlled Ag" : {
-		"metal" : 10,
+		"metal" : 5,
 		"gas" : 20,
-		"water" : 100,
-		"natural" : 40
+		"water" : 200,
+		"natural" : 30
 	},
 	"Mine" : {
-		"metal" : 40,
+		"metal" : 30,
 		"gas" : 10,
-		"water" : 15,
-		"natural" : 20
+		"water" : 100,
+		"natural" : 80
 	},
 	"Skymine" : {
-		"metal" : 100,
-		"gas" : 40,
-		"water" : 10,
-		"natural" : 10
+		"metal" : 50,
+		"gas" : 30,
+		"water" : 20,
+		"natural" : 30
 	},
 };
 
 var attackCost = {
-	"gas" : 1500,
-	"water" : 800,
-	"natural" : 300
+	"gas" : 800,
+	"water" : 1000,
+	"natural" : 500
 };
 
 var smugglingCost = 100;
 
 var buildMultipliers = {
 	"Extraction Well" : {
-		"water" : 0.5
+		"water" : 0.3
 	},
 	"Mine" : {
-		"metal" : 0.5
+		"metal" : 0.3
 	},
 	"Skymine" : {
-		"gas" : 0.5
+		"gas" : 0.3
 	},
 	"Controlled Ag" : {
-		"natural" : 0.5
+		"natural" : 0.3
 	}
 };
 

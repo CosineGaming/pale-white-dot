@@ -82,6 +82,14 @@ function optimizationValues() {
 
 // Debug stuff
 
+var opResources = {
+	"money" : 600000,
+	"water" : 100000,
+	"natural" : 100000,
+	"metal" : 100000,
+	"gas" : 100000,
+}
+
 function debugResources() {
 	$.each(teams, function(teamName, team) {
 		team.resources = $.extend({}, opResources);
