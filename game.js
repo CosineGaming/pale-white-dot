@@ -112,12 +112,15 @@ function trade(from, to, fromResource, toResource, fromCount, toCount)
 	if (typeof toCount == "undefined") {
 		toCount = tradePrice(to, fromResource, toResource, fromCount);
 	}
-	if (!teams[to].enemies || !teams[to].enemies[from] || teams[from].resources["money"] > smugglingCost) {
+	var tradingWithEnemy = teams[to].enemies && teams[to].enemies[from];
+	// If we're paying money too, we end up with negative money which is dumb
+	var canAffordToSmuggle = teams[from].resources["money"] + (fromResource == "money" ? fromCount : 0) >= smugglingCost;
+	if (!tradingWithEnemy || canAffordToSmuggle) {
 		teams[from].resources[fromResource] -= fromCount;
 		teams[to  ].resources[fromResource] += fromCount;
 		teams[from].resources[toResource]   += toCount;
 		teams[to  ].resources[toResource]   -= toCount;
-		if (teams[to].enemies && teams[to].enemies[from]) {
+		if (tradingWithEnemy) {
 			teams[from].resources["money"] -= smugglingCost;
 			teams[to  ].resources["money"] += smugglingCost;
 		}
