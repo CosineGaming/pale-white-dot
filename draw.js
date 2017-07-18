@@ -510,7 +510,7 @@ function drawUpdate()
 	// Win condition
 	// TODO: Figure out a better win condition
 	if (sortedByPower[0] == "player" && !teams["player"].dismissedWin) {
-		$("#win-screen").show();
+		$("#win-screen").delay(2000).fadeIn(2000);
 		teams["player"].dismissedWin = true;
 	}
 

@@ -75,10 +75,7 @@ function eventMessage(text, delay, classes, isStatus)
 			$(this).remove();
 			if (isStatus) {
 				if (to.is(":empty")) {
-					to.hide();
-				}
-				else {
-					to.show();
+					to.fadeOut(fade);
 				}
 			}
 		})
@@ -255,7 +252,7 @@ function checkLost()
 		lost = false;
 	}
 	if (lost) {
-		$("#lose-screen").show();
+		$("#lose-screen").delay(2000).fadeIn(2000);
 	}
 
 }
