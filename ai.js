@@ -97,25 +97,14 @@ function aiFleet(teamName, team) {
 
 	var fleetChance = 1/1;
 	if (Math.random() < fleetChance) {
-		var fleetSize = 0;
-		$.each(team.fleet, function(_, count) {
-			fleetSize += count;
-		});
+		var currentFleetStrength = fleetStrength(team.fleet);
 		var allowNukesChance = 1/(60*5);
 		var allowNukes = Math.random() < allowNukesChance;
-		// Change apparent fleet size subtly to make look less artificial / robotic / intelligent
-		var variation = 0; //fleetSize * 0.3;
 		// Select bodies with more ships than our fleet
 		var bodyName = selectBody(name, function(name, body) {
 			if (body.owner == teamName) {
-				// We want AI to leave at least one ship at home
-				var foundCount = 0;
-				$.each(ships, function(shipType, _) {
-					if (body.built && shipType in body.built) {
-						foundCount += body.built[shipType];
-					}
-				});
-				return foundCount > fleetSize + variation * Math.random() - variation/2;
+				var strength = fleetStrength(body.built);
+				return strength > currentFleetStrength;
 			}
 		});
 		var body = getBody(bodyName);
@@ -137,6 +126,25 @@ function aiFleet(teamName, team) {
 
 }
 
+function shipStrength(type) {
+	var ship = ships[type];
+	// Average survival turns is given by equation (sC)^n=0.5
+	// This is solved by logBase(0.5, dC)
+	var survivalTurns = Math.log(0.5) / Math.log(ship.saveChance)
+	var numKill = survivalTurns * ship.killChance;
+	return numKill;
+}
+
+function fleetStrength(fleet) {
+	var strength = 0;
+	$.each(fleet, function(type, count) {
+		if (type in ships) {
+			strength += shipStrength(type) * count;
+		}
+	});
+	return strength;
+}
+
 function aiAttack(teamName, team) {
 
 	var attackChance = 1/1;
@@ -145,11 +153,18 @@ function aiAttack(teamName, team) {
 			if (team.nextBuild == "attack") {
 				selectBuild(teamName);
 			}
+			var ourStrength = fleetStrength(team.fleet);
 			var allOthers = [];
+			var allDefeatable = [];
 			var toAttack = selectBody(null, function(name, body) {
 				var rv = body.owner != teamName;
 				if (rv) {
 					allOthers.push(name);
+				}
+				var strength = fleetStrength(body.built);
+				rv = rv && (ourStrength > strength);
+				if (rv) {
+					allDefeatable.push(name);
 				}
 				rv = rv && team.enemies && team.enemies[body.owner];
 				return rv;
@@ -158,7 +173,20 @@ function aiAttack(teamName, team) {
 			if (!toAttack) {
 				// We have no enemies, but we want to attack: better make one
 				// AKA declare war
-				toAttack = randFromList(allOthers);
+				toAttack = randFromList(allDefeatable);
+				if (!toAttack) {
+					// Our only chance is nuke, if we have it we're good
+					// Otherwise, we can't take anyone, so we won't try
+					if ("Planetary Nuke" in team.fleet) {
+						toAttack = randFromList(allOthers);
+						if (!toAttack) {
+							console.log("I think there are no planets not owned by me. Is that right?");
+						}
+					}
+					else {
+						return;
+					}
+				}
 				oldOwner = getBody(toAttack).owner;
 				if (oldOwner) {
 					declareWar(teamName, oldOwner);
@@ -191,9 +219,10 @@ function aiAttack(teamName, team) {
 				}
 			}
 			else if (outcome == "defender") {
+				console.log("The " + teamNames[oldOwner] + " defended " + toAttack.capitalize() + " from the " + teamNames[teamName]);
 				if (oldOwner == "player") {
 					outcomeText = $("<p>").append(
-						"The " + teamNames[oldOwner] + " defended "
+						"You defended "
 					).append(planetLink).append(
 						" from the " + teamNames[teamName] + "."
 					);
