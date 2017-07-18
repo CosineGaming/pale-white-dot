@@ -76,9 +76,12 @@ function aiBuild(name, team) {
 			return;
 		}
 		// Don't build on planets engaged in battle
-		var to = selectBody(name, function(name, body) {
-			return !(attacking && name == focusedBody);
-		});
+		var to = team.nextBuildBody;
+		if (!to) {
+			to = selectBody(name, function(name, body) {
+				return !(attacking && name == focusedBody);
+			});
+		}
 		if (build(team.nextBuild, name, to)) {
 			selectBuild(name);
 		}
