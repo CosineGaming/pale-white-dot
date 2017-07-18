@@ -15,7 +15,7 @@ function drawOnce()
 		var max = getMaxBuyable(teams["player"].resources, cost);
 		$("#build-menu").append(
 			addTooltip($("<li>"), tooltip).attr("id", "max-" + itemId).append(
-				$("<img>").attr("src", "assets/" + itemId + ".png").addClass("build-img clickable-img").click(function() { build(item); } )
+				$("<img>").attr("src", "assets/" + itemId + ".png").addClass("build-img clickable").click(function() { build(item); } )
 			).append($("<br />")).append(
 				$("<a>").append(item).click(function() { build(item); } )
 			)
@@ -220,9 +220,11 @@ function drawNewOwner()
 		if (body.owner == "player") {
 			var link = $("<a>");
 			if (name in availImgs) {
-				link.append(
-					$("<img>").attr("src", "assets/" + name + ".png").addClass("owned-body-img clickable-img")
-				);
+				var img = $("<img>").attr("src", "assets/" + name + ".png").addClass("owned-body-img clickable");
+				if (name != focusedBody) {
+					img.addClass("clickable-img");
+				}
+				link.append(img);
 			}
 			link.attr("href", "#" + name).append(name.capitalize());
 			$("#owned").append($("<li>").append(link));
@@ -386,12 +388,26 @@ function drawUpdate()
 		drawResourceList("#trade-resources", focusedBodyObj.owner);
 	}
 
+	// Update the glow on the attack button if we can attack
+	if (teams["player"].fleet && !$.isEmptyObject(teams["player"].fleet) && getMaxBuyable(teams["player"].resources, attackCost) > 0) {
+		$("#attack img").addClass("clickable-img");
+	}
+	else {
+		$("#attack img").removeClass("clickable-img");
+	}
+
 	$(".multiple-link").remove();
 	$.each(buildable, function(item, cost) {
-		drawAffordable(cost, function(resource) {
+		var canAfford = drawAffordable(cost, function(resource) {
 			return item.replace(" ", "-") + "-" + resource;
 		});
 		var buildItem = $("#max-" + item.replace(" ", "-"));
+		if (canAfford) {
+			buildItem.addClass("clickable-img");
+		}
+		else {
+			buildItem.removeClass("clickable-img");
+		}
 		var max = getMaxBuyable(teams["player"].resources, cost);
 		// Each power of 10 that is buildable
 		for (let count=10; count<=max; count*=10) {

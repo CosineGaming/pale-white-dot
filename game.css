@@ -173,13 +173,17 @@ main {
 .stack img {
 	position: absolute;
 	width: 60px;
-	-webkit-filter: drop-shadow(-3px -3px 3px rgba(1, 2, 8, 1));
-	filter: drop-shadow(-3px -3px 3px rgba(1, 2, 8, 1));
+	-webkit-filter: drop-shadow(-3px -3px 3px #010208);
+	filter: drop-shadow(-3px -3px 3px #010208);
 }
 
 .clickable-img {
-	-webkit-filter: drop-shadow(0 0 6px #010208);
-	filter: drop-shadow(0 0 6px #6de2ed);
+	-webkit-filter: drop-shadow(0 0 12px #6de2ed);
+	filter: drop-shadow(0 0 12px #6de2ed);
+	cursor: pointer;
+}
+
+.clickable {
 	cursor: pointer;
 }
 
