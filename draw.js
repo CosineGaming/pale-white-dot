@@ -475,6 +475,13 @@ function drawUpdate()
 		var bodyCount = ownedBodies(name);
 		var resources = totalResources(teams[name]);
 		var tooltip = $("<div>");
+		var enemy = teams[name].enemies && teams[name].enemies["player"];
+		if (enemy) {
+			tooltip.append($("<p>").addClass("red").append("Enemy!"));
+		}
+		else {
+			tooltip.append($("<p>").addClass("green").append("Ally"));
+		}
 		var bodyList = $("<ul>");
 		bodies(function(body, bodyName) {
 			if (body.owner == name) {
@@ -482,19 +489,22 @@ function drawUpdate()
 			}
 		});
 		tooltip.append(bodyList);
+		tooltip.append($("<br>")).append($("<p>").append("Click to view capital body."));
 		tooltipContainer.append(tooltip);
 		if (resources >= 1000) {
 			resources = Math.floor(resources/1000) + "k"
 		}
-		return $("<span>").append(
+		var swords = $("<span>").append(" (&#x2694;&#xFE0F;)").addClass("red");
+		var entry = $("<div>").append(
 			$("<div>").append(
 				addTooltip($("<a>").append(teamNames[name]).click(function() {
 					focusTeam(name);
 				}), tooltip)
-			).append(
+			).append(enemy ? swords : "").append(
 				$("<p>").append(bodyCount).append(" bodies, ").append(resources).append(" resources")
 			)
 		);
+		return entry;
 	}, sortedByPower);
 
 	// Win condition

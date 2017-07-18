@@ -145,10 +145,28 @@ function aiAttack(teamName, team) {
 			if (team.nextBuild == "attack") {
 				selectBuild(teamName);
 			}
+			var allOthers = [];
 			var toAttack = selectBody(null, function(name, body) {
-				return body.owner != teamName;
+				var rv = body.owner != teamName;
+				if (rv) {
+					allOthers.push(name);
+				}
+				rv = rv && team.enemies && team.enemies[body.owner];
+				return rv;
 			});
-			var oldOwner = getBody(toAttack).owner;
+			var oldOwner;
+			if (!toAttack) {
+				// We have no enemies, but we want to attack: better make one
+				// AKA declare war
+				toAttack = randFromList(allOthers);
+				oldOwner = getBody(toAttack).owner;
+				if (oldOwner) {
+					declareWar(teamName, oldOwner);
+				}
+			}
+			else {
+				oldOwner = getBody(toAttack).owner;
+			}
 			var outcomeText;
 			var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.capitalize());
 			var outcome = attack(teamName, toAttack);
@@ -210,13 +228,22 @@ function tradePrice(team, givenResource, desiredResource, givenCount) {
 	return Math.ceil(price);
 }
 
+function declareWar(from, on) {
+	objOrCreate(teams[from], "enemies")[on  ] = true;
+	objOrCreate(teams[on  ], "enemies")[from] = true;
+	if (on == "player") {
+		eventMessage("The " + teamNames[from] + " declared war on you!", 10000, "red", true);
+	}
+}
+
 function aiDiplomacy(name, team) {
-	var reAllyChance = 1/(60*5);
+	var reAllyChance = 1/(60*4);
+	var enemyChance = 1/(60*3);
 	if (Math.random() < reAllyChance) {
 		options = [];
-		$.each(team.enemies, function(name, isEnemy) {
+		$.each(team.enemies, function(otherName, isEnemy) {
 			if (isEnemy) {
-				options.push(name);
+				options.push(otherName);
 			}
 		});
 		var reAlly = randFromList(options);
@@ -227,6 +254,18 @@ function aiDiplomacy(name, team) {
 				eventMessage(outcomeText, 5000, "green", true);
 				updatePrices();
 			}
+		}
+	}
+	if (Math.random() < enemyChance) {
+		options = [];
+		$.each(teams, function(otherName, otherTeam) {
+			if ((!team.enemies || !team.enemies[otherName]) && otherName != name) {
+				options.push(otherName);
+			}
+		});
+		var enemy = randFromList(options);
+		if (enemy) {
+			declareWar(name, enemy);
 		}
 	}
 }
