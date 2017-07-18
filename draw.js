@@ -357,24 +357,45 @@ function drawFleet()
 // idFunction should return the id of the element listing price for `resource`
 function drawAffordable(cost, idFunction)
 {
+	var affordable = true;
 	$.each(cost, function(resource, count) {
 		if (count > teams["player"].resources[resource]) {
 			$("#" + idFunction(resource)).addClass("red");
+			affordable = false;
 		}
 		else {
 			// Don't remember it
 			$("#" + idFunction(resource)).removeClass("red");
 		}
 	});
+	return affordable;
 }
 
 function drawResourceList(container, team) {
 	$(container).empty();
+	var plus = {};
+	bodies(function(body) {
+		if (body.owner == team) {
+			$.each(body.resources, function(name, count) {
+				if (!(name in plus)) {
+					plus[name] = 0;
+				}
+				plus[name] += getMultiplied(body.built, name, count);
+			});
+		}
+	});
 	$.each(teams[team].resources, function(resource, count) {
+		var description = $("<p>").append(descriptions[resource]);
+		var plusText = "";
+		if (resource != "money") {
+			plusText = " (+" + plus[resource] + ")";
+		}
+		$(container).append(description);
 		$(container).append(
-			$("<li>").attr("title", descriptions[resource]).append(
-				names[resource] + ": " + count
-		));
+			addTooltip($("<li>"), description).append(
+				names[resource] + ": " + count + plusText
+			)
+		);
 	});
 }
 
