@@ -38,6 +38,9 @@ function attackFleet(attacker, defender)
 // Returns `true` if `fromFleet` has completely died, false otherwise
 function removeCasualties(fromFleet, dead) {
 	$.each(dead, function(type, count) {
+		if (fromFleet == teams["player"].fleet) {
+			$("#fleet-" + name + " img:last-of-type").attr("src", "assets/exlosion.png").delay(5000).fadeOut(500);
+		}
 		fromFleet[type] -= count;
 		if (fromFleet[type] <= 0) {
 			delete fromFleet[type];

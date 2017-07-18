@@ -111,6 +111,7 @@ function shipElement(name, count, focusedBodyObj, addToBody)
 			addToFleet(focusedBodyObj, name, addToBody ? -1 : 1);
 		});
 	}
+	e.attr("id", (addToBody ? "fleet-" : "defenses-") + name.replace(" ", "-"));
 	stackImages(e, name, count);
 	return e;
 }
