@@ -108,8 +108,8 @@ var planets = { // We're doing stereotypes here. Fuck science.
 		},
 		"owner" : "gas"
 	},
-	"pluto" : { // eh whatever
-	}
+	// "pluto" : { // eh whatever
+	// }
 };
 
 planets["earth"].moons = {
