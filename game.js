@@ -263,7 +263,7 @@ function checkLost()
 function focusTeam(team)
 {
 	var bestBody;
-	var bodyResources = 0;
+	var bodyResources = -1;
 	bodies(function(body, name) {
 		if (body.owner == team) {
 			var totalResources = 0;
