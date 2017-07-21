@@ -170,8 +170,10 @@ function attack(team, body)
 				
 				// The DEFENDING team remembers the ATTACKER as an enemy
 				var enemy = getBody(focusedBody).owner;
-				if (!teams[enemy].enemies || !teams[enemy].enemies["player"]) {
-					declareWar(enemy, "player");
+				if (enemy) {
+					if (!teams[enemy].enemies || !teams[enemy].enemies["player"]) {
+						declareWar(enemy, "player");
+					}
 				}
 
 				team = "player";

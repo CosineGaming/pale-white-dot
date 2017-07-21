@@ -57,7 +57,7 @@ function teamResources() {
 	});
 	bodies(function(body, name) {
 		var br = body.resources;
-		if (br) {
+		if (br && body.owner) {
 			var or = teams[body.owner].optResources;
 			or.water += br.water;
 			or.natural += br.natural;

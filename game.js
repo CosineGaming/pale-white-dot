@@ -156,7 +156,7 @@ function sell() { playerTrade("sell"); }
 function updatePrices(e, type)
 {
 	var focusedBodyObj = getBody(focusedBody);
-	if (focusedBodyObj && !focusedBodyObj.nuked) {
+	if (focusedBodyObj && focusedBodyObj.owner && !focusedBodyObj.nuked) {
 
 		// Enemy cost
 		if (teams[focusedBodyObj.owner].enemies && teams[focusedBodyObj.owner].enemies["player"]) {

@@ -238,7 +238,7 @@ function drawNewOwner()
 	// Display appropriate interaction menu
 	var focusedBodyObj = getBody(focusedBody);
 	if (focusedBodyObj && !focusedBodyObj.nuked) {
-		if (focusedBodyObj.hasOwnProperty("owner") && focusedBodyObj.owner == "player") {
+		if (focusedBodyObj.owner && focusedBodyObj.owner == "player") {
 			$("#owned-menu").show();
 			$("#not-owned-menu").hide();
 		}
@@ -418,7 +418,7 @@ function drawUpdate()
 	var focusedBodyObj = getBody(focusedBody);
 
 	drawResourceList("#resources", "player");
-	if (focusedBodyObj && !focusedBodyObj.nuked) {
+	if (focusedBodyObj && focusedBodyObj.owner && !focusedBodyObj.nuked) {
 		drawResourceList("#trade-resources", focusedBodyObj.owner);
 	}
 

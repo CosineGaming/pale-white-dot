@@ -105,8 +105,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 			"gas" : 8,
 			"water" : 0,
 			"natural" : 0
-		},
-		"owner" : "gas"
+		}
 	},
 	// "pluto" : { // eh whatever
 	// }
@@ -151,7 +150,7 @@ planets["jupiter"].moons = {
 			"metal" : 10,
 			"gas" : 2,
 			"water" : 0,
-			"natural" : 0
+			"natural" : 3
 		},
 		"owner" : "rebel"
 	},
@@ -160,7 +159,7 @@ planets["jupiter"].moons = {
 			"metal" : 5,
 			"gas" : 1,
 			"water" : 10,
-			"natural" : 2
+			"natural" : 5
 		},
 		"owner" : "gas"
 	},
@@ -178,11 +177,11 @@ planets["jupiter"].moons = {
 			"metal" : 4,
 			"gas" : 1,
 			"water" : 5,
-			"natural" : 2
+			"natural" : 5
 		},
 		"owner" : "rebel"
 	},
-	"Jupiter-Coalition" : {
+	"jupiter-coalition" : {
 		"resources" : {
 			"metal" : 8,
 			"gas" : 0,
@@ -193,27 +192,114 @@ planets["jupiter"].moons = {
 	} // Hmm what to do with naming programmatically vs visually
 };
 
-// Saturn moons
+planets["saturn"].moons = {
+	"titan" : {
+		"resources" : {
+			"metal" : 5,
+			"gas" : 2,
+			"water" : 2,
+			"natural" : 4
+		}
+	},
+	"rhea" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 0,
+			"water" : 3,
+			"natural" : 0
+		}
+	},
+	"iapetus" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 0,
+			"water" : 3,
+			"natural" : 0
+		}
+	},
+	"dione" : {
+		"resources" : {
+			"metal" : 1,
+			"gas" : 0,
+			"water" : 5,
+			"natural" : 2
+		}
+	},
+	"tethys" : {
+		"resources" : {
+			"metal" : 1,
+			"gas" : 0,
+			"water" : 5,
+			"natural" : 0
+		}
+	},
+	"enceladus" : {
+		"resources" : {
+			"metal" : 3,
+			"gas" : 0,
+			"water" : 4,
+			"natural" : 6
+		}
+	},
+	"mimas" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 0,
+			"water" : 5,
+			"natural" : 1
+		}
+	},
+	"confederate-of-the-ring" : {
+		"resources" : {
+			"metal" : 5,
+			"gas" : 0,
+			"water" : 1,
+			"natural" : 0
+		},
+		"owner" : "rebel"
+	}
+}
 
 planets["uranus"].moons = {
-	"miranda" : {
-		"owner" : "gas"
-	},
-	"ariel" : {
-		"owner" : "rebel"
-	},
-	"umbriel" : {
-		"owner" : "rebel"
-	},
 	"titania" : {
-		"owner" : "gas"
 	},
 	"oberon" : {
-		"owner" : "gas"
+	},
+	"umbriel" : {
+	},
+	"ariel" : {
+	},
+	"miranda" : {
 	}
 };
 
-// Nepture moons
+// Neptune moons
+planets["neptune"].moons = {
+	"triton" : {
+		"resources" : {
+			"metal" : 3,
+			"gas" : 1,
+			"water" : 2,
+			"natural" : 3
+		}
+	},
+	"proteus" : {
+		"resources" : {
+			"metal" : 2,
+			"gas" : 0,
+			"water" : 1,
+			"natural" : 2
+		}
+	},
+	"nereid" : {
+		"resources" : {
+			"metal" : 1,
+			"gas" : 0,
+			"water" : 2,
+			"natural" : 0
+		}
+	}
+}
 
 // Breaking standards here with the capitalized names
 var buildable = {
