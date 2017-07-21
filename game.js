@@ -12,8 +12,8 @@ var elapsedTicks = 0;
 function update()
 {
 	bodies(function(body) {
-		if (body.hasOwnProperty("owner")) {
-			addResources(body.resources, body.owner, 1, body.built);
+		if (body.owner) {
+			addResources(body.resources, teams[body.owner].resources, 1, body.built);
 		}
 	});
 
@@ -49,7 +49,7 @@ function purchase(team, cost, count)
 		}
 	});
 	if (success) {
-		addResources(cost, team, -1 * count);
+		addResources(cost, teams[team].resources, -1 * count);
 		drawUpdate();
 	}
 	return success;

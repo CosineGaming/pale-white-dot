@@ -48,6 +48,21 @@ function getMultiplied(built, resource, original)
 	return Math.ceil(amount);
 }
 
+function getIncome(team) {
+	var plus = {};
+	bodies(function(body) {
+		if (body.owner == team) {
+			$.each(body.resources, function(name, count) {
+				if (!(name in plus)) {
+					plus[name] = 0;
+				}
+				plus[name] += getMultiplied(body.built, name, count);
+			});
+		}
+	});
+	return plus;
+}
+
 // Adds resources listed in from to resources (doesn't subtract from `from`)
 // If built is provided, resources will be multiplied times the appropriate modifiers
 function addResources(from, to, mult, built)
@@ -60,7 +75,7 @@ function addResources(from, to, mult, built)
 		if (built) {
 			amount = getMultiplied(built, resource, count);
 		}
-		teams[to].resources[resource] += amount * mult;
+		to[resource] += amount * mult;
 	});
 }
 

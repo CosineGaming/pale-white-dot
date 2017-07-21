@@ -390,17 +390,7 @@ function drawAffordable(cost, idFunction)
 
 function drawResourceList(container, team) {
 	$(container).empty();
-	var plus = {};
-	bodies(function(body) {
-		if (body.owner == team) {
-			$.each(body.resources, function(name, count) {
-				if (!(name in plus)) {
-					plus[name] = 0;
-				}
-				plus[name] += getMultiplied(body.built, name, count);
-			});
-		}
-	});
+	var plus = getIncome(team);
 	$.each(teams[team].resources, function(resource, count) {
 		var description = $("<p>").append(descriptions[resource]);
 		var plusText = "";

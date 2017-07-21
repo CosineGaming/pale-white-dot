@@ -6,7 +6,7 @@ function randFromList(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
 
-function selectBuild(team) {
+function selectShipBuild(team) {
 
 	// If we have undefended planets, always defend them
 	var defending = false;
@@ -14,8 +14,8 @@ function selectBuild(team) {
 	bodies(function(body, name) {
 		if (body.owner == team) {
 			if (!body.built || !("Planetary Defense" in body.built)) {
-				teams[team].nextBuildBody = name;
-				teams[team].nextBuild = "Planetary Defense";
+				teams[team].nextShipBuildBody = name;
+				teams[team].nextShipBuild = "Planetary Defense";
 				defending = true;
 			}
 		}
@@ -25,11 +25,74 @@ function selectBuild(team) {
 	}
 
 	// Otherwise pick randomly
-	var options = Object.keys(buildable);
+	var options = Object.keys(ships);
 	if (canCreateFleet(team)) {
 		options.push("attack");
 	}
-	teams[team].nextBuild = randFromList(options);
+	teams[team].nextShipBuildBody = null;
+	teams[team].nextShipBuild = randFromList(options);
+
+}
+
+function selectBuild(team) {
+
+	var turnsWait = 30;
+	// Build multipliers
+	var teamObj = teams[team];
+	if (!teamObj.nextShipBuild) {
+		selectShipBuild(team);
+	}
+	var income = getIncome(team);
+	var turnsToShip = $.extend({}, buildable[teamObj.nextShipBuild]);
+	if (teamObj.nextShipBuild == "attack") {
+		turnsToShip = $.extend({}, attackCost);
+	}
+	addResources(teamObj.resources, turnsToShip, -1);
+	$.each(turnsToShip, function(resource, count) {
+		turnsToShip[resource] /= income[resource];
+	});
+	var mostTurns = 0;
+	var limitingResource = null;
+	$.each(turnsToShip, function(resource, count) {
+		if (count > mostTurns) {
+			mostTurns = count;
+			limitingResource = resource;
+		}
+	});
+	if (mostTurns < turnsWait) {
+		teams[team].nextBuildBody = teams[team].nextShipBuildBody;
+		teams[team].nextBuild = teams[team].nextShipBuild;
+		// Force it to select next time we selectBuild
+		// We don't call this now because it'd build 2 Planetary Defenses
+		teams[team].nextShipBuild = null;
+		return;
+	}
+	$.each(buildMultipliers, function(name, multiplier) {
+		if (Object.keys(multiplier).includes(limitingResource)) {
+			var bestBody = null;
+			var bestResource = 0;
+			bodies(function(body, name) {
+				if (body.owner == team) {
+					if (body.resources[limitingResource] > bestResource) {
+						bestBody = name;
+						bestResource = body.resources[limitingResource];
+					}
+				}
+			});
+			if (bestBody) {
+				teams[team].nextBuild = name;
+				teams[team].nextBuildBody = bestBody;
+				return false;
+			}
+			else {
+				// We apparently cannot find a body on which we can improve our limiting resource
+				// This means it's impossible for us to build our desired ship
+				// TODO: Figure out a way to call selectBuild without infinite loop
+				teams[team].nextBuild = teams[team].nextShipBuild;
+				return false;
+			}
+		}
+	});
 
 }
 
