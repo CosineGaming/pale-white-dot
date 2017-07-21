@@ -38,17 +38,17 @@ var descriptions = {
 var planets = { // We're doing stereotypes here. Fuck science.
 	"mercury" : {
 		"resources" : {
-			"metal" : 8,
+			"metal" : 10,
 			"gas" : 1,
 			"water" : 0,
 			"natural" : 0
 		},
-		"owner" : "rebel"
+		"owner" : "terran"
 	},
 	"venus" : {
 		"resources" : {
 			"metal" : 5,
-			"gas" : 3,
+			"gas" : 6,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -56,8 +56,8 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	},
 	"earth" : {
 		"resources" : {
-			"metal" : 12,
-			"gas" : 1,
+			"metal" : 15,
+			"gas" : 5,
 			"water" : 20,
 			"natural" : 15
 		},
@@ -65,17 +65,17 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	},
 	"mars" : {
 		"resources" : {
-			"metal" : 15,
-			"gas" : 1,
-			"water" : 8,
-			"natural" : 8
+			"metal" : 20,
+			"gas" : 3,
+			"water" : 5,
+			"natural" : 5
 		},
 		"owner" : "mars"
 	},
 	"jupiter" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 20,
+			"gas" : 30,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -84,7 +84,7 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	"saturn" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 15,
+			"gas" : 20,
 			"water" : 0,
 			"natural" : 0
 		},
@@ -93,16 +93,16 @@ var planets = { // We're doing stereotypes here. Fuck science.
 	"uranus" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 10,
+			"gas" : 15,
 			"water" : 0,
 			"natural" : 0
 		},
-		"owner" : "terran"
+		"owner" : "rebel"
 	},
 	"neptune" : {
 		"resources" : {
 			"metal" : 0,
-			"gas" : 8,
+			"gas" : 12,
 			"water" : 0,
 			"natural" : 0
 		}
@@ -114,10 +114,10 @@ var planets = { // We're doing stereotypes here. Fuck science.
 planets["earth"].moons = {
 	"luna" : {
 		"resources" : {
-			"metal" : 4,
+			"metal" : 5,
 			"gas" : 1,
 			"water" : 2,
-			"natural" : 4
+			"natural" : 3
 		},
 		"owner" : "player"
 	}
@@ -140,7 +140,7 @@ planets["mars"].moons = {
 			"water" : 1,
 			"natural" : 0
 		},
-		"owner" : "gas"
+		"owner" : "mars"
 	}
 };
 
@@ -152,14 +152,14 @@ planets["jupiter"].moons = {
 			"water" : 0,
 			"natural" : 3
 		},
-		"owner" : "rebel"
+		"owner" : "gas"
 	},
 	"europa" : {
 		"resources" : {
 			"metal" : 5,
 			"gas" : 1,
 			"water" : 10,
-			"natural" : 5
+			"natural" : 4
 		},
 		"owner" : "gas"
 	},
@@ -170,14 +170,14 @@ planets["jupiter"].moons = {
 			"water" : 4,
 			"natural" : 4
 		},
-		"owner" : "gas",
+		"owner" : "mars",
 	}, // Jet...
 	"callisto" : {
 		"resources" : {
 			"metal" : 4,
 			"gas" : 1,
 			"water" : 5,
-			"natural" : 5
+			"natural" : 4
 		},
 		"owner" : "rebel"
 	},
@@ -189,7 +189,7 @@ planets["jupiter"].moons = {
 			"natural" : 0
 		},
 		"owner" : "rebel"
-	} // Hmm what to do with naming programmatically vs visually
+	}
 };
 
 planets["saturn"].moons = {
@@ -199,7 +199,8 @@ planets["saturn"].moons = {
 			"gas" : 2,
 			"water" : 2,
 			"natural" : 4
-		}
+		},
+		"owner" : "gas"
 	},
 	"rhea" : {
 		"resources" : {
@@ -207,7 +208,8 @@ planets["saturn"].moons = {
 			"gas" : 0,
 			"water" : 3,
 			"natural" : 0
-		}
+		},
+		"owner" : "gas"
 	},
 	"iapetus" : {
 		"resources" : {
@@ -215,7 +217,8 @@ planets["saturn"].moons = {
 			"gas" : 0,
 			"water" : 3,
 			"natural" : 0
-		}
+		},
+		"owner" : "gas"
 	},
 	"dione" : {
 		"resources" : {
@@ -223,7 +226,8 @@ planets["saturn"].moons = {
 			"gas" : 0,
 			"water" : 5,
 			"natural" : 2
-		}
+		},
+		"owner" : "gas"
 	},
 	"tethys" : {
 		"resources" : {
@@ -231,15 +235,17 @@ planets["saturn"].moons = {
 			"gas" : 0,
 			"water" : 5,
 			"natural" : 0
-		}
+		},
+		"owner" : "rebel"
 	},
 	"enceladus" : {
 		"resources" : {
 			"metal" : 3,
 			"gas" : 0,
 			"water" : 4,
-			"natural" : 6
-		}
+			"natural" : 4
+		},
+		"owner" : "rebel"
 	},
 	"mimas" : {
 		"resources" : {
@@ -262,14 +268,48 @@ planets["saturn"].moons = {
 
 planets["uranus"].moons = {
 	"titania" : {
+		"resources" : {
+			"metal" : 2,
+			"gas" : 0,
+			"water" : 4,
+			"natural" : 1
+		},
+		"owner" : "rebel"
 	},
 	"oberon" : {
+		"resources" : {
+			"metal" : 2,
+			"gas" : 0,
+			"water" : 3,
+			"natural" : 0
+		},
+		"owner" : "rebel"
 	},
 	"umbriel" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 0,
+			"water" : 2,
+			"natural" : 0
+		},
+		"owner" : "rebel"
 	},
 	"ariel" : {
+		"resources": {
+			"metal" : 2,
+			"gas" : 0,
+			"water" : 2,
+			"natural" : 0
+		},
+		"owner" : "rebel"
 	},
 	"miranda" : {
+		"resources" : {
+			"metal" : 0,
+			"gas" : 0,
+			"water" : 4,
+			"natural" : 0
+		}
 	}
 };
 
@@ -293,7 +333,7 @@ planets["neptune"].moons = {
 	},
 	"nereid" : {
 		"resources" : {
-			"metal" : 1,
+			"metal" : 2,
 			"gas" : 0,
 			"water" : 2,
 			"natural" : 0
@@ -306,19 +346,19 @@ var buildable = {
 	"Planetary Nuke" : {
 		"metal" : 4000,
 		"gas" : 5000,
-		"water" : 2000,
+		"water" : 2500,
 		"natural" : 1500
 	},
 	"Starship" : {
 		"metal" : 2500,
 		"gas" : 500,
-		"water" : 600,
+		"water" : 1000,
 		"natural" : 1000
 	},
 	"Fighter" : {
 		"metal" : 1000,
 		"gas" : 100,
-		"water" : 550,
+		"water" : 800,
 		"natural" : 50
 	},
 	"Planetary Defense" : {
@@ -348,7 +388,7 @@ var buildable = {
 	"Skymine" : {
 		"metal" : 150,
 		"gas" : 30,
-		"water" : 20,
+		"water" : 40,
 		"natural" : 30
 	},
 };
@@ -391,7 +431,7 @@ var ships = {
 	},
 	"Planetary Nuke" : {
 		"killChance" : 0.2,
-		"saveChance" : 0.6
+		"saveChance" : 0.5
 	},
 };
 
