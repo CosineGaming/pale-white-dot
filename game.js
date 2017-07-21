@@ -177,6 +177,9 @@ function updatePrices(e, type)
 		var otherResource = $("#" + other + "-resource");
 		var count         = $("#" + type  + "-count");
 		var otherCount    = $("#" + other + "-count");
+		if (count.val() && count.val() < 1) {
+			count.val(1);
+		}
 		var price = tradePrice(focusedBodyObj.owner, resource.val(), otherResource.val(), parseInt(count.val()));
 		otherCount.val(price);
 
