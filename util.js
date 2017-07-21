@@ -6,7 +6,12 @@
 // Fuck you. Anyway, thanks http://stackoverflow.com/a/3291856/1556332
 String.prototype.capitalize = function()
 {
-	return this.charAt(0).toUpperCase() + this.slice(1);
+	return this.replace(/\w*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+String.prototype.humanize = function()
+{
+	return this.replace(/-/g, " ").capitalize()
 }
 
 function incrementOrOne(obj, prop, count)

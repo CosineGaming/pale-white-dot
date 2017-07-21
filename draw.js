@@ -197,10 +197,10 @@ function drawNewPlanet()
 	$("#focused-body").attr("src", "assets/" + imgSrc + ".png");
 	$("#focused-body").attr("usemap", "#" + focusedBody + "-map");
 	$("#" + focusedBody + "-map").imageMapResize();
-	$("#focused-label").html(focusedBody.capitalize());
+	$("#focused-label").html(focusedBody.humanize());
 
 	drawList(focusedBodyObj, "moons", function(name, moon) {
-		return $("<a>").attr("href", "#" + name).append(name.capitalize());
+		return $("<a>").attr("href", "#" + name).append(name.humanize());
 	});
 
 	drawBuiltImages(true);
@@ -230,7 +230,7 @@ function drawNewOwner()
 				}
 				link.append(img);
 			}
-			link.attr("href", "#" + name).append(name.capitalize());
+			link.attr("href", "#" + name).append(name.humanize());
 			$("#owned").append($("<li>").append(link));
 		}
 	});
@@ -485,7 +485,7 @@ function drawUpdate()
 		var bodyList = $("<ul>");
 		bodies(function(body, bodyName) {
 			if (body.owner == name) {
-				bodyList.append($("<li>").append(bodyName.capitalize()));
+				bodyList.append($("<li>").append(bodyName.humanize()));
 			}
 		});
 		tooltip.append(bodyList);
@@ -494,6 +494,7 @@ function drawUpdate()
 		if (resources >= 1000) {
 			resources = Math.floor(resources/1000) + "k"
 		}
+		// Sword emoji codepoint
 		var swords = $("<span>").append(" (&#x2694;&#xFE0F;)").addClass("red");
 		var entry = $("<div>").append(
 			$("<div>").append(
