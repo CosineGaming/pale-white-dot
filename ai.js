@@ -26,7 +26,7 @@ function selectBuild(team) {
 
 	// Otherwise pick randomly
 	var options = Object.keys(buildable);
-	if (teams[team].fleet && !$.isEmptyObject(teams[team].fleet)) {
+	if (canCreateFleet(team)) {
 		options.push("attack");
 	}
 	teams[team].nextBuild = randFromList(options);
@@ -93,156 +93,222 @@ function aiBuild(name, team) {
 	}
 }
 
-function aiFleet(teamName, team) {
+function aiFleet(teamName, allowNukes) {
 
-	var fleetChance = 1/1;
-	if (Math.random() < fleetChance) {
-		var currentFleetStrength = fleetStrength(team.fleet);
-		var allowNukesChance = 1/(60*5);
-		var allowNukes = Math.random() < allowNukesChance;
-		// Select bodies with more ships than our fleet
-		var bodyName = selectBody(name, function(name, body) {
-			if (body.owner == teamName) {
-				var strength = fleetStrength(body.built);
-				return strength > currentFleetStrength;
-			}
-		});
-		var body = getBody(bodyName);
-		if (body && body.built) {
-			var types = [];
-			$.each(ships, function(name, _) {
-				if (name in body.built && !(name in defenseShips)) {
+	var team = teams[teamName];
+
+	var currentFleetStrength = fleetStrength(team.fleet);
+	// Select bodies with more ships than our fleet
+	var maxValue = 0;
+	var bodyName = selectBody(teamName, function(name, body) {
+		var strength = fleetStrength(body.built);
+		var takeAway = worstStrength(body.built);
+		return strength - takeAway > currentFleetStrength && takeAway > 0;
+	});
+	var body = getBody(bodyName);
+	if (body && body.built) {
+		var types = [];
+		// Never take away so much that the fleet becomes stronger than the planet
+		var maxStrength = fleetStrength(body.built) - currentFleetStrength;
+		$.each(ships, function(name, _) {
+			if (name in body.built && !(name in defenseShips)) {
+				if (shipStrength(name) <= maxStrength) {
 					if (allowNukes || name != "Planetary Nuke") {
 						types.push(name);
 					}
 				}
-			});
-			type = randFromList(types);
-			if (type) {
-				addToFleet(body, type, 1, teamName);
 			}
+		});
+		type = randFromList(types);
+		if (type) {
+			addToFleet(body, type, 1, teamName);
+			return true;
 		}
 	}
+	return false;
 
 }
 
+function worstStrength(fleet) {
+	var worst = -1;
+	$.each(fleet, function(type, count) {
+		if (type in ships && !(type in defenseShips)) {
+			var strength = shipStrength(type);
+			if (worst == -1 || strength < worst) {
+				worst = strength;
+			}
+		}
+	});
+	if (worst == -1) {
+		worst = 0;
+	}
+	return worst;
+}
+
+// Returns the expected number of ships to kill before dying
 function shipStrength(type) {
 	var ship = ships[type];
-	// Average survival turns is given by equation (sC)^n=0.5
-	// This is solved by logBase(0.5, dC)
-	var survivalTurns = Math.log(0.5) / Math.log(ship.saveChance)
+	var survivalTurns = 1 / (1 - ship.saveChance);
 	var numKill = survivalTurns * ship.killChance;
 	return numKill;
 }
 
 function fleetStrength(fleet) {
 	var strength = 0;
+	var number = 0;
 	$.each(fleet, function(type, count) {
 		if (type in ships && type != "Planetary Nuke") {
 			strength += shipStrength(type) * count;
+			number += count;
 		}
 	});
-	return strength;
+	return strength * number;
+}
+
+function canCreateFleet(teamName) {
+	var team = teams[teamName];
+	var can = false;
+	bodies(function(body) {
+		if (body.owner == teamName) {
+			var strength = fleetStrength(body.built);
+			var takeAway = worstStrength(body.built);
+			if (strength - takeAway > 0 && takeAway > 0) {
+				can = true;
+				// Break out of bodies loop
+				return false;
+			}
+		}
+	});
+	// console.log(can);
+	return can;
+}
+
+function createFleet(teamName, team) {
+	while (aiFleet(teamName, team)) {}
+}
+
+function redistributeFleet(teamName, team) {
+	while (!$.isEmptyObject(team.fleet)) {
+		var body = null;
+		var worstDefense = -1;
+		bodies(function(check) {
+			if (check.owner == teamName) {
+				var strength = fleetStrength(check.built);
+				if (worstDefense == -1 || strength < worstDefense) {
+					body = check;
+					worstDefense = strength;
+				}
+			}
+		});
+		var types = Object.keys(team.fleet);
+		var type = randFromList(types);
+		addToFleet(body, type, -1, teamName);
+	}
 }
 
 function aiAttack(teamName, team) {
 
-	var attackChance = 1/1;
-	if (team.fleet && !$.isEmptyObject(team.fleet) && Math.random() < attackChance) {
-		if (purchase(teamName, attackCost, 1)) {
-			if (team.nextBuild == "attack") {
-				selectBuild(teamName);
+	if (team.nextBuild == "attack" && !canCreateFleet(teamName)) {
+		// We might have been attacked, our defenses have been taken out.
+		// We can no longer attack, let's try to rebuild
+		selectBuild(teamName);
+	}
+	if (canCreateFleet(teamName) && purchase(teamName, attackCost, 1)) {
+		createFleet(teamName, team);
+		console.log(team.fleet);
+		if (team.nextBuild == "attack") {
+			selectBuild(teamName);
+		}
+		var ourStrength = fleetStrength(team.fleet);
+		var haveNuke = "Planetary Nuke" in team.fleet;
+		var allOthers = [];
+		var allDefeatable = [];
+		var allEnemies = [];
+		var toAttack = selectBody(null, function(name, body) {
+			if (body.nuked) {
+				return false;
 			}
-			var ourStrength = fleetStrength(team.fleet);
-			var haveNuke = "Planetary Nuke" in team.fleet;
-			var allOthers = [];
-			var allDefeatable = [];
-			var allEnemies = [];
-			var toAttack = selectBody(null, function(name, body) {
-				var other = body.owner != teamName;
-				if (other) {
-					allOthers.push(name);
-				}
-				var strength = fleetStrength(body.built);
-				defeatable = ourStrength > strength || haveNuke;
-				if (other && defeatable) {
-					allDefeatable.push(name);
-				}
-				var enemy = team.enemies && team.enemies[body.owner];
-				if (other && enemy) {
-					allEnemies.push(name);
-				}
-				return other && defeatable && enemy;
-			});
-			var oldOwner;
-			if (!toAttack) {
-				// We have no defeatable enemies, but we want to attack: better make one
-				// AKA declare war
-				if (allDefeatable.length != 0) {
-					toAttack = randFromList(allDefeatable);
-				}
-				else {
-					// We don't think there's anyone we can beat
-					return;
-				}
-				oldOwner = getBody(toAttack).owner;
-				if (oldOwner) {
-					declareWar(teamName, oldOwner);
-				}
+			var other = body.owner != teamName;
+			if (other) {
+				allOthers.push(name);
+			}
+			var strength = fleetStrength(body.built);
+			defeatable = ourStrength > strength || haveNuke;
+			if (other && defeatable) {
+				allDefeatable.push(name);
+			}
+			var enemy = !body.owner || (team.enemies && team.enemies[body.owner]);
+			if (other && enemy) {
+				allEnemies.push(name);
+			}
+			return other && defeatable && enemy;
+		});
+		var oldOwner;
+		if (!toAttack) {
+			// We have no defeatable enemies, but we want to attack: better make one
+			// AKA declare war
+			if (allDefeatable.length != 0) {
+				toAttack = randFromList(allDefeatable);
 			}
 			else {
-				oldOwner = getBody(toAttack).owner;
+				// We don't think there's anyone we can beat
+				redistributeFleet(teamName, team);
+				return;
 			}
-			var outcomeText;
-			var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.capitalize());
-			var outcome = attack(teamName, toAttack);
-			if (outcome == "attacker") {
-				// Place entire fleet on planet. Will reaccumulate fleet through aiFleet over time, smartly
-				$.each(team.fleet, function(type, count) {
-					addToFleet(getBody(toAttack), type, -1 * count, teamName);
-				});
-				outcomeText = $("<p>").append(
-					"The " + teamNames[teamName] + " took "
-				).append(planetLink);
-				if (oldOwner) {
-					outcomeText.append(
-						" from the " + teamNames[oldOwner] + "!"
-					);
-				}
-				else {
-					outcomeText.append("!");
-				}
-				if (oldOwner == "player") {
-					outcomeText.addClass("red");
-				}
+			oldOwner = getBody(toAttack).owner;
+			if (oldOwner) {
+				declareWar(teamName, oldOwner);
 			}
-			else if (outcome == "defender") {
-				console.log("The " + teamNames[oldOwner] + " defended " + toAttack.capitalize() + " from the " + teamNames[teamName]);
-				if (oldOwner == "player") {
-					outcomeText = $("<p>").append(
-						"You defended "
-					).append(planetLink).append(
-						" from the " + teamNames[teamName] + "."
-					);
-					outcomeText.addClass("green");
-				}
-			}
-			else if (outcome == "nuked") {
-				outcomeText = $("<p>").append(
-					"The " + teamNames[teamName] + " NUKED "
-				).append(planetLink).append(
-					", previously held by the " + teamNames[oldOwner] + "!"
+		}
+		else {
+			oldOwner = getBody(toAttack).owner;
+		}
+		var outcomeText;
+		var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.capitalize());
+		var outcome = attack(teamName, toAttack);
+		if (outcome == "attacker") {
+			redistributeFleet(teamName, team)
+			outcomeText = $("<p>").append(
+				"The " + teamNames[teamName] + " took "
+			).append(planetLink);
+			if (oldOwner) {
+				outcomeText.append(
+					" from the " + teamNames[oldOwner] + "!"
 				);
-				if (oldOwner == "player") {
-					outcomeText.addClass("red");
-				}
 			}
-			if (outcomeText) {
-				eventMessage(outcomeText, 10000, "", true);
+			else {
+				outcomeText.append("!");
 			}
-			if (toAttack == focusedBody || oldOwner == "player") {
-				drawNewOwner();
+			if (oldOwner == "player") {
+				outcomeText.addClass("red");
 			}
+		}
+		else if (outcome == "defender") {
+			console.log("The " + teamNames[oldOwner] + " defended " + toAttack.humanize() + " from the " + teamNames[teamName]);
+			if (oldOwner == "player") {
+				outcomeText = $("<p>").append(
+					"You defended "
+				).append(planetLink).append(
+					" from the " + teamNames[teamName] + "."
+				);
+				outcomeText.addClass("green");
+			}
+		}
+		else if (outcome == "nuked") {
+			outcomeText = $("<p>").append(
+				"The " + teamNames[teamName] + " NUKED "
+			).append(planetLink).append(
+				", previously held by the " + teamNames[oldOwner] + "!"
+			);
+			if (oldOwner == "player") {
+				outcomeText.addClass("red");
+			}
+		}
+		if (outcomeText) {
+			eventMessage(outcomeText, 10000, "", true);
+		}
+		if (toAttack == focusedBody || oldOwner == "player") {
+			drawNewOwner();
 		}
 	}
 
@@ -302,7 +368,7 @@ function ai() {
 		if (name != "player") {
 			aiTrade(name, team);
 			aiBuild(name, team);
-			aiFleet(name, team);
+			// aiFleet(name, team);
 			aiAttack(name, team);
 			aiDiplomacy(name, team);
 		}
