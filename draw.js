@@ -246,8 +246,13 @@ function drawNewOwner()
 			$("#not-owned-menu").show();
 			$("#owned-menu").hide();
 		}
+		if (!focusedBodyObj.owner) {
+			$("#trade").hide();
+		}
+		else {
+			$("#trade").show();
+		}
 		$("#team-label").show();
-		$("#trade").show();
 		var label = "Unclaimed";
 		if (focusedBodyObj.hasOwnProperty("owner")) {
 			label = teamNames[focusedBodyObj.owner];
@@ -262,7 +267,6 @@ function drawNewOwner()
 		$("#owned-menu").hide();
 		$("#not-owned-menu").hide();
 		$("#team-label").hide();
-		$("#trade").hide();
 	}
 
 	updatePrices();

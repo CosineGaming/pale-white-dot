@@ -179,7 +179,6 @@ function canCreateFleet(teamName) {
 			}
 		}
 	});
-	// console.log(can);
 	return can;
 }
 
@@ -215,7 +214,6 @@ function aiAttack(teamName, team) {
 	}
 	if (canCreateFleet(teamName) && purchase(teamName, attackCost, 1)) {
 		createFleet(teamName, team);
-		console.log(team.fleet);
 		if (team.nextBuild == "attack") {
 			selectBuild(teamName);
 		}
@@ -264,7 +262,7 @@ function aiAttack(teamName, team) {
 			oldOwner = getBody(toAttack).owner;
 		}
 		var outcomeText;
-		var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.capitalize());
+		var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.humanize());
 		var outcome = attack(teamName, toAttack);
 		if (outcome == "attacker") {
 			redistributeFleet(teamName, team)

@@ -307,7 +307,7 @@ function hashChange()
 		}
 	}
 
-	document.title = focusedBody.capitalize() + " - Pale White Dot";
+	document.title = focusedBody.humanize() + " - Pale White Dot";
 
 	// Update the stars so that it looks like we've moved, not a static background
 	document.body.style.backgroundPosition = Math.random() * 800 + "px " + Math.random() * 800 + "px";
