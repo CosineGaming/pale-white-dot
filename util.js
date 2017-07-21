@@ -80,10 +80,20 @@ function getMaxBuyable(buyer, buying) {
 function bodies(func)
 {
 	$.each(planets, function(name, planet) {
-		func(planet, name);
+		// We return because we want to allow return to break like in jQuery
+		var doBreak = func(planet, name);
+		if (typeof doBreak != "undefined") {
+			return doBreak;
+		}
 		$.each(planet.moons, function(moonName, moon) {
-			func(moon, moonName);
-		})
+			doBreak = func(moon, moonName);
+			if (typeof doBreak != "undefined") {
+				return doBreak;
+			}
+		});
+		if (typeof doBreak != "undefined") {
+			return doBreak;
+		}
 	});
 }
 
