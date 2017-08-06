@@ -318,7 +318,7 @@ function hashChange()
 
 	$("#back").attr("href", "#" + parentBody);
 	if (!(parentBody in availImgs)) {
-		$("#back-fallback").show().html(parentBody.replace(/-/g, " ").capitalize());
+		$("#back-fallback").show().html(parentBody.humanize());
 		$("#back-img").hide();
 	}
 	else {
