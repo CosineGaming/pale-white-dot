@@ -290,48 +290,24 @@ function aiAttack(teamName, team) {
 		}
 		var ourStrength = fleetStrength(team.fleet);
 		var haveNuke = "Planetary Nuke" in team.fleet;
-		var allOthers = [];
 		var allDefeatable = [];
-		var allEnemies = [];
 		var toAttack = selectBody(null, function(name, body) {
 			if (body.nuked) {
 				return false;
 			}
-			var other = body.owner != teamName;
-			if (other) {
-				allOthers.push(name);
-			}
 			var strength = fleetStrength(body.built);
-			defeatable = ourStrength > strength || haveNuke;
-			if (other && defeatable) {
-				allDefeatable.push(name);
-			}
+			var other = body.owner != teamName;
+			var defeatable = ourStrength > strength || haveNuke;
 			var enemy = !body.owner || (team.enemies && team.enemies[body.owner]);
-			if (other && enemy) {
-				allEnemies.push(name);
-			}
 			return other && defeatable && enemy;
 		});
 		var oldOwner;
 		if (!toAttack) {
-			// We have no defeatable enemies, but we want to attack: better make one
-			// AKA declare war
-			if (allDefeatable.length != 0) {
-				toAttack = randFromList(allDefeatable);
-			}
-			else {
-				// We don't think there's anyone we can beat
-				redistributeFleet(teamName, team);
-				return;
-			}
-			oldOwner = getBody(toAttack).owner;
-			if (oldOwner) {
-				declareWar(teamName, oldOwner);
-			}
+			// If there are no defeatable enemies, now is not the time to attack
+			redistributeFleet(teamName, team);
+			return;
 		}
-		else {
-			oldOwner = getBody(toAttack).owner;
-		}
+		oldOwner = getBody(toAttack).owner;
 		var outcomeText;
 		var planetLink = $("<a>").attr("href", "#" + toAttack).append(toAttack.humanize());
 		var outcome = attack(teamName, toAttack);
@@ -399,7 +375,7 @@ function declareWar(from, on) {
 }
 
 function aiDiplomacy(name, team) {
-	var reAllyChance = 1/(60*4);
+	var reAllyChance = 1/(60*3);
 	var enemyChance = 1/(60*3);
 	if (Math.random() < reAllyChance) {
 		options = [];
@@ -418,7 +394,7 @@ function aiDiplomacy(name, team) {
 			}
 		}
 	}
-	if (Math.random() < enemyChance) {
+	if (Math.random() < enemyChance && canCreateFleet(name)) {
 		options = [];
 		$.each(teams, function(otherName, otherTeam) {
 			if ((!team.enemies || !team.enemies[otherName]) && otherName != name) {
@@ -437,9 +413,8 @@ function ai() {
 		if (name != "player") {
 			aiTrade(name, team);
 			aiBuild(name, team);
-			// aiFleet(name, team);
-			aiAttack(name, team);
 			aiDiplomacy(name, team);
+			aiAttack(name, team);
 		}
 	});
 }
