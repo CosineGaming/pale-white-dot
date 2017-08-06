@@ -8,14 +8,11 @@ function drawOnce()
 
 	// Initialize build menu based on data.js, to be hidden and shown whenever
 	$.each(buildable, function(item, cost) {
-		var tooltip = $("<div>").append($("<p>").append(buildDescriptions[item]));
-		var itemId = item.replace(" ", "-");
-		tooltip.append(costList(cost, itemId));
+		var tooltip = $("<div>").append($("<p>").append(buildDescriptions[item])).attr("id", "build-" + item.idForm() + "-tooltip");
 		$("#build-menu").append(tooltip);
-		var max = getMaxBuyable(teams["player"].resources, cost);
 		$("#build-menu").append(
-			addTooltip($("<li>"), tooltip).attr("id", "max-" + itemId).append(
-				$("<img>").attr("src", "assets/" + itemId + ".png").addClass("build-img clickable").click(function() { build(item); } )
+			addTooltip($("<li>"), tooltip).attr("id", "max-" + item.idForm()).append(
+				$("<img>").attr("src", "assets/" + item.replace(" ", "-") + ".png").addClass("build-img clickable").click(function() { build(item); } )
 			).append($("<br />")).append(
 				$("<a>").append(item).click(function() { build(item); } )
 			)
@@ -426,32 +423,37 @@ function drawUpdate()
 		$("#attack img").removeClass("clickable-img");
 	}
 
-	$(".multiple-link").remove();
-	$.each(buildable, function(item, cost) {
-		var canAfford = drawAffordable(cost, function(resource) {
-			return item.replace(" ", "-") + "-" + resource;
+	$(".delete-update").remove();
+	if (focusedBodyObj && focusedBodyObj.owner == "player") {
+		$(".multiple-link").remove();
+		$.each(buildable, function(item, cost) {
+			var tooltip = $("#build-" + item.idForm() + "-tooltip");
+			tooltip.append(costList(getCost(item, focusedBodyObj), item.idForm()).addClass("delete-update"));
+			var canAfford = drawAffordable(getCost(item, focusedBodyObj), function(resource) {
+				return item.idForm() + "-" + resource;
+			});
+			var buildItem = $("#max-" + item.idForm());
+			if (canAfford) {
+				buildItem.addClass("clickable-img");
+			}
+			else {
+				buildItem.removeClass("clickable-img");
+			}
+			var max = getMaxBuyable(teams["player"].resources, getCost(item, focusedBodyObj));
+			// Each power of 10 that is buildable
+			for (let count=10; count<=max; count*=10) {
+				buildItem.append(
+					$("<span>").addClass("multiple-link").append(
+						" ("
+					).append(
+						$("<a>").append(count).click(function() {
+							build(item, null, null, count);
+						})
+					).append(")")
+				);
+			}
 		});
-		var buildItem = $("#max-" + item.replace(" ", "-"));
-		if (canAfford) {
-			buildItem.addClass("clickable-img");
-		}
-		else {
-			buildItem.removeClass("clickable-img");
-		}
-		var max = getMaxBuyable(teams["player"].resources, cost);
-		// Each power of 10 that is buildable
-		for (let count=10; count<=max; count*=10) {
-			buildItem.append(
-				$("<span>").addClass("multiple-link").append(
-					" ("
-				).append(
-					$("<a>").append(count).click(function() {
-						build(item, null, null, count);
-					})
-				).append(")")
-			);
-		}
-	});
+	}
 	drawAffordable(attackCost, function(resource) {
 		return "attack-" + resource;
 	});

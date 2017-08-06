@@ -14,6 +14,11 @@ String.prototype.humanize = function()
 	return this.replace(/-/g, " ").capitalize()
 }
 
+String.prototype.idForm = function()
+{
+	return this.replace(/ /g, "-").toLowerCase()
+}
+
 function incrementOrOne(obj, prop, count)
 {
 	if (typeof count == "undefined") {

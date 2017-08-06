@@ -28,6 +28,20 @@ function update()
 	drawUpdate();
 }
 
+function getCost(item, body) {
+	// Ships don't increase in cost, or if we haven't built one it's base cost
+	if (item in ships || !body.built || !body.built[item]) {
+		return buildable[item];
+	}
+	var factor = 1;
+	var costFactor = factor * body.built[item] + 1;
+	var price = {};
+	$.each(buildable[item], function(resource, cost) {
+		price[resource] = Math.ceil(cost * costFactor);
+	});
+	return price;
+}
+
 // Checks if you can afford something /and removes those resources/ if you can
 // team: /name/
 // cost: /resource object/
@@ -93,9 +107,9 @@ function build(name, team, toBody, count)
 	if (!count) {
 		count = 1;
 	}
-	var canBuild = purchase(team, buildable[name], count);
+	var body = getBody(toBody);
+	var canBuild = purchase(team, getCost(name, body), count);
 	if (canBuild) {
-		var body = getBody(toBody);
 		incrementOrOne(objOrCreate(body, "built"), name, count);
 		if (focusedBody == toBody) {
 			drawBuilt();

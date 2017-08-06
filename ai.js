@@ -36,6 +36,8 @@ function selectShipBuild(team) {
 
 function selectBuild(team) {
 
+	// Purchase incrementals, if we need much of a resource in order to aquire
+	// our ship in reasonable time
 	var turnsWait = 30;
 	// Build multipliers
 	var teamObj = teams[team];
@@ -67,20 +69,26 @@ function selectBuild(team) {
 		teams[team].nextShipBuild = null;
 		return;
 	}
-	$.each(buildMultipliers, function(name, multiplier) {
+	// Purchase a modifier
+	$.each(buildMultipliers, function(building, multiplier) {
 		if (Object.keys(multiplier).includes(limitingResource)) {
 			var bestBody = null;
 			var bestResource = 0;
 			bodies(function(body, name) {
 				if (body.owner == team) {
-					if (body.resources[limitingResource] > bestResource) {
+					var costFactor = 1;
+					if (body.built && body.built[building]) {
+						costFactor = body.built[building] + 1;
+					}
+					var value = body.resources[limitingResource] / costFactor;
+					if (value > bestResource) {
 						bestBody = name;
-						bestResource = body.resources[limitingResource];
+						bestResource = value;
 					}
 				}
 			});
 			if (bestBody) {
-				teams[team].nextBuild = name;
+				teams[team].nextBuild = building;
 				teams[team].nextBuildBody = bestBody;
 				return false;
 			}
