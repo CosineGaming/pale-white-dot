@@ -217,20 +217,20 @@ function drawNewOwner()
 
 	// Make sure the owned bodies is up to date
 	$("#owned").empty();
-	bodies(function(body, name) {
-		if (body.owner == "player") {
-			var link = $("<a>");
-			if (name in availImgs) {
-				var img = $("<img>").attr("src", "assets/" + name + ".png").addClass("owned-body-img clickable");
-				if (name != focusedBody) {
-					img.addClass("clickable-img");
-				}
-				link.append(img);
+	var sortedBodies = getSortedBodies("player");
+	for (var i=0; i<sortedBodies.length; i++) {
+		var name = sortedBodies[i];
+		var link = $("<a>");
+		if (name in availImgs) {
+			var img = $("<img>").attr("src", "assets/" + name + ".png").addClass("owned-body-img clickable");
+			if (name != focusedBody) {
+				img.addClass("clickable-img");
 			}
-			link.attr("href", "#" + name).append(name.humanize());
-			$("#owned").append($("<li>").append(link));
+			link.append(img);
 		}
-	});
+		link.attr("href", "#" + name).append(name.humanize());
+		$("#owned").append($("<li>").append(link));
+	};
 
 	// Display appropriate interaction menu
 	var focusedBodyObj = getBody(focusedBody);
@@ -479,11 +479,10 @@ function drawUpdate()
 			tooltip.append($("<p>").addClass("green").append("Ally"));
 		}
 		var bodyList = $("<ul>");
-		bodies(function(body, bodyName) {
-			if (body.owner == name) {
-				bodyList.append($("<li>").append(bodyName.humanize()));
-			}
-		});
+		var sortedBodies = getSortedBodies(name);
+		for (var i=0; i<sortedBodies.length; i++) {
+			bodyList.append($("<li>").append(sortedBodies[i].humanize()));
+		};
 		tooltip.append(bodyList);
 		tooltip.append($("<br>")).append($("<p>").append("Click to view capital body."));
 		tooltipContainer.append(tooltip);

@@ -135,6 +135,30 @@ function getBody(name)
 	return null;
 }
 
+// Sort owned bodies by total resources
+// Return array of bodies, most powerful first
+function getSortedBodies(team) {
+	var sortedBodies = [];
+	bodies(function(body, name) {
+		if (body.owner == team) {
+			sortedBodies.push(name);
+		}
+	});
+	// Factions might change while viewing one planet
+	sortedBodies.sort(function(a, b) {
+		return totalBodyIncome(getBody(b)) - totalBodyIncome(getBody(a));
+	});
+	return sortedBodies;
+}
+
+function totalBodyIncome(body) {
+	var totalResources = 0;
+	$.each(body.resources, function(resource, count) {
+		totalResources += getMultiplied(body.built, resource, count);
+	});
+	return totalResources;
+}
+
 function totalResources(obj) {
 	var total = 0;
 	$.each(obj.resources, function(resource, count) {

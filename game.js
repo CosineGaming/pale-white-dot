@@ -279,20 +279,7 @@ function checkLost()
 
 function focusTeam(team)
 {
-	var bestBody;
-	var bodyResources = -1;
-	bodies(function(body, name) {
-		if (body.owner == team) {
-			var totalResources = 0;
-			$.each(body.resources, function(resource, count) {
-				totalResources += getMultiplied(body.built, resource, count);
-			});
-			if (totalResources > bodyResources) {
-				bestBody = name;
-				bodyResources = totalResources;
-			}
-		}
-	});
+	var bestBody = getSortedBodies(team)[0];
 	if (bestBody) {
 		window.location.hash = "#" + bestBody;
 	}
