@@ -84,6 +84,19 @@ function addResources(from, to, mult, built)
 	});
 }
 
+// The total resources available in the Solar System
+function availResources() {
+	var resources = {};
+	bodies(function(body, name) {
+		if (body.resources) {
+			$.each(body.resources, function(resource, count) {
+				incrementOrOne(resources, resource, count);
+			});
+		}
+	});
+	return resources;
+}
+
 function getMaxBuyable(buyer, buying) {
 	var max = -1;
 	$.each(buying, function(resource, count) {

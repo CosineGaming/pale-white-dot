@@ -6,6 +6,28 @@ function randFromList(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
 
+function weightedRandom(weights, inverse) {
+	var max = 0;
+	var computed = {};
+	$.each(weights, function(name, weight) {
+		if (inverse) {
+			weight = 1/weight;
+		}
+		max += weight;
+		computed[name] = max;
+	});
+	var r = Math.random() * max;
+	var rv;
+	$.each(computed, function(name, ceil) {
+		if (ceil > r) {
+			rv = name;
+			// break out of jQuery loop
+			return false;
+		}
+	});
+	return rv;
+}
+
 function selectShipBuild(team) {
 
 	// If we have undefended planets, always defend them
@@ -24,13 +46,29 @@ function selectShipBuild(team) {
 		return;
 	}
 
-	// Otherwise pick randomly
+	// Otherwise pick randomly, negatively weighted by price
 	var options = Object.keys(ships);
-	if (canCreateFleet(team)) {
-		options.push("attack");
+	var weights = {};
+	var avail = availResources();
+	for (var i=0; i<options.length; i++) {
+		// Find the total cost of the thing
+		var name = options[i];
+		var total = 0;
+		$.each(buildable[name], function(resource, count) {
+			// Weight by available resources: = value
+			total += count / avail[resource];
+		});
+		if (name in defenseShips) {
+			total *= 3;
+		}
+		weights[name] = total;
 	}
+	if (canCreateFleet(team)) {
+		// Attack, on average, as much as we build a starship and fighter
+		weights["attack"] = weights["Starship"] + weights["Fighter"];
+	}
+	teams[team].nextShipBuild = weightedRandom(weights, true);
 	teams[team].nextShipBuildBody = null;
-	teams[team].nextShipBuild = randFromList(options);
 
 }
 

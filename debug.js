@@ -1,18 +1,5 @@
 // Optimization
 
-function availResources() {
-	var resources = {water:0, natural: 0, metal:0, gas:0};
-	bodies(function(body, name) {
-		if (body.resources) {
-			resources.water += body.resources.water;
-			resources.natural += body.resources.natural;
-			resources.metal += body.resources.metal;
-			resources.gas += body.resources.gas;
-		}
-	});
-	return resources;
-}
-
 function costResources() {
 	var resources = {water:0, natural: 0, metal:0, gas:0};
 	buildable["attack"] = attackCost;
