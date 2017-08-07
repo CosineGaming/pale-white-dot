@@ -28,19 +28,21 @@ function costResources() {
 	return resources;
 }
 
-function normalizeResources(values, normTo) {
+function normalizeResources(values, normTo, absolute) {
 	var resources = {};
 	var factor = -1;
 	$.each(values, function(name, resource) {
 		resources[name] = resource / normTo[name];
-		if (factor == -1) {
-			factor = 1;
-			while (resources[name] * factor < 5) {
-				factor *= 10;
+		if (!absolute) {
+			if (factor == -1) {
+				factor = 1;
+				while (resources[name] * factor < 5) {
+					factor *= 10;
+				}
 			}
+			resources[name] *= factor;
+			resources[name] = Math.round(resources[name]);
 		}
-		resources[name] *= factor;
-		resources[name] = Math.round(resources[name]);
 	});
 	return resources;
 }
@@ -68,16 +70,30 @@ function teamResources() {
 	$.each(teams, function(name, team) {
 		var or = team.optResources;
 		var total = or.water + or.natural + or.metal + or.gas;
-		or = normalizeResources(or, availResources());
 		console.log(name + ":" + JSON.stringify(or) + "," + total);
 	});
+}
+
+function totalCosts() {
+	var rv = {};
+	$.each(buildable, function(name, cost) {
+		var total = 0;
+		cost = normalizeResources(cost, availResources(), true);
+		$.each(cost, function(resource, count) {
+			total += 3 * count;
+		});
+		rv[name] = Math.round(total);
+	});
+	return rv
 }
 
 function optimizationValues() {
 	console.log("Resources value (costs normed to avail):");
 	console.log(valueResources());
-	console.log("Teams resource aquisition (normalized to avail):");
+	console.log("Teams resource aquisition (unnormalized):");
 	console.log(teamResources());
+	console.log("Total costs (normalized to avail):");
+	console.log(totalCosts());
 }
 
 // Debug stuff

@@ -334,12 +334,18 @@ function init()
 {
 
 	// This is for balance, to slow (>) or speed (<) things up
-	var priceMultiplier = 1.2;
+	var priceMultiplier = 1;
+	var yieldMultiplier = 1;
 	var buildAndAttackCosts = $.extend({}, buildable);
 	buildAndAttackCosts["attack"] = attackCost;
 	$.each(buildAndAttackCosts, function(name, cost) {
 		$.each(cost, function(resource, count) {
 			cost[resource] = Math.round(count * priceMultiplier);
+		});
+	});
+	bodies(function(body, name) {
+		$.each(body.resources, function(resource, count) {
+			body.resources[resource] = count * yieldMultiplier;
 		});
 	});
 

@@ -344,20 +344,20 @@ planets["neptune"].moons = {
 // Breaking standards here with the capitalized names
 var buildable = {
 	"Planetary Nuke" : {
-		"metal" : 4000,
+		"metal" : 3750,
 		"gas" : 5000,
 		"water" : 2500,
 		"natural" : 1500
 	},
 	"Starship" : {
 		"metal" : 2500,
-		"gas" : 500,
+		"gas" : 750,
 		"water" : 1000,
 		"natural" : 1000
 	},
 	"Fighter" : {
 		"metal" : 1000,
-		"gas" : 100,
+		"gas" : 200,
 		"water" : 800,
 		"natural" : 50
 	},
@@ -368,51 +368,51 @@ var buildable = {
 		"natural" : 500
 	},
 	"Extraction Well" : {
-		"metal" : 100,
-		"gas" : 60,
+		"metal" : 150,
+		"gas" : 80,
 		"water" : 40,
 		"natural" : 5
 	},
 	"Controlled Ag" : {
-		"metal" : 15,
-		"gas" : 20,
-		"water" : 200,
+		"metal" : 10,
+		"gas" : 10,
+		"water" : 175,
 		"natural" : 30
 	},
 	"Mine" : {
 		"metal" : 30,
 		"gas" : 10,
-		"water" : 100,
+		"water" : 75,
 		"natural" : 80
 	},
 	"Skymine" : {
 		"metal" : 150,
-		"gas" : 30,
+		"gas" : 40,
 		"water" : 40,
-		"natural" : 30
+		"natural" : 40
 	},
 };
 
 var attackCost = {
-	"gas" : 800,
-	"water" : 1000,
-	"natural" : 500
+	"gas" : 500,
+	"water" : 750,
+	"natural" : 400
 };
 
 var smugglingCost = 100;
 
 var buildMultipliers = {
 	"Extraction Well" : {
-		"water" : 0.3
+		"water" : 1
 	},
 	"Mine" : {
-		"metal" : 0.3
+		"metal" : 1
 	},
 	"Skymine" : {
-		"gas" : 0.3
+		"gas" : 1
 	},
 	"Controlled Ag" : {
-		"natural" : 0.3
+		"natural" : 1
 	}
 };
 
@@ -426,7 +426,7 @@ var ships = {
 		"saveChance" : 0.1
 	},
 	"Planetary Defense" : {
-		"killChance" : 0.5,
+		"killChance" : 0.1,
 		"saveChance" : 0.9
 	},
 	"Planetary Nuke" : {
