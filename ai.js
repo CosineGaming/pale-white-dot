@@ -183,7 +183,7 @@ function aiTrade(name, team) {
 function aiBuild(name, team) {
 	if (team.nextBuild) {
 		if (team.nextBuild == "attack") {
-			// Attack is managed by aiAttack, which is done whether the attempt to build as attack or not
+			aiAttack(name, team);
 			return;
 		}
 		// Don't build on planets engaged in battle
@@ -452,7 +452,6 @@ function ai() {
 			aiTrade(name, team);
 			aiBuild(name, team);
 			aiDiplomacy(name, team);
-			aiAttack(name, team);
 		}
 	});
 }
