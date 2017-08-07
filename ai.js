@@ -399,7 +399,7 @@ function aiAttack(teamName, team) {
 
 function tradePrice(team, givenResource, desiredResource, givenCount) {
 	// This smoothing number makes it so prices do not fluctuate too wildly, allowing for exploitation
-	var smoothing = 500;
+	var smoothing = 1000;
 	var price = givenCount * (teams[team].resources[desiredResource] + smoothing) / (teams[team].resources[givenResource] + smoothing);
 	return Math.ceil(price);
 }
