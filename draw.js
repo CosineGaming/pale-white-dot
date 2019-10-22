@@ -1,8 +1,6 @@
 // draw.js, includes everything that is exclusively for rendering information to the screen
 // GPLv3
 
-var lastBuiltImages = {};
-
 function drawOnce()
 {
 
@@ -78,7 +76,7 @@ function stackImages(element, name, count)
 		img.css({left: i * offset, top: i * offset});
 		e.append(img);
 	}
-	var scale = 2; // TODO: Find a way to use jQuery to load to not make this a pain
+	var scale = 2;
 	e.append(
 		$("<p>").append(count + " " + name + (count > 1 ? "s" : "")).css(
 			{"padding-top": scale * img.get(0).height + stackSize*offset}
@@ -137,38 +135,6 @@ function drawList(obj, field, formatFunc, overrideList)
 	}
 }
 
-function drawBuiltImages(newPlanet)
-{
-	return; // Needs work still (TODO)
-	if (newPlanet) {
-		$("#built-images").empty();
-		lastBuiltImages = {};
-	}
-	var focusedBodyObj = getBody(focusedBody);
-	if (!focusedBodyObj) {
-		return;
-	}
-	var bodyImg = $("#focused-body");
-	var origin = bodyImg.position();
-	var width = bodyImg.width();
-	var height = bodyImg.height();
-	$.each(focusedBodyObj.built, function(name, count) {
-		var changedCount = count;
-		if (name in lastBuiltImages) {
-			changedCount = count - lastBuiltImages[name];
-		}
-		for (var i=0; i<changedCount; i++) {
-			var img = $("<img>").attr("src", "assets/" + name.replace(" ", "-") + ".png");
-			img.css({"z-index": -10});
-			img.css({left: origin.left + Math.random() * width, top: origin.top + Math.random() * height});
-			$("#built-images").append(img);
-		}
-	});
-	if (focusedBodyObj.built) {
-		lastBuiltImages = $.extend({}, focusedBodyObj.built);
-	}
-}
-
 function drawNewPlanet()
 {
 
@@ -199,8 +165,6 @@ function drawNewPlanet()
 	drawList(focusedBodyObj, "moons", function(name, moon) {
 		return $("<a>").attr("href", "#" + name).append(name.humanize());
 	});
-
-	drawBuiltImages(true);
 
 	drawNewOwner();
 	drawBuilt();
@@ -334,8 +298,6 @@ function drawBuilt()
 		$("#l-defenses").hide();
 		$("#l-resources").hide();
 	}
-
-	drawBuiltImages(false);
 
 }
 
