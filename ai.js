@@ -1,6 +1,12 @@
 // AI Library functions
 // In other words, the part that makes the enemy factions do stuff
 
+// What gives the player advantage, despite their humble beginnings, besides
+// the AI being imperfect?
+// 1. Extra money (game.js)
+// 2. Relative peace (aiDiplomacy)
+// 3. Decreased production cost on Luna (less anti-exponential)
+
 function randFromList(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
@@ -399,9 +405,16 @@ function aiAttack(teamName, team) {
 }
 
 function tradePrice(team, givenResource, desiredResource, givenCount) {
-	// This smoothing number makes it so prices do not fluctuate too wildly, allowing for exploitation
+	// This smoothing number makes it so prices do not fluctuate too
+	// wildly, allowing for exploitation
 	var smoothing = 1000;
-	var price = givenCount * (teams[team].resources[desiredResource] + smoothing) / (teams[team].resources[givenResource] + smoothing);
+	// However this doesn't make trading any objectively costful
+	// Which it should be
+	var tradeCost = 0.05;
+	var price = givenCount
+		* (1-tradeCost)
+		* (teams[team].resources[desiredResource] + smoothing)
+		/ (teams[team].resources[givenResource] + smoothing);
 	return Math.ceil(price);
 }
 
@@ -414,36 +427,30 @@ function declareWar(from, on) {
 }
 
 function aiDiplomacy(name, team) {
-	var reAllyChance = 1/(60*3);
-	var enemyChance = 1/(60*3);
-	if (Math.random() < reAllyChance) {
-		options = [];
-		$.each(team.enemies, function(otherName, isEnemy) {
-			if (isEnemy) {
-				options.push(otherName);
-			}
-		});
-		var reAlly = randFromList(options);
-		if (reAlly) {
-			team.enemies[reAlly] = false;
-			if (reAlly == "player") {
+	// Not chance for any, chance for each
+	var reAllyChance = 1/(60*12);
+	var enemyChance = 1/(60*14);
+	var playerEnemyChance = 1/(60*22); // Player lives in relative peace, see top
+	$.each(team.enemies, function(otherName, isEnemy) {
+		if (isEnemy && Math.random() < reAllyChance) {
+			team.enemies[otherName] = false;
+			if (otherName == "player") {
 				var outcomeText = "The " + teamNames[name] + " is allies with you again.";
 				eventMessage(outcomeText, 5000, "green", true);
 				updatePrices();
 			}
 		}
-	}
-	if (Math.random() < enemyChance && canCreateFleet(name)) {
-		options = [];
-		$.each(teams, function(otherName, otherTeam) {
-			if ((!team.enemies || !team.enemies[otherName]) && otherName != name) {
-				options.push(otherName);
+	});
+	$.each(teams, function(otherName, otherTeam) {
+		if (Math.random() < enemyChance && canCreateFleet(name)) {
+			// Leave player for later
+			if ((!team.enemies || !team.enemies[otherName]) && otherName != name && otherName != "player") {
+				declareWar(name, otherName);
 			}
-		});
-		var enemy = randFromList(options);
-		if (enemy) {
-			declareWar(name, enemy);
 		}
+	});
+	if (Math.random() < playerEnemyChance) {
+		declareWar(name, "player");
 	}
 }
 

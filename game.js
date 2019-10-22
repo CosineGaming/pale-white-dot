@@ -34,7 +34,8 @@ function getCost(item, body) {
 	if (item in ships || !body.built || !body.built[item]) {
 		return buildable[item];
 	}
-	var factor = 1;
+	// Production on luna is cheaper (see top of ai.js)
+	var factor = body == "luna" ? 0.4 : 1;
 	var costFactor = factor * body.built[item] + 1;
 	var price = {};
 	$.each(buildable[item], function(resource, cost) {
@@ -368,7 +369,8 @@ function init()
 	}
 
 	// Initialize the team objects
-	var startingMoney = 500 + 1;
+	var startingMoney = 500;
+	var playerStartingMoney = 2500;
 	var startingResource = 0;
 	$.each(teamNames, function(team, _) {
 		teams[team] = {};
@@ -376,9 +378,9 @@ function init()
 		$.each(names, function(resource, _) {
 			teams[team].resources[resource] = startingResource;
 		});
-		teams[team].resources["money"] = startingMoney;
+		// player starts with more money (see top of ai.js)
+		teams[team].resources["money"] = team == "player" ? playerStartingMoney : startingMoney;
 	});
-	teams["player"].resources["money"] -= 1; // So we don't win right off
 
 	setInterval(update, 1000);
 

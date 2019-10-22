@@ -74,6 +74,16 @@ function totalCosts() {
 	return rv
 }
 
+function shipValues() {
+	var rv = {};
+	var costs = totalCosts();
+	$.each(ships, function(name, stats) {
+		var strength = shipStrength(name);
+		rv[name] = (strength / costs[name]).toFixed(4);
+	});
+	return rv
+}
+
 function optimizationValues() {
 	console.log("Resources value (costs normed to avail):");
 	console.log(valueResources());
@@ -81,6 +91,8 @@ function optimizationValues() {
 	console.log(teamResources());
 	console.log("Total costs (normalized to avail):");
 	console.log(totalCosts());
+	console.log("Ship values (strength normalized to normalized costs):");
+	console.log(shipValues());
 }
 
 // Debug stuff
