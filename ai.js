@@ -1,6 +1,5 @@
 // AI Library functions
 // In other words, the part that makes the enemy factions do stuff
-// TODO: Object-oriented? (Note question mark).
 
 function randFromList(list) {
 	return list[Math.floor(Math.random() * list.length)];
@@ -133,8 +132,10 @@ function selectBuild(team) {
 			else {
 				// We apparently cannot find a body on which we can improve our limiting resource
 				// This means it's impossible for us to build our desired ship
-				// TODO: Figure out a way to call selectBuild without infinite loop
-				teams[team].nextBuild = teams[team].nextShipBuild;
+				// So we must pick a new ship or count on diplomacy
+				// Do the former at least
+				teams[team].nextShipBuild = null;
+				teams[team].nextBuild = null;
 				return false;
 			}
 		}
