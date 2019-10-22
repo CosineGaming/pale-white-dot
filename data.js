@@ -116,7 +116,7 @@ planets["earth"].moons = {
 		"resources" : {
 			"metal" : 5,
 			"gas" : 1,
-			"water" : 3,
+			"water" : 2,
 			"natural" : 3
 		},
 		"owner" : "player"
