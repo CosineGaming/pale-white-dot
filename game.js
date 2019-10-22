@@ -17,6 +17,7 @@ function update()
 		}
 	});
 
+	tutorialTick();
 	ai();
 
 	if (attacking) {
@@ -84,14 +85,10 @@ function eventMessage(text, delay, classes, isStatus)
 	}
 	to = isStatus ? $("#status-centered") : $("#interaction-sidebar");
 	to.show();
-	to.append(
-		message.addClass(classes).delay(delay).fadeOut(fade, function() {
+	// Twitter style on-top-is-recent messages
+	to.prepend(
+		message.addClass(classes + " ghost").delay(delay).fadeOut(fade, function() {
 			$(this).remove();
-			if (isStatus) {
-				if (to.is(":empty")) {
-					to.fadeOut(fade);
-				}
-			}
 		})
 	);
 }
@@ -328,6 +325,17 @@ function hashChange()
 
 	drawNewPlanet();
 
+}
+
+function tutorialTick()
+{
+	for (i in tutorial) {
+		var event = tutorial[i];
+		if (event.when()) {
+			eventMessage(event.msg, event.delay * 1000, "", true);
+			tutorial.splice(i, 1);
+		}
+	}
 }
 
 function init()

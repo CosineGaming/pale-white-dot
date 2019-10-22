@@ -98,6 +98,19 @@ main {
 	display: none;
 }
 
+#status-centered p {
+	padding: 5px 20px;
+	transition: padding-bottom 0.1s;
+}
+/* Give the appearance of a ghost parent element without needing to deal
+with fade shenanigans */
+#status-centered p:first-child {
+	padding-top: 20px;
+}
+#status-centered p:last-child {
+	padding-bottom: 20px;
+}
+
 .status-below-graphic {
 	position: relative;
 	top: 200px;
