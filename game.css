@@ -98,16 +98,16 @@ main {
 	display: none;
 }
 
-#status-centered p {
+#status-centered p, #error-events p {
 	padding: 5px 20px;
 	transition: padding-bottom 0.1s;
 }
 /* Give the appearance of a ghost parent element without needing to deal
 with fade shenanigans */
-#status-centered p:first-child {
+#status-centered p:first-child, #error-events p:first-child {
 	padding-top: 20px;
 }
-#status-centered p:last-child {
+#status-centered p:last-child, #error-events p:last-child {
 	padding-bottom: 20px;
 }
 
@@ -128,6 +128,7 @@ with fade shenanigans */
 	display: inline-block;
 	position: relative;
 	width: 640px;
+	z-index: 20;
 }
 
 .ghost {

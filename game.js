@@ -83,7 +83,7 @@ function eventMessage(text, delay, classes, isStatus)
 	if (!(message instanceof jQuery)) {
 		message = $("<p>").append(text);
 	}
-	to = isStatus ? $("#status-centered") : $("#interaction-sidebar");
+	to = isStatus ? $("#status-centered") : $("#error-events");
 	to.show();
 	// Twitter style on-top-is-recent messages
 	to.prepend(
