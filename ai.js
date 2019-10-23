@@ -328,7 +328,7 @@ function aiAttack(teamName, team) {
 		// We can no longer attack, let's try to rebuild
 		selectBuild(teamName);
 	}
-	if (canCreateFleet(teamName) && purchase(teamName, attackCost, 1)) {
+	if (canCreateFleet(teamName) && purchase(teamName, attackCost)) {
 		createFleet(teamName, team);
 		if (team.nextBuild == "attack") {
 			selectBuild(teamName);

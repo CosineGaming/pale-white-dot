@@ -378,7 +378,7 @@ function drawUpdate()
 	$("#year").html(beginYear + Math.floor(elapsedTicks / 60));
 
 	// Update the glow on the attack button if we can attack
-	if (teams["player"].fleet && !$.isEmptyObject(teams["player"].fleet) && getMaxBuyable(teams["player"].resources, attackCost) > 0) {
+	if (teams["player"].fleet && !$.isEmptyObject(teams["player"].fleet) && getCanAfford(teams["player"].resources, attackCost) > 0) {
 		$("#attack img").addClass("clickable-img");
 	}
 	else {
@@ -401,9 +401,15 @@ function drawUpdate()
 			else {
 				buildItem.removeClass("clickable-img");
 			}
-			var max = getMaxBuyable(teams["player"].resources, getCost(item, focusedBodyObj));
 			// Each power of 10 that is buildable
-			for (let count=10; count<=max; count*=10) {
+			// There's probly an O(1) solution to this problem
+			// but it was really hard to get right and I gave up
+			for (let count=10; true; count*=10) {
+				var cost = getCost(item, focusedBodyObj, count);
+				var canAfford = getCanAfford(teams["player"].resources, cost);
+				if (!canAfford) {
+					break;
+				}
 				buildItem.append(
 					$("<span>").addClass("multiple-link").append(
 						" ("
