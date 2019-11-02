@@ -97,17 +97,6 @@ function availResources() {
 	return resources;
 }
 
-function getMaxBuyable(buyer, buying) {
-	var max = -1;
-	$.each(buying, function(resource, count) {
-		var buyable = Math.floor(buyer[resource]/count);
-		if (max == -1 || buyable < max) {
-			max = buyable;
-		}
-	});
-	return max;
-}
-
 // Loops through every planet or moon and passes it to func
 // Passes (actual body object, identifier name, parent object, parent name)
 function bodies(func)

@@ -10,7 +10,7 @@ var tutorial;
 
 	// Shorthand for can afford on luna
 	function lunaAfford(name) {
-		return () => getMaxBuyable(teams["player"].resources, getCost(name, luna)) > 0;
+		return () => getCanAfford(teams["player"].resources, getCost(name, luna));
 	}
 
 	// At any time when there are no messages! A great

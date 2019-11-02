@@ -29,42 +29,73 @@ function update()
 	drawUpdate();
 }
 
-function getCost(item, body) {
-	// Ships don't increase in cost, or if we haven't built one it's base cost
-	if (item in ships || !body.built || !body.built[item]) {
-		return buildable[item];
+function getExpCostFactor(body) {
+	return 1;
+}
+
+function getCost(item, body, count) {
+	if (typeof count == "undefined") {
+		count = 1;
 	}
-	var factor = 1;
-	var costFactor = factor * body.built[item] + 1;
+	var totalFactor;
+	// Ships don't increase in cost, or if we haven't built one it's base cost
+	if (item in ships) {
+		totalFactor = count;
+	}
+	else {
+		// Production on luna is cheaper (see top of ai.js)
+		// Note that this was broken previously, never registering
+		// So my playthrough that was successful was WITHOUT this
+		// So i should probly revert this
+		var factor = getExpCostFactor(body);
+		var built0 = body.built && body.built[item] ? body.built[item] : 0;
+		// We can't do simple multiplication because of cost factor increases
+		// We could do a for loop but this is O(N)
+		// As the count goes up the price would go up
+		// sum n 0 to count-1 ( factor * (built0 + n) + 1 )
+		// = factor * (sum built0 + sum n) + sum 1
+		// = factor * (count * built0 + (count-1) * count / 2) + count * 1
+		// =:
+		totalFactor = count * (factor * (built0 + (count-1)/2) + 1);
+	}
 	var price = {};
 	$.each(buildable[item], function(resource, cost) {
-		price[resource] = Math.ceil(cost * costFactor);
+		price[resource] = Math.ceil(cost * totalFactor);
 	});
 	return price;
+}
+
+// return an array of resource objects for which resources cannot afford cost
+function getInsufficent(resources, cost) {
+	var insufficient = [];
+	$.each(cost, function(resource, required) {
+		if (required > resources[resource]) {
+			insufficient.push(resource);
+		}
+	});
+	return insufficient;
+}
+function getCanAfford(resources, cost) {
+	return getInsufficent(resources, cost).length == 0;
 }
 
 // Checks if you can afford something /and removes those resources/ if you can
 // team: /name/
 // cost: /resource object/
 // count: /number/ to buy
-function purchase(team, cost, count)
+function purchase(team, cost)
 {
-	if (!count) {
-		count = 1;
-	}
-	var success = true;
-	$.each(cost, function(resource, required) {
-		if (required * count > teams[team].resources[resource]) {
-			if (team == "player") {
-				// Add a little marker of what's insufficient
-				// Don't break the loop because we list everything that's insufficient
-				eventMessage("Insufficient " + names[resource]);
-			}
-			success = false;
+	var insufficient = getInsufficent(teams[team].resources, cost);
+	if (team == "player") {
+		for (var resource of insufficient) {
+			// Add a little marker of what's insufficient
+			// Don't break the loop because we list everything that's insufficient
+			eventMessage("Insufficient " + names[resource]);
 		}
-	});
+	}
+	var success = insufficient.length == 0;
 	if (success) {
-		addResources(cost, teams[team].resources, -1 * count);
+		addResources(cost, teams[team].resources, -1);
 		drawUpdate();
 	}
 	return success;
@@ -105,7 +136,7 @@ function build(name, team, toBody, count)
 		count = 1;
 	}
 	var body = getBody(toBody);
-	var canBuild = purchase(team, getCost(name, body), count);
+	var canBuild = purchase(team, getCost(name, body, count));
 	if (canBuild) {
 		incrementOrOne(objOrCreate(body, "built"), name, count);
 		if (focusedBody == toBody) {
