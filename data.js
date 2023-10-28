@@ -451,6 +451,17 @@ var buildDescriptions = {
 	"Controlled Ag" : "An isolated bubble with earth-like conditions to grow food. Increase organic production."
 };
 
+let diplomacyActions = {
+    "attackAllyDownTo" : -1000,
+    "attack" : -1000,
+    "tradeAlly" : 100,
+    "tradeEnemy" : 200,
+    "tradeFactor" : 0.05,
+    "start" : 4000,
+    "startPlayer" : 8000,
+    "tick" : -10
+};
+
 // 1 = I'd like to remake if possible
 // (Just for my own use, no code. The reason is object is for faster search)
 availImgs = {

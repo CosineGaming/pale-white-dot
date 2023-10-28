@@ -108,6 +108,13 @@ function getSafe() {
 	drawBuilt();
 }
 
+function getFriendly() {
+	$.each(teams, function(teamName, team) {
+		team.relationship["player"] = 10000000;
+		teams["player"].relationship[teamName] = 10000000;
+	});
+}
+
 var speedUpHandle = -1;
 
 function speedUp() {
@@ -118,3 +125,5 @@ function speedUp() {
 function slowDown() {
 	cancelAnimationFrame(speedUpHandle);
 }
+
+let totalTraded = 0;

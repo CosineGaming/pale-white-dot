@@ -341,6 +341,8 @@ function aiAttack(teamName, team) {
 			return other && defeatable && enemy;
 		});
 		var oldOwner;
+		// TODO: this looks like a bug to me, where the enemy pays to
+		// attack, but then doesn't attack anyone
 		if (!toAttack) {
 			// If there are no defeatable enemies, now is not the time to attack
 			redistributeFleet(teamName, team);
@@ -414,12 +416,12 @@ function declareWar(from, on) {
 }
 
 function aiDiplomacy(name, team) {
-	var reAllyChance = 1/(60*3);
-	var enemyChance = 1/(60*3);
+	var reAllyChance = 1/(60*1);
+	var enemyChance = 1/(60*2);
 	if (Math.random() < reAllyChance) {
 		options = [];
 		$.each(team.enemies, function(otherName, isEnemy) {
-			if (isEnemy) {
+			if (isEnemy && team.relationship[otherName] >= 0) {
 				options.push(otherName);
 			}
 		});
@@ -436,7 +438,7 @@ function aiDiplomacy(name, team) {
 	if (Math.random() < enemyChance && canCreateFleet(name)) {
 		options = [];
 		$.each(teams, function(otherName, otherTeam) {
-			if ((!team.enemies || !team.enemies[otherName]) && otherName != name) {
+			if ((!team.enemies || !team.enemies[otherName]) && otherName != name && team.relationship[otherName] < 0) {
 				options.push(otherName);
 			}
 		});
@@ -445,6 +447,10 @@ function aiDiplomacy(name, team) {
 			declareWar(name, enemy);
 		}
 	}
+	$.each(teams, function(otherName, otherTeam) {
+		team.relationship[otherName] += diplomacyActions.tick;
+		otherTeam.relationship[name] += diplomacyActions.tick;
+	});
 }
 
 function ai() {

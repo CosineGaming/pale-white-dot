@@ -162,10 +162,20 @@ function trade(from, to, fromResource, toResource, fromCount, toCount)
 		teams[to  ].resources[fromResource] += fromCount;
 		teams[from].resources[toResource]   += toCount;
 		teams[to  ].resources[toResource]   -= toCount;
+		let tradeSize = fromCount + toCount;
 		if (tradingWithEnemy) {
 			teams[from].resources["money"] -= smugglingCost;
 			teams[to  ].resources["money"] += smugglingCost;
 		}
+		let relationshipMod = Math.floor(tradeSize * diplomacyActions.tradeFactor) +
+			(tradingWithEnemy ?
+				diplomacyActions.tradeEnemy :
+				diplomacyActions.tradeAlly);
+		teams[from].relationship[to  ] += relationshipMod;
+		teams[to  ].relationship[from] += relationshipMod;
+		totalTraded += relationshipMod;
+		console.log("Average relationship mod from trades per tick = ", totalTraded / elapsedTicks);
+		console.log("Trade ", from, "-", to, teams[from].relationship[to  ]);
 		drawUpdate();
 		return true;
 	}
@@ -408,6 +418,13 @@ function init()
 			teams[team].resources[resource] = startingResource;
 		});
 		teams[team].resources["money"] = startingMoney;
+	});
+	$.each(teamNames, function(team, _) {
+		teams[team].relationship = {};
+		$.each(teamNames, function(other, _) {
+			let start = (team === "player" || other === "player") ? diplomacyActions.startPlayer : diplomacyActions.start;
+			teams[team].relationship[other] = start;
+		});
 	});
 	teams["player"].resources["money"] -= 1; // So we don't win right off
 

@@ -167,13 +167,22 @@ function attack(team, body)
 	if (!team || !body) { // Displayed, frame-by-frame
 		if (teams.player.fleet && !$.isEmptyObject(teams.player.fleet)) {
 			if (purchase("player", attackCost)) {
-				
+
 				// The DEFENDING team remembers the ATTACKER as an enemy
 				var enemy = getBody(focusedBody).owner;
 				if (enemy) {
 					if (!teams[enemy].enemies || !teams[enemy].enemies["player"]) {
-						declareWar(enemy, "player");
+						declareWar("player", enemy);
+						let newRelationship = Math.min(
+							teams[enemy].relationship["player"],
+							diplomacyActions.attackAllyDownTo);
+						teams[enemy].relationship["player"] = newRelationship;
+						teams["player"].relationship[enemy] = newRelationship;
+						console.log(newRelationship);
 					}
+					teams["player"].relationship[enemy] += diplomacyActions.attack;
+					teams[enemy].relationship["player"] += diplomacyActions.attack;
+					console.log("Attack: ", teams["player"].relationship[enemy]);
 				}
 
 				team = "player";
@@ -198,6 +207,12 @@ function attack(team, body)
 		}
 	}
 	else {
+		let owner = getBody(body).owner;
+		if (owner) {
+			teams[team].relationship[owner] += diplomacyActions.attack;
+			teams[owner].relationship[team] += diplomacyActions.attack;
+			console.log("Attack: ", teams[team].relationship[owner]);
+		}
 		return resolveAttack(team, body);
 	}
 

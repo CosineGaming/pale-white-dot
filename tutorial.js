@@ -103,7 +103,6 @@ var tutorial;
 				// has built a moveable ship
 				var has = false;
 				$.each(luna.built, function(type, count) {
-					console.log(type);
 					if (type in ships && !(type in defenseShips)) {
 						has = true;
 						return false; // break
