@@ -329,7 +329,6 @@ function aiAttack(teamName, team) {
 		}
 		var ourStrength = fleetStrength(team.fleet);
 		var haveNuke = "Planetary Nuke" in team.fleet;
-		var allDefeatable = [];
 		var toAttack = selectBody(null, function(name, body) {
 			if (body.nuked) {
 				return false;
@@ -416,40 +415,29 @@ function declareWar(from, on) {
 }
 
 function aiDiplomacy(name, team) {
-	var reAllyChance = 1/(60*1);
-	var enemyChance = 1/(60*2);
-	if (Math.random() < reAllyChance) {
-		options = [];
-		$.each(team.enemies, function(otherName, isEnemy) {
-			if (isEnemy && team.relationship[otherName] >= 0) {
-				options.push(otherName);
-			}
-		});
-		var reAlly = randFromList(options);
-		if (reAlly) {
-			team.enemies[reAlly] = false;
-			if (reAlly == "player") {
-				var outcomeText = "The " + teamNames[name] + " is allies with you again.";
-				eventMessage(outcomeText, 5000, "green", true);
-				updatePrices();
-			}
-		}
-	}
-	if (Math.random() < enemyChance && canCreateFleet(name)) {
-		options = [];
-		$.each(teams, function(otherName, otherTeam) {
-			if ((!team.enemies || !team.enemies[otherName]) && otherName != name && team.relationship[otherName] < 0) {
-				options.push(otherName);
-			}
-		});
-		var enemy = randFromList(options);
-		if (enemy) {
-			declareWar(name, enemy);
-		}
+	let relationshipChance = 1/(60);
+	if (Math.random() < relationshipChance) {
+		let isAlly = Math.random() < 0.25; // Less chance to ally because trading is more common than attacking
+		let amount = (isAlly ? 1 : -1) * diplomacyActions.random;
+		var otherName = randFromList(Object.keys(teams));
+		team.relationship[otherName] += amount;
+		teams[otherName].relationship[name] += amount;
 	}
 	$.each(teams, function(otherName, otherTeam) {
-		team.relationship[otherName] += diplomacyActions.tick;
-		otherTeam.relationship[name] += diplomacyActions.tick;
+		if (otherName !== name) {
+			if (team.relationship[otherName] > 0 && team.enemies && team.enemies[otherName]) {
+				team.enemies[otherName] = false;
+				teams[otherName].enemies[name] = false;
+				if (otherName == "player") {
+					var outcomeText = "The " + teamNames[name] + " is allies with you again.";
+					eventMessage(outcomeText, 5000, "green", true);
+					updatePrices();
+				}
+			}
+			if (team.relationship[otherName] < 0 && (!team.enemies || !team.enemies[otherName])) {
+				declareWar(name, otherName);
+			}
+		}
 	});
 }
 

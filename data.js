@@ -454,12 +454,12 @@ var buildDescriptions = {
 let diplomacyActions = {
     "attackAllyDownTo" : -1000,
     "attack" : -1000,
-    "tradeAlly" : 100,
+    "tradeAlly" : 10,
     "tradeEnemy" : 200,
-    "tradeFactor" : 0.05,
-    "start" : 4000,
-    "startPlayer" : 8000,
-    "tick" : -10
+    "tradeFactor" : 0.075,
+    "start" : 100,
+    "startPlayer" : 1500,
+    "random" : 1400
 };
 
 // 1 = I'd like to remake if possible

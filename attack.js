@@ -161,6 +161,16 @@ function graphicalAttackFrame() {
 
 }
 
+function attackRelationship(a, b) {
+	let newRelationship = Math.min(
+		teams[a].relationship[b],
+		diplomacyActions.attackAllyDownTo);
+	teams[a].relationship[b] = newRelationship;
+	teams[b].relationship[a] = newRelationship;
+	teams[a].relationship[b] += diplomacyActions.attack;
+	teams[b].relationship[a] += diplomacyActions.attack;
+}
+
 function attack(team, body)
 {
 
@@ -171,18 +181,7 @@ function attack(team, body)
 				// The DEFENDING team remembers the ATTACKER as an enemy
 				var enemy = getBody(focusedBody).owner;
 				if (enemy) {
-					if (!teams[enemy].enemies || !teams[enemy].enemies["player"]) {
-						declareWar("player", enemy);
-						let newRelationship = Math.min(
-							teams[enemy].relationship["player"],
-							diplomacyActions.attackAllyDownTo);
-						teams[enemy].relationship["player"] = newRelationship;
-						teams["player"].relationship[enemy] = newRelationship;
-						console.log(newRelationship);
-					}
-					teams["player"].relationship[enemy] += diplomacyActions.attack;
-					teams[enemy].relationship["player"] += diplomacyActions.attack;
-					console.log("Attack: ", teams["player"].relationship[enemy]);
+					attackRelationship("player", enemy);
 				}
 
 				team = "player";
@@ -209,9 +208,7 @@ function attack(team, body)
 	else {
 		let owner = getBody(body).owner;
 		if (owner) {
-			teams[team].relationship[owner] += diplomacyActions.attack;
-			teams[owner].relationship[team] += diplomacyActions.attack;
-			console.log("Attack: ", teams[team].relationship[owner]);
+			attackRelationship(team, owner);
 		}
 		return resolveAttack(team, body);
 	}
